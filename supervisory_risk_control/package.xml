@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>supervisory_risk_control</name>
+  <version>0.0.0</version>
+  <description>Something</description>
+  <author>Sverre Velten Rothmund</author>
+  <maintainer email="sverre_vr@hotmail.com">Sverre Velten Rothmund</maintainer>
+  <license>GNU AGPL 3.0</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>mavros_msgs</depend>
+</package>
