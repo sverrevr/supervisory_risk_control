@@ -1,0 +1,3 @@
+<launch>
+    <node name="test_bbn" pkg="supervisory_risk_control" type="test_bayesian_network" respawn="false" output="screen" launch-prefix=""/>
+</launch>
