@@ -30,7 +30,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(${PROJECT_NAME} src/${PROJECT_NAME}.cpp)
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${CMAKE_SOURCE_DIR}/include/smile/libsmile.a)
 install(TARGETS ${PROJECT_NAME}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
