@@ -25,7 +25,7 @@ class BayesianNetwork{
     std::map<int, std::vector<double>> virtual_evidence_;
 
     const std::vector<std::string>& temporal_leaf_nodes_;
-    std::deque<std::map<std::string,std::map<std::string,double>>> node_states_;
+    std::deque<std::map<std::string,std::map<std::string,double>>> temporal_leaf_node_states_;
 
     auto getNodeId(std::string name) const{
         const auto node_id = net_.FindNode(name.c_str());
@@ -306,20 +306,24 @@ public:
             assert(res>=0);
         }
         else{
-            for( const auto& [node_name, distribution]: node_states_.front()){
+            for( const auto& [node_name, distribution]: temporal_leaf_node_states_.front()){
                 setPriors(node_name, distribution);
             }
-            node_states_.pop_front();
+            temporal_leaf_node_states_.pop_front();
             temporal_evidence_.pop_front();
             temporal_virtual_evidence_.pop_front();
             apply_evidence();
         }
         temporal_evidence_.push_back(std::map<int,int>{});
         temporal_virtual_evidence_.push_back(std::map<int,std::vector<double>>{});
-        node_states_.push_back(newest_states);
+        temporal_leaf_node_states_.push_back(newest_states);
     }
 
     auto getNumberOfTimeSteps()const{
         return net_.GetNumberOfSlices();
+    }
+
+    auto & getTemporalLeafNodeSate() const{
+        return temporal_leaf_node_states_.back();
     }
 };
