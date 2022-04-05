@@ -2,7 +2,7 @@
 #include <cmath>
 #include <algorithm>
 
-int motor_overhead_clasifier(double val){
+int motor_use_clasifier(double val){
     return std::clamp((int)std::floor(val*10),0,9);
 }
 

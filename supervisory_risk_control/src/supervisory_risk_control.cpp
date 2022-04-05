@@ -13,7 +13,8 @@ class SupervisoryRiskControl
     ros::NodeHandle nh;
     ros::NodeHandle nhp{"~"};
 
-    const std::vector<std::string> temporal_leaf_nodes = {"obstacle_missing_from_lidar_scan","turbulence_geometry_følsomhet", "other_disturbances", "velocity_deviation_distance_scaling_factor", "distance_deviation_when_loss_of_control", "motorbruk_fra_slitasje_eller_tether", "velocity_deviation_when_loss_of_control", "other_reason_for_roll_pitchrate_devitaiton"};
+    //const std::vector<std::string> temporal_leaf_nodes = {"obstacle_missing_from_lidar_scan","turbulence_geometry_følsomhet", "other_disturbances", "velocity_deviation_distance_scaling_factor", "distance_deviation_when_loss_of_control", "motorbruk_fra_slitasje_eller_tether", "velocity_deviation_when_loss_of_control", "other_reason_for_roll_pitchrate_devitaiton"};
+    const std::vector<std::string> temporal_leaf_nodes = {"varying_motor_use", "mean_motor_use"};
     BayesianNetwork net{ros::package::getPath("supervisory_risk_control") + "/include/supervisory_risk_control/2feb_simplified Discretized.xdsl",
                         temporal_leaf_nodes, 2};
 
@@ -23,13 +24,13 @@ class SupervisoryRiskControl
     {
         ROS_INFO("\n\n\nNew measurement");
         // put all values as evidence on measurement nodes
-        net.setEvidence("motor_overhead", motor_overhead_clasifier(msg->data[MOTOR_OVERHEAD]));
-        ROS_INFO("%s: %.2f, %i", "motor_overhead",msg->data[MOTOR_OVERHEAD], motor_overhead_clasifier(msg->data[MOTOR_OVERHEAD]));
+        net.setEvidence("motor_use", motor_use_clasifier(msg->data[topic_indices::motor_max]));
+        ROS_INFO("%s: %.2f, %i", "motor_use",msg->data[topic_indices::motor_max], motor_use_clasifier(msg->data[topic_indices::motor_max]));
 
-        net.setEvidence("js_derivat", js_derivative_clasifier(msg->data[JS_DERIVATIVE]));
-        ROS_INFO("%s: %.2f, %i", "js_derivat",msg->data[JS_DERIVATIVE], js_derivative_clasifier(msg->data[JS_DERIVATIVE]));
+        net.setEvidence("js_derivat", js_derivative_clasifier(msg->data[topic_indices::js_derivative]));
+        ROS_INFO("%s: %.2f, %i", "js_derivat",msg->data[topic_indices::js_derivative], js_derivative_clasifier(msg->data[topic_indices::js_derivative]));
 
-        net.setEvidence("loss_of_control_authority", loss_of_control_authority_classifier(msg->data[LOSS_OF_CONTROL_AUTHORITY]));
+        /*net.setEvidence("loss_of_control_authority", loss_of_control_authority_classifier(msg->data[LOSS_OF_CONTROL_AUTHORITY]));
         ROS_INFO("%s: %.2f, %i", "loss_of_control_authority",msg->data[LOSS_OF_CONTROL_AUTHORITY], loss_of_control_authority_classifier(msg->data[LOSS_OF_CONTROL_AUTHORITY]));
 
         net.setEvidence("velocity_deviation", velocity_deviation_classifier(msg->data[VELOCITY_DEVIATION]));
@@ -48,42 +49,47 @@ class SupervisoryRiskControl
         ROS_INFO("%s: %.2f, %i", "turbulence_geometry", NAN, 2);
 
         net.setEvidence("current_safety_margin", 3);
-        ROS_INFO("%s: %.2f, %i", "current_safety_margin", NAN, 3);
+        ROS_INFO("%s: %.2f, %i", "current_safety_margin", NAN, 3);*/
 
         // evalaute different actions
+        const std::string output_node = "S3__Loss_of_control_authority_causes_contact";
+        //const std::string output_node = "probability_that_we_will_contact";
+
         double lowest_cost = INFINITY;
         int best_margin = -1;
         int best_acceleration = -1;
-        double best_speed = -1;
-        double best_contact_prob = -1;
+        //double best_speed = -1;
+        double best_output_probability = -1;
+
         for(int safety_margin = 0; safety_margin < 5; ++safety_margin){
             net.setEvidence("safety_margin", safety_margin);
             for(int max_acceleration = 0; max_acceleration < 5; ++max_acceleration){
                 net.setEvidence("motorbruk_til_maks_akselerasjon", max_acceleration);
-                double contact_prob = net.evaluateStates({"probability_that_we_will_contact"}).at("probability_that_we_will_contact").at("true");
-                for(double speed = 0.2; speed < 1.5; speed+=0.3){
+                double output_prob = net.evaluateStates({output_node}).at(output_node).at(output_node);
+                //for(double speed = 0.2; speed < 1.5; speed+=0.3){
                     static constexpr double safety_margin_penalty = 1;
                     static constexpr double max_acceleration_penalty = 1;
-                    static constexpr double speed_penalty = 1;
-                    static constexpr double contact_speed_gain_penalty = 3;
-                    static constexpr double contact_constant_penalty = 0.1;
+                    //static constexpr double speed_penalty = 1;
+                    //static constexpr double contact_speed_gain_penalty = 3;
+                    static constexpr double contact_constant_penalty = 1;
                     const double safety_margin_cost = std::pow(safety_margin/4.0,2.0)*safety_margin_penalty;
                     const double max_acc_cost = std::pow(1-max_acceleration/4.0,2.0)*max_acceleration_penalty;
-                    const double speed_cost = std::pow(1-speed/1.4,2.0)*speed_penalty;
-                    const double risk_cost = contact_prob*(contact_constant_penalty+std::pow(speed,2.0)*contact_speed_gain_penalty);
-                    const double cost = safety_margin_cost+max_acc_cost+speed_cost+risk_cost;
+                    //const double speed_cost = std::pow(1-speed/1.4,2.0)*speed_penalty;
+                    //const double risk_cost = contact_prob*(contact_constant_penalty+std::pow(speed,2.0)*contact_speed_gain_penalty);
+                    const double cost = safety_margin_cost+max_acc_cost+contact_constant_penalty*output_prob;//speed_cost+risk_cost;
                     if(cost<lowest_cost){
                         lowest_cost = cost;
                         best_margin = safety_margin;
                         best_acceleration = max_acceleration;
-                        best_speed = speed;
-                        best_contact_prob = contact_prob;
+                        //best_speed = speed;
+                        best_output_probability = output_prob;
                     }
-                }
+                //}
             }
         }
 
-        ROS_INFO("Optimal action - Margin: %i, Acc: %i, Speed: %.2f. Cost: %.2f, Contact prob: %.2f", best_margin, best_acceleration, best_speed, lowest_cost, best_contact_prob);
+        //ROS_INFO("Optimal action - Margin: %i, Acc: %i, Speed: %.2f. Cost: %.2f, Contact prob: %.2f", best_margin, best_acceleration, best_speed, lowest_cost, best_contact_prob);
+        ROS_INFO("Optimal action - Margin: %i, Acc: %i. Cost: %.2f, Output prob: %.2f", best_margin, best_acceleration, lowest_cost, best_output_probability);
 
         // increment time
         net.incrementTime();
