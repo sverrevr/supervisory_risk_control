@@ -7,6 +7,8 @@
 #include <string>
 #include <cmath>
 #include <sstream>
+#include "mavros_msgs/ParamSet.h"
+#include <stdexcept>
 
 class SupervisoryRiskControl
 {
@@ -90,6 +92,15 @@ class SupervisoryRiskControl
 
         //ROS_INFO("Optimal action - Margin: %i, Acc: %i, Speed: %.2f. Cost: %.2f, Contact prob: %.2f", best_margin, best_acceleration, best_speed, lowest_cost, best_contact_prob);
         ROS_INFO("Optimal action - Margin: %i, Acc: %i. Cost: %.2f, Output prob: %.2f", best_margin, best_acceleration, lowest_cost, best_output_probability);
+
+
+        auto param_set = mavros_msgs::ParamSet{};
+        param_set.request.param_id = "SA_DISTANCE";
+        param_set.request.value.real = best_margin;
+
+        if (!ros::service::call("/mavros/param/set", param_set) ||
+        (param_set.response.success == 0u))
+        throw "Failed to write PX4 parameter " + param_set.request.param_id;
 
         // increment time
         net.incrementTime();
