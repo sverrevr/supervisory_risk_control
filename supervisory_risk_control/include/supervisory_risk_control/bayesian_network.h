@@ -222,6 +222,13 @@ public:
         }
     }
 
+    //Input <node_name, observation id>
+    void setEvidence(const std::map<std::string, int>&  evidence){
+        for(auto e : evidence){
+            setEvidence(e.first,e.second);
+        }
+    }
+
     void setPriors(std::string node_name, const std::map<std::string, double>& prior_distribution){
         const auto node_id = getNodeId(node_name);
         auto node_definition = net_.GetNode(node_id)->Definition();

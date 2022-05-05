@@ -12,4 +12,5 @@
   <depend>std_msgs</depend>
   <depend>mavros_msgs</depend>
   <depend>roslib</depend>
+  <depend>supervisory_risk_control_msgs</depend>
 </package>

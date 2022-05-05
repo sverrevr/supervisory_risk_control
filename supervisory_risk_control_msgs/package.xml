@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>supervisory_risk_control_msgs</name>
+  <version>0.0.0</version>
+
+  <description>Messages that are needed for the supervisory risk controller. </description>
+
+  <maintainer email="sverre.v.rothmund@ntnu.no">sverre</maintainer>
+  <license>Closed</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+
+</package>

@@ -1,0 +1,34 @@
+#Optimal actions
+float32 optimal_cost
+int16 optimal_safety_margin
+int16 optimal_max_acc
+int16 optimal_speed
+
+#Probabilities with this choise
+float32 damage_to_drone
+float32 loss_of_mission
+float32 loss_of_control
+float32 disturbance_causes_loss_of_control
+float32 contact_with_obstacle_causes_loss_of_control
+float32 contact_with_obstacle
+float32 disturbance_causes_deviation_beyond_safety_margin
+float32 loss_of_control_authortiy_causes_deviation_beyond_safety_margin
+
+#measurements
+int16 turbulence_geometry
+int16 height_over_ground
+int16 current_speed
+int16 current_joystick_input
+int16 measured_motor_use
+int16 velocity_deviation
+bool has_currently_lost_control_authority
+
+#Mean of underlying varaibles
+float32 turbulence_geometry_suceptability_mean
+float32 turbulence_mean
+float32 other_disturbance_mean
+float32 tether_sway_suceptability_mean
+float32 tether_sway_mean
+float32 tether_drag_mean
+float32 tether_friction_mean
+float32 motor_wear_mean

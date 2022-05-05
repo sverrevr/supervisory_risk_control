@@ -12,6 +12,7 @@ find_package(
              roslib 
              mavros_msgs
              std_msgs
+             supervisory_risk_control_msgs
              )
 
 find_package(Boost REQUIRED)
@@ -24,6 +25,7 @@ catkin_package(
   mavros_msgs
   std_msgs
   roslib
+  supervisory_risk_control_msgs
   )
 
 include_directories(include ${catkin_INCLUDE_DIRS})
