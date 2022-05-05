@@ -1,34 +1,38 @@
 #Optimal actions
-float32 optimal_cost
+float32 risk_cost
 int16 optimal_safety_margin
 int16 optimal_max_acc
 int16 optimal_speed
 
-#Probabilities with this choise
-float32 damage_to_drone
-float32 loss_of_mission
-float32 loss_of_control
-float32 disturbance_causes_loss_of_control
-float32 contact_with_obstacle_causes_loss_of_control
-float32 contact_with_obstacle
-float32 disturbance_causes_deviation_beyond_safety_margin
-float32 loss_of_control_authortiy_causes_deviation_beyond_safety_margin
+#Probability of binary predictions with this choise:
+float32 motor_saturation_caused_deviation_beyond_safety_margin
+float32 hitting_obstacle_causes_loss_of_control
+
+#Mean frequency of prediction with this choise:
+float32 mean_frequency_of_motor_saturation
+float32 mean_frequency_of_motor_saturation_causing_loss_of_control
+float32 mean_frequency_of_hitting_obstacles
+float32 mean_frequency_of_motor_saturation_exceeding_safety_margin
+float32 mean_frequency_of_disturbance_causing_deviation_beyond_safety_margin
+
+#Mean value of intermediate predictions with this choise:
+float32 mean_predicted_drag
+float32 mean_predicted_compond_motoruse_badness
+float32 mean_predicted_deviation_when_motors_saturate
 
 #measurements
-int16 turbulence_geometry
-int16 height_over_ground
-int16 current_speed
-int16 current_joystick_input
-int16 measured_motor_use
-int16 velocity_deviation
-bool has_currently_lost_control_authority
+int16 measured_height_over_ground
+int16 measured_current_speed_setpoint
+int16 measured_current_change_in_joystick_input
+int16 measured_motoruse
+int16 measured_velocity_deviation
+int16 measured_current_acceleration_limit
+
+#Mean intermediate estimation variables
+float32 mean_current_drag
+float32 mean_joystick_motor_use
 
 #Mean of underlying varaibles
-float32 turbulence_geometry_suceptability_mean
-float32 turbulence_mean
-float32 other_disturbance_mean
-float32 tether_sway_suceptability_mean
-float32 tether_sway_mean
-float32 tether_drag_mean
-float32 tether_friction_mean
-float32 motor_wear_mean
+float32 mean_friction
+float32 mean_other_motoruse
+float32 mean_turbulence

@@ -44,9 +44,9 @@ class BayesianNetwork{
     auto getNumberOfOutcomes(std::string node_name){
         const auto node_id = getNodeId(node_name);
         const auto outcome_count = net_.GetNode(node_id)->Definition()->GetNumberOfOutcomes();
-        if(outcome_count<=0) ROS_ERROR("No outcomes for node_id %s", node_name.c_str());
-        assert(outcome_count>0);
-        return outcome_count;
+        //if(outcome_count<=0) ROS_ERROR("No outcomes for node_id %s", node_name.c_str());
+        //assert(outcome_count>0);
+        return std::max(outcome_count,1);
     }
 
     void setDefinition(std::string node_name, DSL_doubleArray& CPT){
@@ -106,12 +106,14 @@ class BayesianNetwork{
         const auto node_id = getNodeId(node_name);
         const auto is_temporal = isTemporal(node_id);
         const auto outcome_count = getNumberOfOutcomes(node_name);
-        const auto outcome_names = net_.GetNode(node_id)->Definition()->GetOutcomesNames();
-        for(int i=0; i<outcome_count;++i){
-            if(is_temporal)
-                return_value[(*outcome_names)[i]] = getTemporalOutcome(node_id,time_slice,i);
-            else
-                return_value[(*outcome_names)[i]] = getOutcome(node_id,i);
+        if(outcome_count==1){
+            return_value["Expected utility"] = is_temporal ? getTemporalOutcome(node_id,time_slice,0) : getOutcome(node_id,0);
+        }
+        else{
+            const auto outcome_names = net_.GetNode(node_id)->Definition()->GetOutcomesNames();
+            for(int i=0; i<outcome_count;++i){
+                return_value[(*outcome_names)[i]] = is_temporal ? getTemporalOutcome(node_id,time_slice,i) : getOutcome(node_id,i);
+            }
         }
         return return_value;
     }
@@ -167,7 +169,7 @@ class BayesianNetwork{
 	}
 
 public:
-    BayesianNetwork(std::string full_path, const std::vector<std::string>& temporal_leaf_nodes, int max_num_timesteps = -1, unsigned num_network_evaluation_samples = 10000) 
+    BayesianNetwork(std::string full_path, const std::vector<std::string>& temporal_leaf_nodes={}, int max_num_timesteps = -1, int num_network_evaluation_samples = -1) 
         : max_number_of_timesteps_(max_num_timesteps), temporal_leaf_nodes_(temporal_leaf_nodes)
     {
         DSL_errorH().RedirectToFile(stdout); //Rederects errors to standard output
@@ -177,10 +179,15 @@ public:
         const auto result_slice = net_.SetNumberOfSlices(1);
         if(result_slice<0) ROS_ERROR("Insufficient number of time slices");
         assert(result_slice>=0);
-        net_.SetDefaultBNAlgorithm(DSL_ALG_BN_EPISSAMPLING);
-        const auto return_set_samples = net_.SetNumberOfSamples(num_network_evaluation_samples);
-        if(return_set_samples<0) ROS_ERROR("Illigal number of samples set: %d", num_network_evaluation_samples);
-        assert(return_set_samples>=0);
+        if(num_network_evaluation_samples<0){
+            net_.SetDefaultBNAlgorithm(DSL_ALG_BN_LAURITZEN);
+        }
+        else{
+            net_.SetDefaultBNAlgorithm(DSL_ALG_BN_EPISSAMPLING);
+            const auto return_set_samples = net_.SetNumberOfSamples(num_network_evaluation_samples);
+            if(return_set_samples<0) ROS_ERROR("Illigal number of samples set: %d", num_network_evaluation_samples);
+            assert(return_set_samples>=0);
+        }
 
         temporal_evidence_.push_back(std::map<int,int>{});
         temporal_virtual_evidence_.push_back(std::map<int,std::vector<double>>{});
