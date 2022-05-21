@@ -5,10 +5,8 @@ namespace topic_indices
 enum topic_indices
 {
 motor_max,
-js_derivative,
-acceleration_limit,
-speed_setpoint,
-vxvy_error_component,
+drone_roll_pitch,
+yaw_moment,
 height_over_ground
 };
 }
