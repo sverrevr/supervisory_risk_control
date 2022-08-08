@@ -1,0 +1,559 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<root>
+ <tabbed_widget parent="main_window" name="Main Window">
+  <Tab tab_name="tab1" containers="1">
+   <Container>
+    <DockSplitter count="2" orientation="-" sizes="0.5;0.5">
+     <DockArea name="...">
+      <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
+       <range left="0.070173" bottom="-1.056000" right="84.201171" top="1.296000"/>
+       <limitY/>
+       <curve name="velocity_deviation" color="#1f77b4"/>
+       <curve name="rp_variance" color="#bcbd22"/>
+       <curve name="js_dxy" color="#1f77b4"/>
+       <curve name="rp_error_var" color="#d62728"/>
+       <curve name="manual_control_setpoint/z" color="#bcbd22"/>
+       <curve name="manual_control_setpoint/r" color="#1ac938"/>
+       <curve name="distance_sensor.00/current_distance" color="#1ac938"/>
+      </plot>
+     </DockArea>
+     <DockSplitter count="2" orientation="|" sizes="0.5;0.5">
+      <DockArea name="...">
+       <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
+        <range left="0.070173" bottom="-1.050000" right="84.201171" top="1.050000"/>
+        <limitY/>
+        <curve name="manual_control_setpoint/x" color="#9467bd"/>
+        <curve name="manual_control_setpoint/y" color="#17becf"/>
+        <curve name="manual_control_setpoint/z" color="#bcbd22"/>
+        <curve name="vehicle_local_position/vx" color="#1f77b4"/>
+        <curve name="manual_control_setpoint/r" color="#1ac938"/>
+       </plot>
+      </DockArea>
+      <DockArea name="...">
+       <plot flip_x="false" flip_y="false" mode="XYPlot" style="Lines">
+        <range left="-1.534421" bottom="-1.548141" right="2.186530" top="0.405233"/>
+        <limitY/>
+        <curve curve_x="vehicle_local_position/x" name="vehicle_local_position/[x;y]" color="#f14cc1" curve_y="vehicle_local_position/y"/>
+       </plot>
+      </DockArea>
+     </DockSplitter>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab tab_name="tab2" containers="1">
+   <Container>
+    <DockSplitter count="1" orientation="-" sizes="1">
+     <DockArea name="...">
+      <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
+       <range left="0.070173" bottom="-33.156130" right="84.201171" top="56.943798"/>
+       <limitY/>
+       <curve name="js_dx" color="#ff7f0e"/>
+       <curve name="js_dy" color="#f14cc1"/>
+       <curve name="manual_control_setpoint/x" color="#9467bd"/>
+       <curve name="manual_control_setpoint/z" color="#bcbd22"/>
+       <curve name="manual_control_setpoint/y" color="#17becf"/>
+       <curve name="roll" color="#bcbd22"/>
+       <curve name="pitch" color="#d62728"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab tab_name="tab3" containers="1">
+   <Container>
+    <DockSplitter count="2" orientation="-" sizes="0.5;0.5">
+     <DockSplitter count="2" orientation="|" sizes="0.5;0.5">
+      <DockArea name="...">
+       <plot flip_x="false" flip_y="false" mode="XYPlot" style="Lines">
+        <range left="-1.534421" bottom="-1.447634" right="2.186530" top="0.304726"/>
+        <limitY/>
+        <curve curve_x="vehicle_local_position/x" name="vehicle_local_position/[x;y]" color="#ff7f0e" curve_y="vehicle_local_position/y"/>
+        <curve curve_x="vehicle_local_position_setpoint/x" name="vehicle_local_position_setpoint/[x;y]" color="#f14cc1" curve_y="vehicle_local_position_setpoint/y"/>
+       </plot>
+      </DockArea>
+      <DockArea name="...">
+       <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
+        <range left="0.070173" bottom="-38.981972" right="84.201171" top="1537.536146"/>
+        <limitY/>
+        <curve name="vehicle_local_position_setpoint/x" color="#bcbd22"/>
+        <curve name="vehicle_local_position_setpoint/y" color="#1f77b4"/>
+        <curve name="vehicle_local_position/x" color="#d62728"/>
+        <curve name="vehicle_local_position/y" color="#ff7f0e"/>
+        <curve name="actuator_outputs.01/output.00" color="#d62728"/>
+        <curve name="actuator_outputs.01/output.01" color="#1ac938"/>
+        <curve name="actuator_outputs.01/output.02" color="#ff7f0e"/>
+        <curve name="actuator_outputs.01/output.03" color="#f14cc1"/>
+       </plot>
+      </DockArea>
+     </DockSplitter>
+     <DockArea name="...">
+      <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
+       <range left="0.070173" bottom="-0.035355" right="84.201171" top="1.449569"/>
+       <limitY/>
+       <curve name="pos_error" color="#9467bd"/>
+       <curve name="js_norm" color="#17becf"/>
+       <curve name="velocity_deviation" color="#1f77b4"/>
+       <curve name="rp_error_var" color="#d62728"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab tab_name="tab2" containers="1">
+   <Container>
+    <DockSplitter count="2" orientation="-" sizes="0.5;0.5">
+     <DockArea name="...">
+      <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
+       <range left="0.070173" bottom="-0.000640" right="82.948449" top="0.026221"/>
+       <limitY/>
+       <curve name="pitch" color="#ff7f0e"/>
+       <curve name="roll" color="#f14cc1"/>
+       <curve name="vehicle_local_position/ax" color="#9467bd"/>
+       <curve name="vehicle_attitude_setpoint/roll_body" color="#17becf"/>
+       <curve name="vehicle_attitude_setpoint/pitch_body" color="#bcbd22"/>
+       <curve name="pitch_error" color="#1f77b4">
+        <transform alias="pitch_error[Moving Average]" name="Moving Average">
+         <options value="500" compensate_offset="true"/>
+        </transform>
+       </curve>
+       <curve name="manual_control_setpoint/x" color="#d62728"/>
+       <curve name="manual_control_setpoint/y" color="#1ac938"/>
+      </plot>
+     </DockArea>
+     <DockArea name="...">
+      <plot flip_x="false" flip_y="false" mode="XYPlot" style="Lines">
+       <range left="-2.997557" bottom="-1.400199" right="3.649667" top="0.257291"/>
+       <limitY/>
+       <curve curve_x="vehicle_local_position/x" name="vehicle_local_position/[x;y]" color="#ff7f0e" curve_y="vehicle_local_position/y"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <currentTabIndex index="3"/>
+ </tabbed_widget>
+ <use_relative_time_offset enabled="1"/>
+ <!-- - - - - - - - - - - - - - - -->
+ <!-- - - - - - - - - - - - - - - -->
+ <Plugins>
+  <plugin ID="DataLoad CSV">
+   <default time_axis="" delimiter="0"/>
+  </plugin>
+  <plugin ID="DataLoad ULog"/>
+  <plugin ID="UDP Server"/>
+  <plugin ID="WebSocket Server"/>
+  <plugin ID="Fast Fourier Transform"/>
+  <plugin ID="Quaternion to RPY"/>
+  <plugin ID="Reactive Script Editor">
+   <library code="--[[ Helper function to create a ScatterXY series from arrays.&#xa;&#xa; series_name: name of the created ScatterXY series&#xa; prefix:      prefix of the timeseries, before the index of the array&#xa; suffix_X:   suffix to complete the name of the series containing the X value.&#xa;             if [nil], the index of the array will be used.&#xa; suffix_Y:   suffix to complete the name of the series containing the Y value&#xa; timestamp:   usually the tracker_time variable&#xa;              &#xa; Example:&#xa; &#xa; Assuming we have multiple series in the form:&#xa; &#xa;   /trajectory/node.{X}/position/x&#xa;   /trajectory/node.{X}/position/y&#xa;   &#xa; where {N} is the index of the array (integer). We can create a reactive series from the array with:&#xa; &#xa;   CreateSeriesFromArray( &quot;my_trajectory&quot;, &quot;/trajectory/node&quot;,  &quot;position/x&quot;, &quot;position/y&quot;, tracker_time );&#xa;]]--&#xa;&#xa;function CreateSeriesFromArray( series_name, prefix, suffix_X, suffix_Y, timestamp )&#xa;  --- create a new series or overwite the previous one&#xa;  new_series = MutableScatterXY.new(series_name)&#xa;  &#xa;  --- Append points to new_series&#xa;  index = 0&#xa;  while(true) do&#xa;&#xa;    x = index;&#xa;    -- if not nil, get the X coordinate from a series&#xa;    if suffix_X ~= nil then &#xa;      series_x = TimeseriesView.find( string.format( &quot;%s.%d/%s&quot;, prefix, index, suffix_X) )&#xa;      if series_x == nil then break end&#xa;      x = series_x:atTime(timestamp)&#x9; &#xa;    end&#xa;    &#xa;    series_y = TimeseriesView.find( string.format( &quot;%s.%d/%s&quot;, prefix, index, suffix_Y) )&#xa;    if series_x == nil then break end &#xa;    y = series_y:atTime(timestamp)&#xa;    &#xa;    new_series:push_back(x,y)&#xa;    index = index+1&#xa;  end&#xa;end&#xa;"/>
+   <scripts/>
+  </plugin>
+  <plugin ID="CSV Exporter"/>
+ </Plugins>
+ <!-- - - - - - - - - - - - - - - -->
+ <previouslyLoaded_Datafiles>
+  <fileInfo prefix="" filename="../../../../../scout_logs/turbulence2.ulg">
+   <selected_datasources value=""/>
+   <plugin ID="DataLoad ULog"/>
+  </fileInfo>
+ </previouslyLoaded_Datafiles>
+ <!-- - - - - - - - - - - - - - - -->
+ <customMathEquations>
+  <snippet name="pitch_error">
+   <global>window = {}
+time_window = {}
+time_horizon = 0.5</global>
+   <function>table.insert(time_window,time)
+table.insert(window,v1)
+
+while(time_window[#time_window] - time_window[1] > time_horizon) do
+	table.remove(time_window,1)
+	table.remove(window,1)	
+end
+
+smallest_error = 100000
+min_ref =100000
+max_ref = -1000000
+for key, ref in ipairs(window) do
+	min_ref=math.min(min_ref,ref)
+	max_ref=math.max(max_ref,ref)
+end
+if(value>min_ref and value&lt;max_ref)then
+	smallest_error=0
+elseif(value&lt;min_ref)then
+	smallest_error=math.abs(value-min_ref)
+elseif(value>max_ref)then
+	smallest_error=math.abs(value-max_ref)
+end
+
+return smallest_error</function>
+   <linked_source>pitch</linked_source>
+   <additional_sources>
+    <v1>vehicle_attitude_setpoint/pitch_body</v1>
+   </additional_sources>
+  </snippet>
+  <snippet name="roll">
+   <global></global>
+   <function>w = value
+x = v1
+y = v2
+z = v3
+
+dcm21 = 2 * (w * x + y * z)
+dcm22 = 1-2*(x*x+y*y)
+
+roll = math.atan(dcm21, dcm22)
+
+return roll</function>
+   <linked_source>vehicle_attitude/q.00</linked_source>
+   <additional_sources>
+    <v1>vehicle_attitude/q.01</v1>
+    <v2>vehicle_attitude/q.02</v2>
+    <v3>vehicle_attitude/q.03</v3>
+   </additional_sources>
+  </snippet>
+  <snippet name="vxy_error_var">
+   <global>window = {}
+window_size = 40</global>
+   <function>if (#window &lt; window_size) then
+	table.insert(window,value)
+else
+	for i=1, window_size do
+		window[i] = window[i+1]
+	end	
+	window[window_size] = value
+end
+
+sum = 0
+for key, elem in ipairs(window) do
+	sum = sum + elem
+end
+mean= sum/#window
+
+square_error = 0
+for key, elem in ipairs(window) do
+	square_error = square_error + (elem-mean)*(elem-mean)
+end
+
+return math.sqrt(square_error/(#window-1))</function>
+   <linked_source>velocity_deviation</linked_source>
+  </snippet>
+  <snippet name="js_dxy">
+   <global></global>
+   <function>return math.sqrt(value*value+v1*v1)/300</function>
+   <linked_source>js_dx</linked_source>
+   <additional_sources>
+    <v1>js_dy</v1>
+   </additional_sources>
+  </snippet>
+  <snippet name="velocity_deviation">
+   <global>window_x = {}
+window_y = {}
+time_window = {}
+time_horizon = 1
+e=0.01
+v_ref=1.0</global>
+   <function>x=value
+y=v1
+rx_current=v2
+ry_current=v3
+
+table.insert(time_window,time)
+table.insert(window_x,rx_current)
+table.insert(window_y,ry_current)
+
+while(time_window[#time_window] - time_window[1] > time_horizon) do
+	table.remove(time_window,1)
+	table.remove(window_x,1)
+	table.remove(window_y,1)
+end
+
+
+smallest_error = 100000
+for i=1,#window_x do
+	rx = window_x[i]
+	ry = window_y[i]
+	angle = 0
+	no_input = false
+	--atan2....
+	if rx>e then
+		angle = math.atan(ry/rx)
+	elseif(rx&lt;-e and ry>=0) then
+		angle = math.atan(ry/rx)+math.pi
+	elseif(rx&lt;-e and ry&lt;0) then
+		angle = math.atan(ry/rx)-math.pi
+	elseif(ry>e) then
+		angle = math.pi/2
+	elseif(ry&lt;e) then
+		angle = math.pi/2
+	else 
+		no_input=true
+	end
+	if no_input then
+		error = math.sqrt(x*x+y*y)
+	else
+		cross_track_error = -x*math.sin(angle)+y*math.cos(angle)	
+		along_track_velocity = x*math.cos(angle)+y*math.sin(angle)
+		v_setpoint = v_ref*math.sqrt(rx*rx+ry*ry)
+		along_track_error=0
+		if(along_track_velocity&lt;0) then
+			along_track_error = along_track_velocity
+		elseif(along_track_velocity > v_setpoint) then
+			along_track_error = 0--along_track_velocity-v_setpoint
+		end
+		
+		
+		error=math.sqrt(cross_track_error*cross_track_error+along_track_error*along_track_error)
+	end
+	if(error &lt; smallest_error) then
+		smallest_error = error
+	end
+end
+
+return smallest_error</function>
+   <linked_source>vx_body</linked_source>
+   <additional_sources>
+    <v1>vy_body</v1>
+    <v2>manual_control_setpoint/x</v2>
+    <v3>manual_control_setpoint/y</v3>
+   </additional_sources>
+  </snippet>
+  <snippet name="rp_error_var">
+   <global>window = {}
+window_size = 500</global>
+   <function>if (#window &lt; window_size) then
+	table.insert(window,value)
+else
+	for i=1, window_size do
+		window[i] = window[i+1]
+	end	
+	window[window_size] = value
+end
+
+sum = 0
+for key, elem in ipairs(window) do
+	sum = sum + elem
+end
+mean= sum/#window
+
+square_error = 0
+for key, elem in ipairs(window) do
+	square_error = square_error + (elem-mean)*(elem-mean)
+end
+
+return 5*math.sqrt(square_error/(#window-1))</function>
+   <linked_source>rp_error</linked_source>
+  </snippet>
+  <snippet name="js_dy">
+   <global>prevX = 0
+prevY = 0
+is_first = true</global>
+   <function>if (is_first) then
+  is_first = false
+  prevX = time
+  prevY = value
+end
+
+dx = time - prevX
+dy = value - prevY
+prevX = time
+prevY = value
+
+return dy/dx</function>
+   <linked_source>manual_control_setpoint/y</linked_source>
+  </snippet>
+  <snippet name="js_dx">
+   <global>prevX = 0
+prevY = 0
+is_first = true</global>
+   <function>if (is_first) then
+  is_first = false
+  prevX = time
+  prevY = value
+end
+
+dx = time - prevX
+dy = value - prevY
+prevX = time
+prevY = value
+
+return dy/dx</function>
+   <linked_source>manual_control_setpoint/x</linked_source>
+  </snippet>
+  <snippet name="y_err_var">
+   <global>window = {}
+window_size = 20</global>
+   <function>error = value-v1
+
+if (#window &lt; window_size) then
+	table.insert(window,error)
+else
+	for i=1, window_size do
+		window[i] = window[i+1]
+	end	
+	window[window_size] = error
+end
+
+sum = 0
+for key, elem in ipairs(window) do
+	sum = sum + elem
+end
+mean= sum/#window
+
+square_error = 0
+for key, elem in ipairs(window) do
+	square_error = square_error + (elem-mean)*(elem-mean)
+end
+
+return math.sqrt(square_error/(#window-1))</function>
+   <linked_source>vehicle_local_position/y</linked_source>
+   <additional_sources>
+    <v1>vehicle_local_position_setpoint/y</v1>
+   </additional_sources>
+  </snippet>
+  <snippet name="yaw">
+   <global></global>
+   <function>z = value
+w = v1
+x = v2
+y = v3
+
+dcm10 = 2 * (x * y + w * z)
+dcm00 = 1-2*(y*y+z*z)
+
+yaw = math.atan(dcm10, dcm00)
+
+return yaw</function>
+   <linked_source>vehicle_attitude/q.03</linked_source>
+   <additional_sources>
+    <v1>vehicle_attitude/q.00</v1>
+    <v2>vehicle_attitude/q.01</v2>
+    <v3>vehicle_attitude/q.02</v3>
+   </additional_sources>
+  </snippet>
+  <snippet name="js_norm">
+   <global></global>
+   <function>return math.sqrt(value*value+v1*v1)</function>
+   <linked_source>manual_control_setpoint/x</linked_source>
+   <additional_sources>
+    <v1>manual_control_setpoint/y</v1>
+   </additional_sources>
+  </snippet>
+  <snippet name="vy_body">
+   <global></global>
+   <function>vx=value
+vy=v1
+yaw=v2
+
+return -vx*math.sin(yaw)+vy*math.cos(yaw)</function>
+   <linked_source>vehicle_local_position/vx</linked_source>
+   <additional_sources>
+    <v1>vehicle_local_position/vy</v1>
+    <v2>yaw</v2>
+   </additional_sources>
+  </snippet>
+  <snippet name="vx_body">
+   <global></global>
+   <function>vx=value
+vy=v1
+yaw=v2
+
+return vx*math.cos(yaw)+vy*math.sin(yaw)</function>
+   <linked_source>vehicle_local_position/vx</linked_source>
+   <additional_sources>
+    <v1>vehicle_local_position/vy</v1>
+    <v2>yaw</v2>
+   </additional_sources>
+  </snippet>
+  <snippet name="pos_error">
+   <global></global>
+   <function>err_x = value-v2
+err_y = v1-v3
+
+return math.sqrt(err_x*err_x+err_y*err_y)</function>
+   <linked_source>vehicle_local_position_setpoint/x</linked_source>
+   <additional_sources>
+    <v1>vehicle_local_position_setpoint/y</v1>
+    <v2>vehicle_local_position/x</v2>
+    <v3>vehicle_local_position/y</v3>
+   </additional_sources>
+  </snippet>
+  <snippet name="rp_variance">
+   <global>window = {}
+window_size = 300</global>
+   <function>if (#window &lt; window_size) then
+	table.insert(window,value)
+else
+	for i=1, window_size do
+		window[i] = window[i+1]
+	end	
+	window[window_size] = value
+end
+
+sum = 0
+for key, elem in ipairs(window) do
+	sum = sum + elem
+end
+mean= sum/#window
+
+square_error = 0
+for key, elem in ipairs(window) do
+	square_error = square_error + (elem-mean)*(elem-mean)
+end
+
+return math.sqrt(square_error/(#window-1))</function>
+   <linked_source>rp_norm</linked_source>
+  </snippet>
+  <snippet name="pitch">
+   <global></global>
+   <function>w = value
+x = v1
+y = v2
+z = v3
+
+dcm20 = 2 * (w * y - z * x)
+
+return math.asin(dcm20)</function>
+   <linked_source>vehicle_attitude/q.00</linked_source>
+   <additional_sources>
+    <v1>vehicle_attitude/q.01</v1>
+    <v2>vehicle_attitude/q.02</v2>
+    <v3>vehicle_attitude/q.03</v3>
+   </additional_sources>
+  </snippet>
+  <snippet name="x_err_var">
+   <global>window = {}
+window_size = 20</global>
+   <function>error = value-v1
+
+if (#window &lt; window_size) then
+	table.insert(window,error)
+else
+	for i=1, window_size do
+		window[i] = window[i+1]
+	end	
+	window[window_size] = error
+end
+
+sum = 0
+for key, elem in ipairs(window) do
+	sum = sum + elem
+end
+mean= sum/#window
+
+square_error = 0
+for key, elem in ipairs(window) do
+	square_error = square_error + (elem-mean)*(elem-mean)
+end
+
+return math.sqrt(square_error/(#window-1))</function>
+   <linked_source>vehicle_local_position/x</linked_source>
+   <additional_sources>
+    <v1>vehicle_local_position_setpoint/x</v1>
+   </additional_sources>
+  </snippet>
+ </customMathEquations>
+ <snippets/>
+ <!-- - - - - - - - - - - - - - - -->
+</root>
+
