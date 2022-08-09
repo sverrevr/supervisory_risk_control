@@ -2,7 +2,38 @@
 #include <vector>
 #include <string>
 
-double mean(std::map<std::string,double> input){
+template <typename t>
+class map_stringkey : public std::map<std::string, t>{
+    public:
+    map_stringkey(const std::map<std::string, t>& val) : std::map<std::string,t>(val){}
+    map_stringkey() :std::map<std::string,t>(){}
+
+    auto& at(std::string value){
+        if(std::map<std::string, t>::find(value) == std::map<std::string, t>::end()){
+            ROS_ERROR("Attempting to access non existing key \"%s\"",value.c_str());
+            /*ROS_ERROR("Existing keys are:");
+            for(auto it = std::map<std::string, t>::begin(); it!=std::map<std::string, t>::end(); ++it){
+                ROS_ERROR("%s",it->first().c_str());
+            }*/
+            throw std::string{"Attempting to access non existing key " + value};
+        }
+        return std::map<std::string, t>::at(value);
+    }
+
+    const auto& at(std::string value) const{
+        if(std::map<std::string, t>::find(value) == std::map<std::string, t>::end()){
+            ROS_ERROR("Attempting to access non existing key \"%s\"",value.c_str());
+            /*ROS_ERROR("Existing keys are:");
+            for(auto it = std::map<std::string, t>::begin(); it!=std::map<std::string, t>::end(); ++it){
+                ROS_ERROR("%s",it->first().c_str());
+            }*/
+            throw std::string{"Attempting to access non existing key " + value};
+        }
+        return std::map<std::string, t>::at(value);
+    }
+};
+
+double mean(map_stringkey<double> input){
     double mean = 0;
     double prob_sum = 0;
     for(int i=0; i<10; ++i){
@@ -10,8 +41,7 @@ double mean(std::map<std::string,double> input){
         prob_sum += input.at("State"+std::to_string(i));
     }
     if(prob_sum<0.98 || prob_sum > 1.02){
-        ROS_ERROR("Probability sum does not sum to 1 when evaluating mean!");
-        assert(false);
+        throw std::string("Probability sum does not sum to 1 when evaluating mean!");
     }
     return mean;
 }
@@ -31,7 +61,7 @@ double mean(std::map<std::string,double> input){
     return mean;
 }*/
 
-double log_mean(std::map<std::string,double> input){
+double log_mean(map_stringkey<double> input){
     int number_of_states = input.size();
     double mean = 0;
     double prob_sum = 0;
@@ -44,8 +74,8 @@ double log_mean(std::map<std::string,double> input){
         prob_sum += input.at("State"+std::to_string(i));
     }
     if(prob_sum<0.98 || prob_sum > 1.02){
-        ROS_ERROR("Probability sum does not sum to 1 when evaluating mean!");
-        assert(false);
+        throw std::string("Probability sum does not sum to 1 when evaluating mean!");
     }
     return mean;
 }
+

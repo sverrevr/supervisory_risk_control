@@ -10,8 +10,9 @@ bool found_feasible_option
 #Mean frequency of prediction with this choise:
 float32 mean_frequency_of_motor_saturation
 float32 mean_frequency_of_loss_of_control_due_to_motor_wear
-float32 mean_frequency_of_exceeding_safety_marign_due_to_turbulence
+float32 mean_frequency_of_exceeding_safety_margin_due_to_turbulence
 float32 mean_frequency_of_contact_with_unobservable_obstacle
+float32 mean_frequency_of_breaking_distance_exceeding_safety_margin
 
 #Mean value of intermediate predictions with this choise:
 
