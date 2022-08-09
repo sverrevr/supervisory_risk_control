@@ -1,15 +1,14 @@
-#ifndef VALUEOFINFORMATION_H
-#define VALUEOFINFORMATION_H
+#ifndef SMILE_VALUEOFINFO_H
+#define SMILE_VALUEOFINFO_H
 
 // {{SMILE_PUBLIC_HEADER}}
 
-#include "dslobject.h"
 #include "dmatrix.h"
 
 
 class DSL_network;
 
-class DSL_valueOfInformation : public DSL_object
+class DSL_valueOfInformation
 {
  protected:
   DSL_network  *theNetwork; 
@@ -30,9 +29,7 @@ class DSL_valueOfInformation : public DSL_object
   DSL_valueOfInformation(DSL_network *thisOne);
  ~DSL_valueOfInformation(void) {CleanUp();};
 
-  void CleanUp(int deep = 0);
-  void CheckReadiness(int deep = 0);
-  void CheckConsistency(int deep = 0);
+  void CleanUp();
 
   DSL_network  *GetNetwork(void)          {return(theNetwork);};
   DSL_intArray &GetNodes(void)            {return(theNodes);};

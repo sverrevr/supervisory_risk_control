@@ -1,5 +1,5 @@
-#ifndef DSL_EM_H
-#define DSL_EM_H
+#ifndef SMILE_EM_H
+#define SMILE_EM_H
 
 // {{SMILE_PUBLIC_HEADER}}
 

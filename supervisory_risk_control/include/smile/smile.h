@@ -1,6 +1,6 @@
 /*
 
-SMILE ACADEMIC version 1.6.0 / 2020-09-28
+SMILE ACADEMIC version 2.0.8 / 2022-07-29
 SMILE: Structural Modeling, Inference and Learning Engine
 
 This software can be used only with a valid license, obtained from BayesFusion, LLC.
@@ -38,35 +38,32 @@ http://support.bayesfusion.com/
 #endif
 
 // basic data structures
-#include "intarray.h"
 #include "doublearray.h"
 #include "dmatrix.h"
 #include "syscoord.h"
-#include "generalclases.h"
 
 // network structure
 #include "network.h"
-#include "node.h"
 #include "submodel.h"
-#include "simplecase.h"
-#include "errorstrings.h"
+#include "case.h"
 #include "progress.h"
 #include "randgen.h"
+#include "errorhandler.h"
 
 // supported node definition classes
 #include "defcpt.h"
 #include "deftruthtable.h"
 #include "defnoisymax.h"
 #include "defnoisyadder.h"
-#include "deflist.h"
-#include "deftable.h"
+#include "defdecision.h"
+#include "defutility.h"
 #include "defmau.h"
 #include "defdemorgan.h"
 #include "defequation.h"
 
 // supported node value classes
 #include "valbeliefvector.h"
-#include "vallistofdecisions.h"
+#include "valpolicyvalues.h"
 #include "valexpectedutility.h"
 #include "valmauexpectedutility.h"
 #include "valequationevaluation.h"
@@ -77,13 +74,9 @@ http://support.bayesfusion.com/
 // sensitivity
 #include "sensitivity.h"
 
-// define SMILE_NO_DIAGNOSIS before including smile.h to exclude diagnosis
-#ifndef SMILE_NO_DIAGNOSIS
-#include "diag_network.h"
-#include "nodecost.h"
-#include "extradefinition.h"
-#include "caselibrary.h"
-#endif // !SMILE_NO_DIAGNOSIS
+// diagnosis
+#include "diagsession.h"
+#include "diagcaselibrary.h"
 
 // define SMILE_NO_LEARNING before including smile.h to exclude learning
 #ifndef SMILE_NO_LEARNING
@@ -100,8 +93,20 @@ http://support.bayesfusion.com/
 #include "tan.h"
 #include "abn.h"
 #include "dbcml.h"
-#include "essentialsearch.h"
 #include "instancecounts.h"
 #endif // !SMILE_NO_LEARNING
+
+#ifndef SMILE_NO_V1_COMPATIBILITY
+typedef DSL_nodeDef DSL_nodeDefinition;
+typedef DSL_nodeVal DSL_nodeValue;
+typedef DSL_decision DSL_list;
+typedef DSL_utility DSL_table;
+typedef DSL_equationEvaluation DSL_valEqEvaluation;
+typedef DSL_case DSL_simpleCase;
+typedef DSL_diagSession DIAG_network;
+typedef DSL_diagFaultState DIAG_faultyState;
+typedef DSL_diagTestInfo DIAG_testInfo;
+#endif
+
 
 #endif

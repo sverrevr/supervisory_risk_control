@@ -1,55 +1,80 @@
-#ifndef SYSCOORD_H
-#define SYSCOORD_H
+#ifndef SMILE_SYSCOORD_H
+#define SMILE_SYSCOORD_H
 
 // {{SMILE_PUBLIC_HEADER}}
 
-#include "dslobject.h"
-#include "intarray.h"
+#include "dmatrix.h"
 
-class DSL_Dmatrix;
-class DSL_nodeDefinition;
-class DSL_nodeValue;
-
-class DSL_sysCoordinates : public DSL_object
+class DSL_sysCoordinatesImpl
 {
- protected:
-  DSL_Dmatrix *link;
-  DSL_intArray currentPosition;
-  int          currentIntPosition;
+public:
+	int& operator[](int index) { return currentPosition[index]; }
+	int operator[](int index) const { return currentPosition[index]; }
+	const DSL_intArray& Coordinates() const { return currentPosition; }
+	int Index() const { return currentIntPosition; }
 
-  DSL_intArray lockedCoords;
+	void GoFirst();
 
- public:
-  DSL_sysCoordinates(void);
-  DSL_sysCoordinates(DSL_Dmatrix         &theLink);
-  DSL_sysCoordinates(DSL_nodeDefinition  &theLink);
-  DSL_sysCoordinates(DSL_nodeValue       &theLink);
-  void LinkTo(DSL_Dmatrix         &theLink);
-  void LinkTo(DSL_nodeDefinition  &theLink);
-  void LinkTo(DSL_nodeValue       &theLink);
+	void LockCoordinate(int coordIndex);
+	void UnlockCoordinate(int coordIndex);
+	void UnlockAll();
 
-  int &operator[](int index) {return(currentPosition[index]);};
-  // navigation
-  void GoFirst(void);
-  void GoLast(void);
-  int GoTo(int theIndex);
-  int Next(void);
-  int Previous(void);
-  int GoToCurrentPosition(void);
-  // conversion
-  int  Index(void) {return(currentIntPosition);};
-  DSL_intArray &Coordinates(void) {return(currentPosition);};
-  // accesing data
-  double &UncheckedValue(void);
-  double &CheckedValue(void);
+protected:
+	DSL_sysCoordinatesImpl(const DSL_Dmatrix& mtx);
 
-  int LockCoordinate(int thisOne);
-  int UnlockCoordinate(int thisOne);
-  int UnlockAll(void);
+	int GoTo(const DSL_Dmatrix& mtx, int index);
+	void GoLast(const DSL_Dmatrix& mtx);
+	int GoToCurrentPosition(const DSL_Dmatrix& mtx);
+	int Next(const DSL_Dmatrix& mtx);
+	int Previous(const DSL_Dmatrix& mtx);
 
- protected:
-  void Initialize(void);
+private:
+	DSL_intArray currentPosition;
+	int currentIntPosition;
+	DSL_intArray lockedCoords;
 };
 
+template <class M, class V>
+class DSL_sysCoordinatesBase : public DSL_sysCoordinatesImpl
+{
+public:
+	DSL_sysCoordinatesBase(M& mtx) : DSL_sysCoordinatesImpl(mtx), link(mtx) {}
+
+	V UncheckedValue()
+	{
+		return link[Index()];
+	}
+
+	int GoTo(int index)
+	{
+		return DSL_sysCoordinatesImpl::GoTo(link, index);
+	}
+
+	void GoLast()
+	{
+		DSL_sysCoordinatesImpl::GoLast(link);
+	}
+
+	int GoToCurrentPosition()
+	{
+		return DSL_sysCoordinatesImpl::GoToCurrentPosition(link);
+	}
+
+	int Next()
+	{
+		return DSL_sysCoordinatesImpl::Next(link);
+	}
+	
+	int Previous()
+	{
+		return DSL_sysCoordinatesImpl::Previous(link);
+	}
+
+private:
+	M& link;
+};
+
+typedef DSL_sysCoordinatesBase<const DSL_Dmatrix, double> DSL_sysCoordinates;
+typedef DSL_sysCoordinatesBase<DSL_Dmatrix, double&> DSL_writeableSysCoordinates;
 
 #endif 

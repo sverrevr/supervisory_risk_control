@@ -1,76 +1,34 @@
-#ifndef DSL_DEFNOISYADDER_H
-#define DSL_DEFNOISYADDER_H
+#ifndef SMILE_DEFNOISYADDER_H
+#define SMILE_DEFNOISYADDER_H
 
 // {{SMILE_PUBLIC_HEADER}}
 
-#include "cidefinition.h"
-#include "network.h"
-#include "node.h"
+#include "cidef.h"
 
-
-class DSL_noisyAdder : public DSL_ciDefinition  
+class DSL_noisyAdder : public DSL_ciDef  
 {
 public:
     enum Function { fun_average, fun_single_fault };
 
-    DSL_noisyAdder(int myHandle, DSL_network *theNetwork);
-    DSL_noisyAdder(DSL_nodeDefinition &likeThisOne);
+    DSL_noisyAdder(DSL_network& network, int handle);
+    DSL_noisyAdder(const DSL_nodeXformContext& context);
   
     int GetType() const { return DSL_NOISY_ADDER; } 
     const char* GetTypeName() const { return "NOISY_ADDER"; }
 
-    int ReCreateFromNetworkStructure();
+    void GetUnconstrainedColumns(std::vector<int> &columns) const;
     
-    int operator=(DSL_nodeDefinition &likeThisOne);
-    int Clone(DSL_nodeDefinition &thisGuy);
-    void CheckConsistency(int deep = 0);
+    int CheckCiWeightsConsistency(const DSL_Dmatrix &ciWeights, char * errorMsg, int errorMsgBufSize);
 
-    int GetNumberOfParents() const { return network->GetParents(handle).NumItems(); }
-    int GetNumberOfParentOutcomes(int parentPos) const;
-    int GetParentStartingPosition(int parentPos) const;
-  
-    int AddParent(int theParent);
-    int RemoveParent(int theParent);
-    int DaddyGetsBigger(int daddy, int thisPosition);
-    int DaddyGetsSmaller(int daddy, int thisPosition);
-    int DaddyChangedOrderOfOutcomes(int daddy, DSL_intArray &newOrder);
-    int OrderOfParentsGetsChanged(DSL_intArray &newOrder);
-    int ChangeOrderOfOutcomes(DSL_intArray &newOrder);
-    
-    int SetDefinition(DSL_Dmatrix &withThis);
-    int SetDefinition(DSL_doubleArray &withThis);
-    int CheckCiWeightsConsistency(DSL_Dmatrix &ciWeights, char * errorMsg, int errorMsgBufSize);
+    void CalculateCpt() const;
+    void CiToCpt(const DSL_Dmatrix& ci, DSL_Dmatrix& cpt) const;
 
-    //  ==== Converting noisy-adder into CPT distribution ====
-    int CiToCpt();
-    int CiToCpt(DSL_Dmatrix& ci,DSL_Dmatrix& cpt);
-
-
-    int AddOutcome(const char *thisName) {return InsertOutcome(GetNumberOfOutcomes(),thisName);} 
-    int InsertOutcome(int here, const char *thisName);
-    int RemoveOutcome(int outcomeNumber);
-    int SetNumberOfOutcomes(int aNumber);
-    int SetNumberOfOutcomes(DSL_stringArray &theOutcomeNames);
-
-    int CptToCi() { return DSL_OUT_OF_RANGE; } // It's a subject for the next paper...
-    DSL_Dmatrix &GetCpt();
-    int CiIndexConstrained(DSL_Dmatrix &ci,int index);
-
-    /*
-    // Methods for relavance
-    int AbsorbEvidenceFromParent(int theParent);
-    int MarginalizeParent(int theParent);
-    */   
-
-    int GetDistinguishedState() {return dState; }
+    int GetDistinguishedState() const { return dState; }
     int GetParentDistinguishedState(int parentPos) const { return dParentStates[parentPos]; }
-    double GetParentWeight(int parentPos) { return parentWeights[parentPos]; }
+    double GetParentWeight(int parentPos) const { return parentWeights[parentPos]; }
 
-    DSL_doubleArray& ParentWeights() { return parentWeights; }
-    DSL_intArray& ParentDistinguishedStates() { return dParentStates;}
-
-    int SetDistinguishedState(int thisState);
-    int SetParentDistinguishedState(int parentPos, int newDState);
+    int SetDistinguishedState(int newDistState);
+    int SetParentDistinguishedState(int parentPos, int newDistState);
     int SetParentWeight(int parentPos, double value);
 
     int SetFunction(Function val);
@@ -86,18 +44,31 @@ public:
     int SetTemporalParentInfo(int order, const DSL_doubleArray &weights, const DSL_intArray &distStates);
 
 private:
-    void DoCopyParameters(DSL_nodeDefinition &target) const;
-    int CiToCptAverage(DSL_Dmatrix& ci,DSL_Dmatrix& cpt);
-    int CiToCptSingleFault(DSL_Dmatrix& ci,DSL_Dmatrix& cpt);
+    DSL_noisyAdder(const DSL_noisyAdder& src, DSL_network& targetNetwork);
+    DSL_nodeDef* Clone(DSL_network& targetNetwork) const;
+    void DoCopyParameters(DSL_nodeDef& target) const;
 
-    int TemporalHelper(int order, DSL_noisyAdder*& def) const;
+    int AddParent(int theParent);
+    int RemoveParent(int theParent);
+    int OnParentOutcomeAdd(int parentHandle, int thisPosition);
+    int OnParentOutcomeRemove(int parentHandle, int thisPosition);
+    int OnParentOutcomeReorder(int parentHandle, const DSL_intArray& newOrder);
+    int OnParentReorder(const DSL_intArray& newOrder);
+    int AfterInsertOutcome(int outcomeIndex);
+    int AfterRemoveOutcome(int outcomeIndex);
+    int AfterOutcomeCountChanged();
+    int AfterReorderOutcomes(const DSL_intArray& newOrder);
+
+    void FixConstrainedColumns();
+    int CiIndexConstrained(int index) const;
+
+    int CiToCptAverage(const DSL_Dmatrix& ci,DSL_Dmatrix& cpt) const;
+    int CiToCptSingleFault(const DSL_Dmatrix& ci,DSL_Dmatrix& cpt) const;
 
     int dState;
     DSL_intArray dParentStates;
     DSL_doubleArray parentWeights;
     Function function;
-
-
 };
 
 #endif

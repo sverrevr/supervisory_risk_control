@@ -1,70 +1,39 @@
-#ifndef TRUTHTABLE_H
-#define TRUTHTABLE_H
+#ifndef SMILE_TRUTHTABLE_H
+#define SMILE_TRUTHTABLE_H
 
 // {{SMILE_PUBLIC_HEADER}}
 
-#ifndef DEFCPT_H
 #include "defcpt.h"
-#endif
 
-//-------------------------------------------------------------------------
-//-------------------------------------------------------------------------
-// TRUTHTABLE
-//-------------------------------------------------------------------------
-//-------------------------------------------------------------------------
+// represents a discrete & deterministic chance node.
+// It's a CPT with only 0's and 1's
 
 class DSL_truthTable : public DSL_cpt
 {
- // represents a discrete & deterministic chance node.
- // It's a CPT with only 1's and 0's
+public:
+	DSL_truthTable(DSL_network& network, int handle);
+	DSL_truthTable(const DSL_nodeXformContext& xfp);
 
- // ENTRY VALUES:
- // This node is expecting DISCRETE entries from it's parents
- // wich means that all it's parents should be discrete (or 
- // discretized if they are continuous)
+	int GetType() const { return DSL_TRUTHTABLE; }
+	const char *GetTypeName() const { return "TRUTHTABLE"; }
 
- public:
-  // METHODS FOR USER INTERACTION
-  // creation/destruction
-  DSL_truthTable(int myHandle, DSL_network *theNetwork);
-  DSL_truthTable(DSL_nodeDefinition &likeThisOne);
-  virtual ~DSL_truthTable() {CleanUp();};
+	int SetResultingStates(const DSL_stringArray& states);
+	int SetResultingStates(const DSL_intArray& states);
+	int GetResultingStates(DSL_intArray& states) const;
+	int GetResultingStates(DSL_stringArray& states) const;
 
-  int operator =(DSL_nodeDefinition &likeThisOne) {return(DSL_cpt::operator =(likeThisOne));};
-
-  // methods to deal with changes in the definition of my parents
-  int DaddyGetsBigger(int daddy, int thisPosition);
-
-  // setting and retrieving data
-  int GetType() const { return DSL_TRUTHTABLE; }
-  const char *GetTypeName() const { return "TRUTHTABLE"; }
-
-  int SetProbability(DSL_intArray &thisCoordinates, double theProbability);
-  int SetResultingState(DSL_intArray &thisCoordinates);
-  int SetResultingStates(DSL_stringArray &theStates);
-  int SetResultingStates(const DSL_intArray &theStates);
-  int SetResultingStates(const int* states);
-
-  int GetResultingState(DSL_intArray &thisCoordinates) const;
-  int GetResultingStates(DSL_intArray &here) const;
-  int GetResultingStates(DSL_stringArray &here) const;
-
-  int GetTemporalResultingStates(int order, DSL_intArray &states) const;
-  int SetTemporalResultingStates(int order, const DSL_intArray &states);
-  int SetTemporalResultingStates(int order, const int* states);
+	int GetTemporalResultingStates(int order, DSL_intArray &states) const;
+	int SetTemporalResultingStates(int order, const DSL_intArray &states);
   
-  void CheckConsistency(int deep = 0);
+	int MakeUniform() { return DSL_WRONG_NODE_TYPE; }
+	int MakeRandom(DSL_randGen &randGen);
 
-  int Clone(DSL_nodeDefinition &thisGuy);
-  
-  // get/set definitions in several ways
-  int SetDefinition(DSL_intArray &withThis) {return(SetResultingStates(withThis));};
-  int SetDefinition(DSL_stringArray &withThis) {return(SetResultingStates(withThis));};
-  int MakeUniform() { return DSL_WRONG_NODE_TYPE; }
- 
 protected:
-  int SetResultingState(DSL_intArray &thisCoordinates, DSL_intArray &theStates);
-  int MakeConsistent();
+	DSL_truthTable(const DSL_truthTable& src, DSL_network& target);
+	DSL_nodeDef* Clone(DSL_network& targetNetwork) const;
+
+	void MakeConsistent();
+	int AfterOutcomeCountChanged();
 };
 
 #endif

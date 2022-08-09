@@ -1,5 +1,5 @@
-#ifndef DSL_SENSITIVITY_H
-#define DSL_SENSITIVITY_H
+#ifndef SMILE_SENSITIVITY_H
+#define SMILE_SENSITIVITY_H
 
 // {{SMILE_PUBLIC_HEADER}}
 
@@ -43,8 +43,9 @@ public:
 	void GetTargets(std::vector<Target> &targets) const;
 
 	// used only with influence diagrams
-	void SetCurrentConfig(int configIndex);
+	int SetCurrentConfig(int configIndex);
 	int GetCurrentConfig() const;
+	bool IsConfigPossible(int configIndex) const;
 	const std::vector<int>& GetIndexingNodes() const { return indexingNodes; }
 	int GetNumberOfConfigs() const { return (int)allConfigs.size(); }
 

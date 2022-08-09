@@ -1,5 +1,5 @@
-#ifndef DSL_TAN_H
-#define DSL_TAN_H
+#ifndef SMILE_TAN_H
+#define SMILE_TAN_H
 
 // {{SMILE_PUBLIC_HEADER}}
 

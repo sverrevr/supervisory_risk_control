@@ -1,23 +1,27 @@
-#ifndef DSL_VALEQUATIONEVALUATION_H
-#define DSL_VALEQUATIONEVALUATION_H
+#ifndef SMILE_VALEQUATIONEVALUATION_H
+#define SMILE_VALEQUATIONEVALUATION_H
 
 // {{SMILE_PUBLIC_HEADER}}
 
 #include "nodeval.h"
+#include "dmatrix.h"
 #include <vector>
 
-class DSL_valEqEvaluation : public DSL_nodeValue
+
+class DSL_equationEvaluation : public DSL_nodeVal
 {
 public:
-    DSL_valEqEvaluation(int myHandle, DSL_network *net);
-	DSL_valEqEvaluation(DSL_nodeValue &that);
-
-	int Clone(DSL_nodeValue &that);
+    DSL_equationEvaluation(DSL_network& network, int handle);
+    DSL_equationEvaluation(const DSL_valXformContext& ctx);
 
     int GetType() const { return DSL_EQUATIONEVALUATION; }
 
     int AddIndexingParent(int parent) { return DSL_WRONG_NODE_TYPE; }
-    int GetSize() { return DSL_WRONG_NODE_TYPE; }
+    const DSL_Dmatrix* GetMatrix() const { return &discBeliefs; }
+    DSL_Dmatrix* GetWriteableMatrix() { return &discBeliefs; }
+
+    int GetMean(double& mean) const;
+    int GetStdDev(double& stddev) const;
 
     const std::vector<double>& GetSamples() const { return samples; }
 	double GetSample(int index) const { return samples[index]; }
@@ -37,17 +41,23 @@ public:
 	// used only for exact evaluation
 	void SetSampleMean(double mean);
 
-	int SetDiscBeliefs(const std::vector<double> &beliefs);
-	const std::vector<double>& GetDiscBeliefs() const { return discBeliefs; }
+    bool IsDiscretized() const { return !discBeliefs.IsEmpty(); }
+    const DSL_Dmatrix& GetDiscBeliefs() const { return discBeliefs; }
 
+    int SetEvidence(int evidence);
     int SetEvidence(double evidence);
     int SetPropagatedEvidence(double evidence);
-    int GetEvidence(double &e) const { e = evidence; return DSL_OKAY; }
+    int GetEvidence(double& e) const;
     int ClearEvidence();
     int ClearPropagatedEvidence();
 
+    void InitXform(DSL_valXformContext& ctx) const;
+
 private:
-	void CalcStats() const;
+    DSL_equationEvaluation(const DSL_equationEvaluation& src, DSL_network& targetNetwork);
+    DSL_nodeVal* Clone(DSL_network& targetNetwork) const;
+
+    void CalcStats() const;
 
     double evidence;
 
@@ -62,7 +72,8 @@ private:
 
 	mutable bool statsCalculated;
 
-	std::vector<double> discBeliefs;
+	DSL_Dmatrix discBeliefs;
 };
 
-#endif // DSL_VALEQUATIONEVALUATION_H
+#endif
+

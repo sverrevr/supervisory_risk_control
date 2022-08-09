@@ -1,5 +1,5 @@
-#ifndef DSL_MST_H
-#define DSL_MST_H
+#ifndef SMILE_MST_H
+#define SMILE_MST_H
 
 // {{SMILE_PUBLIC_HEADER}}
 
@@ -39,6 +39,4 @@ private:
 	};
 };
 
-//tst function
-void test_mst();
 #endif

@@ -1,5 +1,5 @@
-#ifndef DSL_PATTERN_H
-#define DSL_PATTERN_H
+#ifndef SMILE_PATTERN_H
+#define SMILE_PATTERN_H
 
 // {{SMILE_PUBLIC_HEADER}}
 
@@ -29,4 +29,5 @@ public:
 private:
     std::vector<std::vector<EdgeType> > mat;
 };
+
 #endif

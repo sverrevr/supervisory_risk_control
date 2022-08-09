@@ -1,103 +1,84 @@
-#ifndef DSL_DEFNOISYMAX_H
-#define DSL_DEFNOISYMAX_H
+#ifndef SMILE_DEFNOISYMAX_H
+#define SMILE_DEFNOISYMAX_H
 
 // {{SMILE_PUBLIC_HEADER}}
 
-#include "cidefinition.h"
+#include "cidef.h"
 #include <vector>
 
-// this is an implementation of noisy-MAX.
-// as native parametrization we use weight[i] = P(Y|Xi), 
+// This is an implementation of noisy-MAX.
+// As native parametrization we use weight[i] = P(Y|Xi), 
 // called 'Diez' but this convention is not strict. 
 // We DON'T use P(Y|~X1,...,Xi,...,Xn)
 
-class DSL_noisyMAX : public DSL_ciDefinition  
+class DSL_noisyMAX : public DSL_ciDef  
 {
 public:
-    DSL_noisyMAX(int myHandle, DSL_network *theNetwork);
-    DSL_noisyMAX(DSL_nodeDefinition &likeThisOne);
+    DSL_noisyMAX(DSL_network& network, int handle);
+    DSL_noisyMAX(const DSL_nodeXformContext& context);
 
-    int GetNumberOfParentOutcomes(int parentPos) const { return parentOutcomeStrengths[parentPos].NumItems(); }
-    int GetParentStartingPosition(int parentPos) const { return parentStartingPos[parentPos]; }
+    int GetType() const { return DSL_NOISY_MAX; }
+    const char* GetTypeName() const { return "NOISY_MAX"; }
 
-    const DSL_intArray &GetParentOutcomeStrengths(int parentPos) const { return parentOutcomeStrengths[parentPos]; }
+    void GetUnconstrainedColumns(std::vector<int> &columns) const;
+
     int GetStrengthOfOutcome(int parentPos, int parentPosOutcome) const { return parentOutcomeStrengths[parentPos].FindPosition(parentPosOutcome); }
     int GetOutcomeOfStrength(int parentPos, int outcomeStrength) const { return parentOutcomeStrengths[parentPos][outcomeStrength]; }
-    int GetNumberOfParents() const { return (int)parentOutcomeStrengths.size(); }
+
+    const DSL_intArray& GetParentOutcomeStrengths(int parentPos) const { return parentOutcomeStrengths[parentPos]; }
     int SetParentOutcomeStrengths(int parentPos, const DSL_intArray &newStrengths); 
 
     int GetTemporalParentOutcomeStrengths(int order, std::vector<DSL_intArray>& strengths) const;
     int SetTemporalParentOutcomeStrengths(int order, const std::vector<DSL_intArray>& strengths);
 
-    int GetType() const { return DSL_NOISY_MAX; } 
-    const char* GetTypeName() const { return "NOISY_MAX"; }
-    int operator=(DSL_nodeDefinition &likeThisOne);
-    int Clone(DSL_nodeDefinition &thisGuy);
-    void CleanUp(int deep = 0);  
-    int ReCreateFromNetworkStructure();
-    
-    void CheckConsistency(int deep = 0);
-
-    int AddParent(int theParent);
-    int RemoveParent(int theParent);
-    int DaddyGetsBigger(int daddy, int thisPosition);
-    int DaddyGetsSmaller(int daddy, int thisPosition);
-    int DaddyChangedOrderOfOutcomes(int daddy, DSL_intArray &newOrder);
-    int OrderOfParentsGetsChanged(DSL_intArray &newOrder);
-    int ChangeOrderOfOutcomes(DSL_intArray &newOrder);
     int ChangeOrderOfStrengths(int parentPos, const DSL_intArray &newOrder);
 
-    int IsParentNecessary(int parentIndex, double epsilon, bool &necessary);
+    int IsParentNecessary(int parentIndex, double epsilon, bool &necessary) const;
 
-    int SetDefinition(DSL_Dmatrix &withThis);
-    int SetDefinition(DSL_doubleArray &withThis);
-    int CheckCiWeightsConsistency(DSL_Dmatrix &ciWeights, char * errorMsg, int errorMsgBufSize);
+    int CheckCiWeightsConsistency(const DSL_Dmatrix &weightsToTest, std::string &errMsg, int& errRow, int& errCol) const;
 
     //  ==== Converting noisy-MAX into Henrion parametrization ====
     int GetHenrionProbabilities(DSL_Dmatrix &henrion);
-    int SetHenrionProbabilities(DSL_Dmatrix &henrion);
-    int CheckHenrionConsistency(DSL_Dmatrix &henrion, char * errorMsg, int errorMsgBufSize, int &errRow, int &errCol, bool &leakInconsistent);
+    int SetHenrionProbabilities(const DSL_Dmatrix &henrion);
+    int CheckHenrionConsistency(DSL_Dmatrix &henrion, std::string &errMsg, int &errRow, int &errCol, bool &leakInconsistent) const;
 
     //  ==== Converting noisy-MAX into CPT distribution ====
-    int CiToCpt();
-    int CiToCpt(DSL_Dmatrix& ci,DSL_Dmatrix& cpt);
+    void CalculateCpt() const;
+    void CiToCpt(DSL_Dmatrix& ci, DSL_Dmatrix& cpt) const;
 
-    //  ==== Converting CPT to noisy-MAX distribution ====
+    static void CiToCumulativeCi(DSL_Dmatrix& ci);
     static void CumulativeCiToCpt(const DSL_Dmatrix& ci, const std::vector<DSL_intArray> &parentOutcomeStrengths, const DSL_intArray &parentStartingPos, DSL_Dmatrix& cpt);
-    static void CiToCumulativeCi(DSL_Dmatrix &ci);
-    int CptToCi() { return SquareCptToCi(table,ciWeights,1/(double)GetNumberOfOutcomes(),0.0001); }
-    int CiIndexConstrained(DSL_Dmatrix &ci,int index);
+
+    int CptToCi();
   
-    // Square distance routines
-    double SquareDistance(DSL_Dmatrix& cptA, DSL_Dmatrix& cptB) const;
-    int SquareCptToCi(DSL_Dmatrix& cpt,DSL_Dmatrix& ci,double step, double minStep);
-
-    // Kullback-Leibler distance routines
-    double KLDistance(DSL_Dmatrix& cptReal, DSL_Dmatrix& cptApprox) const;
-    int KLCptToCi(DSL_Dmatrix& cpt,DSL_Dmatrix& ci,double step, double minStep);
-
     // Part Added during transition noisyOR/AND -> noisyMAX
     int SetLegacyNoisyOrProbabilities(DSL_doubleArray &legacyWeights);
     int GetLegacyNoisyOrProbabilities(DSL_doubleArray &legacyWeights);
-    int CalculateCptColumn(const DSL_intArray &coordinates, DSL_doubleArray &here); 
-
-    DSL_Dmatrix &GetCpt();
-
-    // Methods for relavance
-    int AbsorbEvidenceFromParent(int theParent);
-    int MarginalizeParent(int theParent);
 
     void SetParentOutcomeStrengthsUnchecked(int parentPos, const DSL_intArray &newStrengths);
 
+    void CalcParentColumnBases(DSL_intArray& colBases) const;
+
 private:
-    bool IsNonZero(const DSL_Dmatrix& cpt) const;
-    double SquareCiToCptSingleStep(DSL_Dmatrix& ci,DSL_Dmatrix& cpt,int index,double step);
-    double KLCiToCptSingleStep(DSL_Dmatrix& ci,DSL_Dmatrix& cpt,int index,double step, bool undo = true);
-    void DoCopyParameters(DSL_nodeDefinition &target) const;
-    void RecalcParentStartingPositions();
+    DSL_noisyMAX(const DSL_noisyMAX& src, DSL_network& targetNetwork);
+    DSL_nodeDef* Clone(DSL_network& targetNetwork) const;
+    void DoCopyParameters(DSL_nodeDef& target) const;
+
+    int AddParent(int parentHandle);
+    int RemoveParent(int parentHandle);
+    int OnParentOutcomeAdd(int parentHandle, int thisPosition);
+    int OnParentOutcomeRemove(int parentHandle, int thisPosition);
+    int OnParentOutcomeReorder(int parentHandle, const DSL_intArray& newOrder);
+    int OnParentReorder(const DSL_intArray& newOrder);
+
+    void FixConstrainedColumns();
+
+    int CiIndexConstrained(const DSL_Dmatrix& ci, int index) const;
+    
+    int SquareCptToCi(DSL_Dmatrix& ci, double step, double minStep) const;
+    double SquareCiToCptSingleStep(DSL_Dmatrix& ci, int index, double step) const;
 
     std::vector<DSL_intArray> parentOutcomeStrengths;
-    DSL_intArray parentStartingPos;
 };
 
 #endif 

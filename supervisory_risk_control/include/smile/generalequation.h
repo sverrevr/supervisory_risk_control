@@ -1,5 +1,5 @@
-#ifndef GENERAL_EQUATION_H
-#define GENERAL_EQUATION_H
+#ifndef SMILE_GENERAL_EQUATION_H
+#define SMILE_GENERAL_EQUATION_H
 
 // {{SMILE_PUBLIC_HEADER}}
 
@@ -14,7 +14,7 @@ class DSL_extFunctionContainer;
 class DSL_generalEquation
 {
 public:
-	DSL_generalEquation();
+	DSL_generalEquation(const char *id = NULL);
 	DSL_generalEquation(const DSL_generalEquation &other);
 	~DSL_generalEquation();
     
@@ -47,7 +47,6 @@ public:
 
 private:
 	int DoSolveFor(const std::string &Xj);
-	bool operator==(const DSL_generalEquation &theOtherOne) const;
 
     void DetermineEquationType();
 

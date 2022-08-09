@@ -1,55 +1,62 @@
-#ifndef DSL_STRINGARRAY_H
-#define DSL_STRINGARRAY_H
+#ifndef SMILE_STRINGARRAY_H
+#define SMILE_STRINGARRAY_H
 
 // {{SMILE_PUBLIC_HEADER}}
 
-#include "dslobject.h"
-
 class DSL_intArray;
 
-class DSL_stringArray : public DSL_object
+#include <vector>
+#include <string>
+#include "platform.h"
+#ifdef DSL_INITLIST_SUPPORTED
+#include <initializer_list>
+#endif
+
+class DSL_stringArray
 {
 public:
-    DSL_stringArray();
-    DSL_stringArray(int initialSize, int initialDelta=10);
-    DSL_stringArray(const DSL_stringArray &likeThisOne);
-    ~DSL_stringArray() { CleanUp(); }
-    int operator=(const DSL_stringArray &likeThisOne);
-    char *operator[](int index) { return items[index]; }
-    char *Subscript(int index);
-    const char * operator[](int index) const { return items[index]; }
-    const char * Subscript(int index) const;
-    int GetSize() const { return size; }
-    int NumItems() const { return numitems; }
-    virtual int SetString(int thisPosition, const char *thisString);
-    virtual int Add(const char *thisSring);
-    virtual int Insert(int here, const char *thisString);
+    DSL_stringArray() {}
+    DSL_stringArray(int size) : items(size) {}
+    DSL_stringArray(const DSL_stringArray &src);
+
+#ifdef DSL_INITLIST_SUPPORTED
+    DSL_stringArray(std::initializer_list<const char*> il)
+    {
+        CopyPtrVector(il, items);
+    }
+#endif
+
+    ~DSL_stringArray();
+
+    const char* const* begin() const { return &items.front(); }
+    const char* const* end() const { return begin() + items.size(); }
+
+    DSL_stringArray& operator=(const DSL_stringArray &src);
+    const char* operator[](int index) const { return items[index]; }
+    const char* Subscript(int index) const;
+    void Clear();
+    void Reserve(int space) { items.reserve(space); }
+    bool IsEmpty() const { return items.empty(); }
+    int GetSize() const { return (int)items.size(); }
+    virtual int SetString(int index, const char *value);
+    virtual int Add(const char *value);
+    virtual int Insert(int index, const char *value);
     int Delete(int index);
-    int DeleteByContent(char *thisContent);
-    int FindPosition(const char *ofThisString) const;
-    int IsInList(const char *thisString) const;
-    void Flush();
-    int RoomGuaranteed(int forThisPeople);
-    int SetSize(int thisSize);
-    char **Items() {return(items);};
-    int FillFrom(DSL_stringArray &thisOne);
-    int ChangeOrder(DSL_intArray &newPos);
-    void CheckReadiness(int deep = 0);
-    void CleanUp(int deep = 0);
-    void UseAsList(int nItems = -1) { if (Ok(nItems)) numitems = nItems; else numitems = size; };
+    int DeleteByContent(const char *value);
+    int FindPosition(const char *value) const;
+    int Contains(const char* value) const { return FindPosition(value) >= 0; }
+    int ChangeOrder(const DSL_intArray &sourcePermutation);
+
+#ifndef SMILE_NO_V1_COMPATIBILITY
+    // BACKWARD COMPATIBILITY ONLY
+    int NumItems() const { return GetSize(); }
+#endif
 
 protected:
-    int Ok(int index) const { return index >= 0 && index<size; }
-    int Full() const { return size == numitems; }
-    int Grow();
-    void DeleteString(int atThisPosition);
-    void ChangeString(int atThisPosition, const char *newString);
+    bool IndexValid(int index) const;
+    static void CopyPtrVector(const std::vector<const char*>& src, std::vector<const char*>& dst);
 
-    char **items;
-    int size;
-    int numitems;
-    int delta;
-    
+    std::vector<const char*> items;
 };
 
 #endif

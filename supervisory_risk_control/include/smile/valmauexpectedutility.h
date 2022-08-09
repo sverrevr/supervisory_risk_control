@@ -1,41 +1,38 @@
-#ifndef VALMAUEXPECTEDUTILITY_H
-#define VALMAUEXPECTEDUTILITY_H
+#ifndef SMILE_VALMAUEXPECTEDUTILITY_H
+#define SMILE_VALMAUEXPECTEDUTILITY_H
 
 // {{SMILE_PUBLIC_HEADER}}
 
 #include "nodeval.h"
 #include "dmatrix.h"
 
-class DSL_mauExpectedUtility : public DSL_nodeValue
+class DSL_mauExpectedUtility : public DSL_nodeVal
 {
 public:
-	DSL_mauExpectedUtility(int myHandle, DSL_network *theNetwork);
-	DSL_mauExpectedUtility(DSL_nodeValue &likeThisOne);
-	~DSL_mauExpectedUtility() {CleanUp();}
+	DSL_mauExpectedUtility(DSL_network& network, int handle);
+	DSL_mauExpectedUtility(const DSL_valXformContext& ctx);
 
 	int GetType() const { return DSL_MAUEXPECTEDUTILITY; }
 
-	void CleanUp(int deep = 0);
-	int ReCreateFromNetworkStructure();
+	void Reset();
 
-	DSL_Dmatrix &GetUtilities() { return theUtilities; }
+	DSL_Dmatrix &GetUtilities() { return expectedUtilities; }
 
-	int operator =(DSL_nodeValue &likeThisOne);
-	int Clone(DSL_nodeValue &thisGuy);
+	const DSL_Dmatrix* GetMatrix() const { return &expectedUtilities; }
+	DSL_Dmatrix* GetWriteableMatrix() { return &expectedUtilities; }
 
-	void *GetValue() {return &GetUtilities(); }
-	int GetValue(DSL_Dmatrix **here) {*here = &GetUtilities(); return DSL_OKAY; }
-	int SetValue(DSL_Dmatrix &withThis) { return theUtilities = withThis; }
-
-	int SetUtility(DSL_intArray &theCoordinates, double theUtility) { theUtilities.Subscript(theCoordinates) = theUtility; return DSL_OKAY; }
-	int GetUtility(DSL_intArray &theCoordinates, double &here) { here = theUtilities.Subscript(theCoordinates); return DSL_OKAY; }
 	int CalculateMAU();
 
+	void InitXform(DSL_valXformContext& ctx) const {}
+
 private:
-	int BuildCustomVector(int forThisNode, DSL_intArray &fromTheseCoords, DSL_intArray &here);
+	DSL_mauExpectedUtility(const DSL_mauExpectedUtility& src, DSL_network& targetNetwork);
+	DSL_nodeVal* Clone(DSL_network& targetNetwork) const;
+
+	int BuildCustomVector(int forThisNode, const DSL_intArray& fromTheseCoords, DSL_intArray& here) const;
 	double Utility(const DSL_doubleArray &theParentsUtilities, int startIndex);
 
-	DSL_Dmatrix  theUtilities; // holds the expected utility for each policy
+	DSL_Dmatrix expectedUtilities; // holds the expected utility for each policy
 };
 
 #endif

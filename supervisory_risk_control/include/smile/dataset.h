@@ -1,5 +1,5 @@
-#ifndef DSL_DATASET_H
-#define DSL_DATASET_H
+#ifndef SMILE_DATASET_H
+#define SMILE_DATASET_H
 
 // {{SMILE_PUBLIC_HEADER}}
 
@@ -205,7 +205,7 @@ public:
 	int Discretize(int var, DiscretizeAlgorithm alg, int intervals, const std::string &statePrefix);
 
 private:
-    int TranslateDiscrete(int var, DSL_node *node, std::string &errMsg);
+    int TranslateDiscrete(int var, const DSL_node *node, std::string &errMsg);
 	bool IsMissingFloat(int var, int rec, float missingFloat) const;
 	void FreeData();
 	void FreeColData(int var);

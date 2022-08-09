@@ -2,8 +2,10 @@
 
 // SMILE Windows autolink header, do not include directly
 
-#if (_MSC_VER>=1920 && _MSC_VER<1930)
-    #define SMILE_MSVC_VER "142"
+#if (_MSC_VER>=1930 && _MSC_VER<1940)
+	#define SMILE_MSVC_VER "143"
+#elif (_MSC_VER>=1920 && _MSC_VER<1930)
+	#define SMILE_MSVC_VER "142"
 #elif (_MSC_VER>=1910 && _MSC_VER<1920)
 	#define SMILE_MSVC_VER "141"
 #elif (_MSC_VER==1900)
