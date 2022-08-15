@@ -1,0 +1,3 @@
+int16 safety_margin
+int16 max_acceleartion
+int16 max_speed

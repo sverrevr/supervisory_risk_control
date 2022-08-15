@@ -9,6 +9,7 @@ find_package(
 
 add_message_files(
   FILES
+  actions.msg
   debug_display.msg)
 
 generate_messages(

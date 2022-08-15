@@ -2,6 +2,7 @@
 #include "supervisory_risk_control/bayesian_network.h"
 #include "supervisory_risk_control/debug_array_id.hpp"
 #include <supervisory_risk_control_msgs/debug_display.h>
+#include <supervisory_risk_control_msgs/actions.h>
 #include <ros/ros.h>
 #include <ros/package.h>
 #include <string>
@@ -28,13 +29,31 @@ class SupervisoryRiskControl
     int number_of_filtered_points = 0;
     double camera_noise = 0;
     double drone_tilt = 0;
-    int max_speed_target = 10;
-    int safety_margin_target = 1;
+    int max_speed_target = 9;
+    int safety_margin_target = 0;
     enum class last_set_target_type {none, speed, margin} last_set_target = last_set_target_type::none;
+    bool new_data = true;
 
-    static constexpr double risk_limit = 0.01;
+    struct{
+        double max_risk;
+        struct{
+            double max_yaw_moment, max_turbulence, max_number_of_filtered_points;
+        } measurement_conversion;
+        struct{
+            struct {
+                double constant, scale;
+            } motor_saturation, turbulence, unobservable_obs, breaking_distance, damage;
+            struct{
+               double damage_to_drone, loss_of_mission;
+            } total;
+        } risk;
 
-    const std::vector<std::string> causal_node_names = {"tether_tension_motor_use_scaling_factor", "drone_tilt_to_counteract_tether", "motor_wear", "motoruse_for_whirlewind", "turbulence", "dust", "enviornment_observability"};
+        struct{
+            double target_cost, non_target_cost, acceleration_cost, parameter_change_cost;
+        } cost_function_parameters;
+    } pars;
+
+    const std::vector<std::string> causal_node_names = {"tether_tension_motor_use_scaling_factor", "motor_wear", "motoruse_for_whirlewind", "turbulence", "dust", "enviornment_observability"};
     BayesianNetwork net{ros::package::getPath("supervisory_risk_control") + "/include/supervisory_risk_control/net.xdsl", causal_node_names, 2};
 
     ros::Subscriber debug_value_subscriber = nh.subscribe<mavros_msgs::DebugValue>("/mavros/debug_value/debug_float_array", 1, [&](mavros_msgs::DebugValueConstPtr msg)
@@ -43,18 +62,20 @@ class SupervisoryRiskControl
         height_over_ground = msg->data[topic_indices::height_over_ground];
         yaw_moment = msg->data[topic_indices::yaw_moment];
         roll_pitch_deviation = msg->data[topic_indices::turbulence];
-        drone_tilt = msg->data[topic_indices::drone_roll_pitch]; });
+        drone_tilt = msg->data[topic_indices::drone_roll_pitch]; 
+        new_data=true;});
     ros::Subscriber number_of_filtered_points_subscriber = nh.subscribe<std_msgs::Int32>("/cloud_filter/number_of_removed_points", 1, [&](std_msgs::Int32ConstPtr msg)
-                                                                                         { number_of_filtered_points = 0.9 * number_of_filtered_points + 0.1 * msg->data; });
+                                                                                         { //number_of_filtered_points = 0.9 * number_of_filtered_points + 0.1 * msg->data; 
+                                                                                         number_of_filtered_points=msg->data;});
     ros::Subscriber noise_level_subscriber = nh.subscribe<std_msgs::Float32>("/supervisor/noise_level", 1, [&](std_msgs::Float32ConstPtr msg)
                                                                              { camera_noise = msg->data; });
     ros::Subscriber max_speed_target_subscriber = nh.subscribe<std_msgs::Float32>("/supervisor/max_speed_target", 1, [&](std_msgs::Float32ConstPtr msg)
-                                                                             { max_speed_target = (int)(msg->data*10); 
+                                                                             { max_speed_target = std::clamp((int)(msg->data*10),0,9); 
                                                                                 last_set_target = last_set_target_type::speed;});
     ros::Subscriber safety_margin_target_subscriber = nh.subscribe<std_msgs::Float32>("/supervisor/safety_margin_target", 1, [&](std_msgs::Float32ConstPtr msg)
-                                                                             { safety_margin_target = (int)(msg->data*10); 
+                                                                             { safety_margin_target = std::clamp((int)(msg->data*10),0,9); 
                                                                                 last_set_target = last_set_target_type::margin;});
-    ros::Subscriber safety_margin_target_subscriber = nh.subscribe<std_msgs::Float32>("/supervisor/disable_target", 1, [&](std_msgs::Float32ConstPtr msg)
+    ros::Subscriber disable_target_subscriber = nh.subscribe<std_msgs::Float32>("/supervisor/disable_target", 1, [&](std_msgs::Float32ConstPtr msg)
                                                                              { last_set_target = last_set_target_type::none;});
 
     ros::Publisher debug_display_publisher = nh.advertise<supervisory_risk_control_msgs::debug_display>("supervisory_risk_controller/debug_msg", 1);
@@ -62,7 +83,7 @@ class SupervisoryRiskControl
 
     map_stringkey<int> previous_action;
 
-    const std::vector<std::string> output_node_names = {"frequency_of_motor_saturation", "frequency_of_loss_of_control_due_to_motor_wear", "frequency_of_exceeding_safety_margin_due_to_turbulence", "frequency_of_contact_with_unobservable_obstacle", "frequency_of_breaking_distance_exceeding_safety_margin"};
+    const std::vector<std::string> output_node_names = {"frequency_of_motor_saturation_deviating_beyond_safety_margin", "frequency_of_loss_of_control_due_to_motor_wear", "frequency_of_exceeding_safety_margin_due_to_turbulence", "frequency_of_contact_with_unobservable_obstacle", "frequency_of_breaking_distance_exceeding_safety_margin"};
     const std::vector<std::string> intermediate_estimation_node_names = {
         "motoruse_for_tether",
     };
@@ -89,7 +110,7 @@ class SupervisoryRiskControl
 
         {
             // motor saturation is at 1949
-            auto motor_use_state = std::clamp((int)std::floor(motor_use * 10 / 1949), 0, 9);
+            auto motor_use_state = std::clamp((int)std::floor(10*(motor_use-1600)/(1949-1600)), 0, 9);
             net.setEvidence("mean_motor", motor_use_state);
             ROS_INFO("%s: %.2f, %i", "mean_motor", motor_use, motor_use_state);
             debug_display.measured_motoruse = motor_use_state;
@@ -102,8 +123,7 @@ class SupervisoryRiskControl
             debug_display.measured_drone_roll_pitch = drone_tilt_state;
         }
         {
-            // TODO!
-            auto yaw_moment_state = std::clamp((int)std::floor(yaw_moment * 10), 0, 9);
+            auto yaw_moment_state = std::clamp((int)std::floor(yaw_moment * 10/pars.measurement_conversion.max_yaw_moment), 0, 9);
             net.setEvidence("yaw_moment", yaw_moment_state);
             ROS_INFO("%s: %.2f, %i", "yaw_moment", yaw_moment, yaw_moment_state);
             debug_display.measured_yaw_moment = yaw_moment_state;
@@ -117,7 +137,7 @@ class SupervisoryRiskControl
         }
         {
             // High turbulence area has measurements of 0.004-0.007, define max to be slightly higher as there might be even worse cases.
-            auto velocity_deviation_state = std::clamp((int)std::floor(roll_pitch_deviation * 10 / 0.008), 0, 9);
+            auto velocity_deviation_state = std::clamp((int)std::floor(roll_pitch_deviation * 10 / pars.measurement_conversion.max_turbulence), 0, 9);
             net.setEvidence("roll_pitch_deviation", velocity_deviation_state);
             ROS_INFO("%s: %.2f, %i", "roll_pitch_deviation", roll_pitch_deviation, velocity_deviation_state);
             debug_display.measured_velocity_deviation = velocity_deviation_state;
@@ -131,7 +151,7 @@ class SupervisoryRiskControl
         }
         {
             // Not a clear connection between worse conditions and increased number of points. 0 is defineatly good, and is 0 most of the time. 10 seems like a safe place to define as there being an undetectable obstacle close by
-            auto number_of_filtered_points_state = std::clamp((int)std::floor(number_of_filtered_points), 0, 9);
+            auto number_of_filtered_points_state = std::clamp((int)std::floor(number_of_filtered_points * 10 / pars.measurement_conversion.max_number_of_filtered_points), 0, 9);
             net.setEvidence("number_of_filtered_away_points", number_of_filtered_points_state);
             ROS_INFO("%s: %i, %i", "number_of_filtered_away_points", number_of_filtered_points, number_of_filtered_points_state);
             debug_display.measured_lidar_flicker = number_of_filtered_points_state;
@@ -143,27 +163,28 @@ class SupervisoryRiskControl
         double max_speed = actions.at("max_speed") / 9.0;
         double safety_margin = actions.at("safety_margin") / 9.0;
 
-        double mean_frequency_of_motor_saturation = 1.2 * log_mean(output.at("frequency_of_motor_saturation"));
-        double mean_frequency_of_motor_saturation_deviating_beyond_safety_margin = mean_frequency_of_motor_saturation * (0.3 + 0.7 * (1-safety_margin));
+        double mean_frequency_of_motor_saturation_deviating_beyond_safety_margin = log_mean(output.at("frequency_of_motor_saturation_deviating_beyond_safety_margin"));
         double mean_frequency_of_turbulence_causing_deviation_beyond_safety_margin = log_mean(output.at("frequency_of_exceeding_safety_margin_due_to_turbulence"));
         double mean_frequency_of_contact_with_unobservable_obstacle = log_mean(output.at("frequency_of_contact_with_unobservable_obstacle"));
         double mean_frequency_of_breaking_distance_exceeding_safety_margin = log_mean(output.at("frequency_of_breaking_distance_exceeding_safety_margin"));
 
         double mean_frequency_of_contact_causing_loss_of_control =
-            mean_frequency_of_motor_saturation_deviating_beyond_safety_margin * (0.1 + 0.2 * std::pow(max_speed, 2)) + mean_frequency_of_turbulence_causing_deviation_beyond_safety_margin * (0.05 + 0.2 * std::pow(max_speed, 2)) + (mean_frequency_of_contact_with_unobservable_obstacle + mean_frequency_of_breaking_distance_exceeding_safety_margin) * (0.01 + 0.2 * std::pow(max_speed, 2));
+            mean_frequency_of_motor_saturation_deviating_beyond_safety_margin * (pars.risk.motor_saturation.constant+ pars.risk.motor_saturation.scale * std::pow(max_speed, 2)) 
+            + mean_frequency_of_turbulence_causing_deviation_beyond_safety_margin * (pars.risk.turbulence.constant + pars.risk.turbulence.scale * std::pow(max_speed, 2)) 
+            + mean_frequency_of_contact_with_unobservable_obstacle * (pars.risk.unobservable_obs.constant + pars.risk.unobservable_obs.scale * std::pow(max_speed, 2))
+            + mean_frequency_of_breaking_distance_exceeding_safety_margin * (pars.risk.breaking_distance.constant + pars.risk.breaking_distance.scale * std::pow(max_speed, 2));
 
         double mean_frequency_of_motor_wear_causing_loss_of_control = log_mean(output.at("frequency_of_loss_of_control_due_to_motor_wear"));
 
         double mean_frequency_of_loss_of_control = mean_frequency_of_contact_causing_loss_of_control + mean_frequency_of_motor_wear_causing_loss_of_control;
 
-        double mean_risk_damage_to_drone = mean_frequency_of_loss_of_control * (0.3 + 0.7 * height_over_ground);
+        double mean_risk_damage_to_drone = mean_frequency_of_loss_of_control * (pars.risk.damage.constant + pars.risk.damage.scale * (height_over_ground/40));
         double mean_risk_loss_of_mission = mean_frequency_of_loss_of_control;
-        double total_risk = 0.8 * mean_risk_damage_to_drone + 0.2 * mean_risk_loss_of_mission;
+        double total_risk = pars.risk.total.damage_to_drone * mean_risk_damage_to_drone + pars.risk.total.loss_of_mission * mean_risk_loss_of_mission;
 
         if (do_print)
         {
-            std::cout << "Mean freq of motor saturation: " << mean_frequency_of_motor_saturation
-                      << "\nMean freq of motor sat deviating beyond: " << mean_frequency_of_motor_saturation_deviating_beyond_safety_margin
+            std::cout << "Mean freq of motor saturation deviating beyond: " << mean_frequency_of_motor_saturation_deviating_beyond_safety_margin
                       << "\nMean freq of turbulence deviation beyond: " << mean_frequency_of_turbulence_causing_deviation_beyond_safety_margin
                       << "\nMean freq of contact with unobs obst: " << mean_frequency_of_contact_with_unobservable_obstacle
                       << "\nMean freq of breaking dist exceeding: " << mean_frequency_of_breaking_distance_exceeding_safety_margin
@@ -180,7 +201,7 @@ class SupervisoryRiskControl
     {
         net.setEvidence(actions);
         auto output = net.evaluateStates(output_node_names);
-        return evaluate_risk(output, actions) < risk_limit;
+        return evaluate_risk(output, actions) < pars.max_risk;
     }
 
     /*auto heuristic_search()
@@ -254,23 +275,25 @@ class SupervisoryRiskControl
     auto exact_search()
     {
         map_stringkey<int> optimal_action;
-        optimal_action["safety_margin"] = 0; // OBS denne er definert feil vei, finn ut hva å gjøre med det
+        optimal_action["safety_margin"] = 9;
         optimal_action["max_upwards_acceleration"] = 0;
         optimal_action["max_speed"] = 0;
         map_stringkey<int> action;
         double optimal_cost = INFINITY;
 
         double min_safety_margin = 0;
-        double max_max_speed = 10;
+        double max_max_speed = 9;
         double max_speed_cost = 1;
         double safety_margin_cost = 1;
         if(last_set_target == last_set_target_type::speed){
             max_max_speed = max_speed_target;
-            max_speed_cost = 5;
+            max_speed_cost = pars.cost_function_parameters.target_cost;
+            safety_margin_cost = pars.cost_function_parameters.non_target_cost;
         }
         else if(last_set_target == last_set_target_type::margin){
             min_safety_margin = safety_margin_target;
-            safety_margin_cost = 5;
+            safety_margin_cost = pars.cost_function_parameters.target_cost;
+            max_speed_cost = pars.cost_function_parameters.non_target_cost;
         }
 
         for (int safety_margin = min_safety_margin; safety_margin < 10; ++safety_margin)
@@ -280,17 +303,20 @@ class SupervisoryRiskControl
             {
                 action["max_upwards_acceleration"] = acceleration_limit;
                 // max speed does not affect the network
-                net.setEvidence(action);
-                for (int max_speed = 0; max_speed < max_max_speed; ++max_speed)
+                for (int max_speed = 0; max_speed <= max_max_speed; ++max_speed)
                 {
                     action["max_speed"] = max_speed;
+                    net.setEvidence(action);
                     auto output = net.evaluateStates(output_node_names);
-                    bool is_feasible = evaluate_risk(output, action) < risk_limit;
-                    double parameter_cost = std::pow(safety_margin, 1) + 0.6 * std::pow(4 - acceleration_limit, 1) + std::pow(9 - max_speed, 1);
+                    double risk =  evaluate_risk(output, action);
+                    bool is_feasible = risk< pars.max_risk;
+                    double parameter_cost = safety_margin_cost*std::pow(safety_margin, 1) 
+                        + pars.cost_function_parameters.acceleration_cost * std::pow(4 - acceleration_limit, 1) 
+                        + max_speed_cost * std::pow(9 - max_speed, 1);
 
                     double change_cost = std::pow(safety_margin - previous_action["safety_margin"], 2) + std::pow(acceleration_limit - previous_action["max_upwards_acceleration"], 2) + std::pow(max_speed - previous_action["max_speed"], 2);
 
-                    double total_cost = parameter_cost + 0.3 * change_cost;
+                    double total_cost = parameter_cost + pars.cost_function_parameters.parameter_change_cost * change_cost;
 
                     if (is_feasible && total_cost < optimal_cost)
                     {
@@ -311,7 +337,6 @@ class SupervisoryRiskControl
         {
             auto output = net.evaluateStates(all_estimate_node_names);
             debug_display.mean_tether_tension_motor_use_scaling_factor = mean(output.at("tether_tension_motor_use_scaling_factor"));
-            debug_display.mean_drone_roll_pitch_to_counteract_tether = mean(output.at("drone_tilt_to_counteract_tether"));
             debug_display.mean_motor_wear = mean(output.at("motor_wear"));
             debug_display.mean_motoruse_for_whirlewind = mean(output.at("motoruse_for_whirlewind"));
             debug_display.mean_motoruse_for_tether = mean(output.at("motoruse_for_tether"));
@@ -338,9 +363,9 @@ class SupervisoryRiskControl
             debug_display.optimal_safety_margin = action.at("safety_margin");
             debug_display.optimal_max_acc = action.at("max_upwards_acceleration");
             debug_display.optimal_speed = action.at("max_speed");
-            debug_display.found_feasible_option = debug_display.risk_cost < risk_limit;
+            debug_display.found_feasible_option = debug_display.risk_cost < pars.max_risk;
 
-            debug_display.mean_frequency_of_motor_saturation = log_mean(output.at("frequency_of_motor_saturation"));
+            debug_display.mean_frequency_of_motor_saturation_deviating_beyond_safety_margin = log_mean(output.at("frequency_of_motor_saturation_deviating_beyond_safety_margin"));
             debug_display.mean_frequency_of_loss_of_control_due_to_motor_wear = log_mean(output.at("frequency_of_loss_of_control_due_to_motor_wear"));
             debug_display.mean_frequency_of_exceeding_safety_margin_due_to_turbulence = log_mean(output.at("frequency_of_exceeding_safety_margin_due_to_turbulence"));
             debug_display.mean_frequency_of_contact_with_unobservable_obstacle = log_mean(output.at("frequency_of_contact_with_unobservable_obstacle"));
@@ -386,13 +411,45 @@ class SupervisoryRiskControl
         }
     }
 
+    ros::Subscriber try_out_actions = nh.subscribe<supervisory_risk_control_msgs::actions>("/supervisor/test_action_set",1, [&](supervisory_risk_control_msgs::actionsConstPtr msg){
+        std::map<std::string,int> action ={{"safety_margin", msg->safety_margin},{"max_upwards_acceleration", msg->max_acceleartion},{"max_speed",msg->max_speed}};
+        net.setEvidence(action);
+        auto output = net.evaluateStates(output_node_names);
+        auto risk = evaluate_risk(output, action, true);
+        ROS_INFO("Testing action - Margin: %i, Acc: %i, Speed: %i. Risk_cost: %f", action.at("safety_margin"), action.at("max_upwards_acceleration"), action.at("max_speed"),  risk);
+    });
+
 public:
     SupervisoryRiskControl()
     {
-        while(true){
+        nhp.getParam("max_risk", pars.max_risk);
+        nhp.getParam("measurement_conversion/max_yaw_moment", pars.measurement_conversion.max_yaw_moment);
+        nhp.getParam("measurement_conversion/max_turbulence", pars.measurement_conversion.max_turbulence);
+        nhp.getParam("measurement_conversion/max_number_of_filtered_points", pars.measurement_conversion.max_number_of_filtered_points);
+        nhp.getParam("risk/motor_saturation/constant", pars.risk.motor_saturation.constant);
+        nhp.getParam("risk/motor_saturation/scale", pars.risk.motor_saturation.scale);
+        nhp.getParam("risk/turbulence/constant", pars.risk.turbulence.constant);
+        nhp.getParam("risk/turbulence/scale", pars.risk.turbulence.scale);
+        nhp.getParam("risk/unobservable_obs/constant", pars.risk.unobservable_obs.constant);
+        nhp.getParam("risk/unobservable_obs/scale", pars.risk.unobservable_obs.scale);
+        nhp.getParam("risk/breaking_distance/constant", pars.risk.breaking_distance.constant);
+        nhp.getParam("risk/breaking_distance/scale", pars.risk.breaking_distance.scale);
+        nhp.getParam("risk/damage/constant", pars.risk.damage.constant);
+        nhp.getParam("risk/damage/scale", pars.risk.damage.scale);
+        nhp.getParam("risk/total/damage_to_drone", pars.risk.total.damage_to_drone);
+        nhp.getParam("risk/total/loss_of_mission", pars.risk.total.loss_of_mission);
+        nhp.getParam("cost_function_parameters/target_cost", pars.cost_function_parameters.target_cost);
+        nhp.getParam("cost_function_parameters/non_target_cost", pars.cost_function_parameters.non_target_cost);
+        nhp.getParam("cost_function_parameters/acceleration_cost", pars.cost_function_parameters.acceleration_cost);
+        nhp.getParam("cost_function_parameters/parameter_change_cost", pars.cost_function_parameters.parameter_change_cost);
+
+        while(ros::ok()){
             ros::spinOnce();
-            run();
-            ros::Duration(1).sleep();
+            if(new_data){
+                run();
+                new_data = false;
+            }
+            ros::Duration(0.1).sleep();
         }
     }
 };

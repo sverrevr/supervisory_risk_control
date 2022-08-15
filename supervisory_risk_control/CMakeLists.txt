@@ -4,7 +4,8 @@ project(supervisory_risk_control)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_FLAGS "-Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -DCMAKE_BUILD_TYPE=RelWithDebInfo -g -O0 ${CMAKE_CXX_FLAGS}")
+#set(CMAKE_CXX_FLAGS "-Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -DCMAKE_BUILD_TYPE=RelWithDebInfo -g -O0 ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -O3 ${CMAKE_CXX_FLAGS}")
 
 find_package(
   catkin REQUIRED
