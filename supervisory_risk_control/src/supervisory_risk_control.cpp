@@ -1,6 +1,6 @@
 #include "mavros_msgs/DebugValue.h"
 #include "supervisory_risk_control/bayesian_network.h"
-#include "supervisory_risk_control/debug_array_id.hpp"
+#include "supervisory_risk_control/debug_array_id_real.hpp"
 #include <supervisory_risk_control_msgs/debug_display.h>
 #include <supervisory_risk_control_msgs/actions.h>
 #include <ros/ros.h>
@@ -37,7 +37,7 @@ class SupervisoryRiskControl
     struct{
         double max_risk;
         struct{
-            double max_yaw_moment, max_turbulence, max_number_of_filtered_points;
+            double max_yaw_moment, max_turbulence, max_number_of_filtered_points, motor_max, motor_min, max_tilt;
         } measurement_conversion;
         struct{
             struct {
@@ -61,8 +61,8 @@ class SupervisoryRiskControl
         motor_use = msg->data[topic_indices::motor_max];
         height_over_ground = msg->data[topic_indices::height_over_ground];
         yaw_moment = msg->data[topic_indices::yaw_moment];
-        roll_pitch_deviation = msg->data[topic_indices::turbulence];
-        drone_tilt = msg->data[topic_indices::drone_roll_pitch]; 
+        roll_pitch_deviation = msg->data[topic_indices::roll_pitch_ref_error];
+        drone_tilt = msg->data[topic_indices::roll_pitch_js_error]; 
         new_data=true;});
     ros::Subscriber number_of_filtered_points_subscriber = nh.subscribe<std_msgs::Int32>("/cloud_filter/number_of_removed_points", 1, [&](std_msgs::Int32ConstPtr msg)
                                                                                          { //number_of_filtered_points = 0.9 * number_of_filtered_points + 0.1 * msg->data; 
@@ -110,51 +110,51 @@ class SupervisoryRiskControl
 
         {
             // motor saturation is at 1949
-            auto motor_use_state = std::clamp((int)std::floor(10*(motor_use-1600)/(1949-1600)), 0, 9);
+            auto motor_use_state = std::clamp((int)std::floor(10*(motor_use-pars.measurement_conversion.motor_min)/(pars.measurement_conversion.motor_max-pars.measurement_conversion.motor_min)), 0, 9);
             net.setEvidence("mean_motor", motor_use_state);
             ROS_INFO("%s: %.2f, %i", "mean_motor", motor_use, motor_use_state);
-            debug_display.measured_motoruse = motor_use_state;
+            debug_display.measured_motoruse = motor_use_state/10.0;
         }
         {
-            // Max roll(pitch angle is 20 degrees)
-            auto drone_tilt_state = std::clamp((int)std::floor(drone_tilt * 10 / 20), 0, 9);
+            // Max roll/pitch
+            auto drone_tilt_state = std::clamp((int)std::floor(drone_tilt * 10 / pars.measurement_conversion.max_tilt), 0, 9);
             net.setEvidence("drone_tilt", drone_tilt_state);
             ROS_INFO("%s: %.2f, %i", "drone_tilt", drone_tilt, drone_tilt_state);
-            debug_display.measured_drone_roll_pitch = drone_tilt_state;
+            debug_display.measured_drone_roll_pitch = drone_tilt_state/10.0;
         }
         {
             auto yaw_moment_state = std::clamp((int)std::floor(yaw_moment * 10/pars.measurement_conversion.max_yaw_moment), 0, 9);
             net.setEvidence("yaw_moment", yaw_moment_state);
             ROS_INFO("%s: %.2f, %i", "yaw_moment", yaw_moment, yaw_moment_state);
-            debug_display.measured_yaw_moment = yaw_moment_state;
+            debug_display.measured_yaw_moment = yaw_moment_state/10.0;
         }
         {
             // max height is 40m
             auto height_over_ground_state = std::clamp((int)std::floor(height_over_ground * 10 / 40), 0, 9);
             net.setEvidence("height_over_ground", height_over_ground_state);
             ROS_INFO("%s: %.2f, %i", "height_over_ground", height_over_ground, height_over_ground_state);
-            debug_display.measured_height_over_ground = height_over_ground_state;
+            debug_display.measured_height_over_ground = height_over_ground_state/10.0;
         }
         {
             // High turbulence area has measurements of 0.004-0.007, define max to be slightly higher as there might be even worse cases.
             auto velocity_deviation_state = std::clamp((int)std::floor(roll_pitch_deviation * 10 / pars.measurement_conversion.max_turbulence), 0, 9);
             net.setEvidence("roll_pitch_deviation", velocity_deviation_state);
             ROS_INFO("%s: %.2f, %i", "roll_pitch_deviation", roll_pitch_deviation, velocity_deviation_state);
-            debug_display.measured_velocity_deviation = velocity_deviation_state;
+            debug_display.measured_velocity_deviation = velocity_deviation_state/10.0;
         }
         {
             // Human input of value between 0 and 1
             auto camera_noise_state = std::clamp((int)std::floor(camera_noise * 10), 0, 9);
             net.setEvidence("camera_noise", camera_noise_state);
             ROS_INFO("%s: %.2f, %i", "camera_noise", camera_noise, camera_noise_state);
-            debug_display.measured_camera_noise = camera_noise_state;
+            debug_display.measured_camera_noise = camera_noise_state/10.0;
         }
         {
             // Not a clear connection between worse conditions and increased number of points. 0 is defineatly good, and is 0 most of the time. 10 seems like a safe place to define as there being an undetectable obstacle close by
             auto number_of_filtered_points_state = std::clamp((int)std::floor(number_of_filtered_points * 10 / pars.measurement_conversion.max_number_of_filtered_points), 0, 9);
             net.setEvidence("number_of_filtered_away_points", number_of_filtered_points_state);
             ROS_INFO("%s: %i, %i", "number_of_filtered_away_points", number_of_filtered_points, number_of_filtered_points_state);
-            debug_display.measured_lidar_flicker = number_of_filtered_points_state;
+            debug_display.measured_lidar_flicker = number_of_filtered_points_state/10.0;
         }
     }
 
@@ -340,6 +340,9 @@ class SupervisoryRiskControl
             debug_display.mean_motor_wear = mean(output.at("motor_wear"));
             debug_display.mean_motoruse_for_whirlewind = mean(output.at("motoruse_for_whirlewind"));
             debug_display.mean_motoruse_for_tether = mean(output.at("motoruse_for_tether"));
+            debug_display.mean_turbulence = mean(output.at("turbulence"));
+            debug_display.mean_enviornment_observability = mean(output.at("enviornment_observability"));
+            debug_display.mean_dust = mean(output.at("dust"));
         }
 
         // Worst case:
@@ -426,6 +429,9 @@ public:
         nhp.getParam("measurement_conversion/max_yaw_moment", pars.measurement_conversion.max_yaw_moment);
         nhp.getParam("measurement_conversion/max_turbulence", pars.measurement_conversion.max_turbulence);
         nhp.getParam("measurement_conversion/max_number_of_filtered_points", pars.measurement_conversion.max_number_of_filtered_points);
+        nhp.getParam("measurement_conversion/max_tilt", pars.measurement_conversion.max_tilt);
+        nhp.getParam("measurement_conversion/motor_max", pars.measurement_conversion.motor_max);
+        nhp.getParam("measurement_conversion/motor_min", pars.measurement_conversion.motor_min);
         nhp.getParam("risk/motor_saturation/constant", pars.risk.motor_saturation.constant);
         nhp.getParam("risk/motor_saturation/scale", pars.risk.motor_saturation.scale);
         nhp.getParam("risk/turbulence/constant", pars.risk.turbulence.constant);

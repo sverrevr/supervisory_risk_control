@@ -1,8 +1,8 @@
 #Optimal actions
 float32 risk_cost
-int16 optimal_safety_margin
-int16 optimal_max_acc
-int16 optimal_speed
+float32 optimal_safety_margin
+float32 optimal_max_acc
+float32 optimal_speed
 bool found_feasible_option
 
 #Probability of binary predictions with this choise:
@@ -17,13 +17,13 @@ float32 mean_frequency_of_breaking_distance_exceeding_safety_margin
 #Mean value of intermediate predictions with this choise:
 
 #measurements
-int16 measured_height_over_ground
-int16 measured_motoruse
-int16 measured_yaw_moment
-int16 measured_drone_roll_pitch
-int16 measured_velocity_deviation
-int16 measured_camera_noise
-int16 measured_lidar_flicker
+float32 measured_height_over_ground
+float32 measured_motoruse
+float32 measured_yaw_moment
+float32 measured_drone_roll_pitch
+float32 measured_velocity_deviation
+float32 measured_camera_noise
+float32 measured_lidar_flicker
 
 #Mean intermediate estimation variables
 float32 mean_motoruse_for_tether

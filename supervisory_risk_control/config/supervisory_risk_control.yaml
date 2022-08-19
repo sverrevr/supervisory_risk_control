@@ -3,8 +3,11 @@ max_risk: 0.005
 # parameters converting measurements to states. Max is the lowest value that gives the worst case state
 measurement_conversion:
   max_yaw_moment: 1 #TODO!
-  max_turbulence: 0.008
+  max_turbulence: 0.006
+  max_tilt: 0.2
   max_number_of_filtered_points: 10
+  motor_max: 1949
+  motor_min: 1600
 
 # Risk evaluation parameters:
 risk:
@@ -31,4 +34,4 @@ cost_function_parameters:
   target_cost: 5
   non_target_cost: 1
   acceleration_cost: 0.6
-  parameter_change_cost: 0
+  parameter_change_cost: 0.5

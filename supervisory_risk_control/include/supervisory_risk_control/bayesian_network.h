@@ -244,8 +244,8 @@ public:
         const auto node_id = getNodeId(node_name);
         if (isTemporal(node_id))
         {
-            temporal_evidence_.back()[node_id] = outcome_id;
-            const auto res = net_.GetNode(node_id)->Value()->SetTemporalEvidence(time_slice, outcome_id);
+            //temporal_evidence_.back()[node_id] = outcome_id;
+            const auto res = -1; //net_.GetNode(node_id)->Value()->SetTemporalEvidence(time_slice, outcome_id);
             if (res < 0)
                 ROS_ERROR("Set temporal evidence (t=%d, outcome_id=%d) on node \"%s\" resulted in error", time_slice, outcome_id, node_name.c_str());
             assert(res >= 0);
