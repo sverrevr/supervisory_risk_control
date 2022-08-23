@@ -57,7 +57,7 @@ class SupervisoryRiskControl
         } cost_function_parameters;
     } pars;
 
-    const std::vector<std::string> causal_node_names = {"tether_tension_motor_use_scaling_factor", "motor_wear", "motoruse_for_whirlewind", "turbulence", "dust", "enviornment_observability"};
+    const std::vector<std::string> causal_node_names = {"tether_tension_motor_use_scaling_factor", "motor_wear", "random_disturbance", "turbulence", "dust", "enviornment_observability"};
 
     BayesianNetwork net;
 
@@ -139,10 +139,10 @@ class SupervisoryRiskControl
             debug_display.measured_drone_roll_pitch = drone_tilt_state/10.0;
         }
         {
-            auto yaw_moment_state = std::clamp((int)std::floor(yaw_moment * 10/pars.measurement_conversion.max_yaw_moment), 0, 9);
+            /*auto yaw_moment_state = std::clamp((int)std::floor(yaw_moment * 10/pars.measurement_conversion.max_yaw_moment), 0, 9);
             net.setEvidence("yaw_moment", yaw_moment_state);
             ROS_INFO("%s: %.2f, %i", "yaw_moment", yaw_moment, yaw_moment_state);
-            debug_display.measured_yaw_moment = yaw_moment_state/10.0;
+            debug_display.measured_yaw_moment = yaw_moment_state/10.0;*/
         }
         {
             // max height is 40m
@@ -188,9 +188,9 @@ class SupervisoryRiskControl
             debug_display.measured_drone_roll_pitch = measurement_msg.drone_tilt/10.0;
         }
         {
-            net.setEvidence("yaw_moment", measurement_msg.yaw_moment);
+            /*net.setEvidence("yaw_moment", measurement_msg.yaw_moment);
             ROS_INFO("%s: %i", "yaw_moment", measurement_msg.yaw_moment);
-            debug_display.measured_yaw_moment = measurement_msg.yaw_moment/10.0;
+            debug_display.measured_yaw_moment = measurement_msg.yaw_moment/10.0;*/
         }
         {
             // max height is 40m
@@ -405,7 +405,7 @@ class SupervisoryRiskControl
             auto output = net.evaluateStates(all_estimate_node_names);
             debug_display.mean_tether_tension_motor_use_scaling_factor = mean(output.at("tether_tension_motor_use_scaling_factor"));
             debug_display.mean_motor_wear = mean(output.at("motor_wear"));
-            debug_display.mean_motoruse_for_whirlewind = mean(output.at("motoruse_for_whirlewind"));
+            debug_display.mean_motoruse_for_whirlewind = mean(output.at("random_disturbance"));
             debug_display.mean_motoruse_for_tether = mean(output.at("motoruse_for_tether"));
             debug_display.mean_turbulence = mean(output.at("turbulence"));
             debug_display.mean_enviornment_observability = mean(output.at("enviornment_observability"));
