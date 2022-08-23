@@ -1,0 +1,7 @@
+int16 height_over_ground
+int16 drone_tilt
+int16 motor_mean
+int16 yaw_moment
+int16 roll_pitch_deviation
+int16 camera_noise
+int16 number_of_filtered_away_points

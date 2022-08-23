@@ -1,4 +1,5 @@
-max_risk: 0.005
+dynamic: true
+max_risk: 0.01
 
 # parameters converting measurements to states. Max is the lowest value that gives the worst case state
 measurement_conversion:
@@ -12,17 +13,17 @@ measurement_conversion:
 # Risk evaluation parameters:
 risk:
   motor_saturation:
-    constant: 0.4
-    scale: 0.2
+    constant: 0.3
+    scale: 0.1
   turbulence:
-    constant: 0.2
-    scale: 0.2
+    constant: 0.3
+    scale: 0.1
   unobservable_obs:
-    constant: 0.05
-    scale: 0.2
+    constant: 0.03
+    scale: 0.4
   breaking_distance:
-    constant: 0.05
-    scale: 0.2
+    constant: 0.03
+    scale: 0.4
   damage: #scaled by height
     constant: 0.1
     scale: 0.4
@@ -34,4 +35,4 @@ cost_function_parameters:
   target_cost: 5
   non_target_cost: 1
   acceleration_cost: 0.6
-  parameter_change_cost: 0.5
+  parameter_change_cost: 0

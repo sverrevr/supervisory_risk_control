@@ -203,6 +203,12 @@ public:
     BayesianNetwork(std::string full_path, const std::vector<std::string> &temporal_leaf_nodes = {}, int max_num_timesteps = -1, int num_network_evaluation_samples = -1)
         : max_number_of_timesteps_(max_num_timesteps), temporal_leaf_nodes_(temporal_leaf_nodes)
     {
+        init(full_path, num_network_evaluation_samples);
+    }
+    BayesianNetwork(const std::vector<std::string> &temporal_leaf_nodes = {}, int max_num_timesteps = -1)
+        : max_number_of_timesteps_(max_num_timesteps), temporal_leaf_nodes_(temporal_leaf_nodes){}
+
+    void init(std::string full_path, int num_network_evaluation_samples = -1){
         DSL_errorH().RedirectToFile(stdout); // Rederects errors to standard output
         const auto result = net_.ReadFile(full_path.c_str());
         if (result < 0)
@@ -399,6 +405,13 @@ public:
         temporal_evidence_.push_back(std::map<int, int>{});
         temporal_virtual_evidence_.push_back(std::map<int, std::vector<double>>{});
         temporal_leaf_node_states_.push_back(newest_states);
+    }
+
+    void incrementTime1_5DBN(std::vector<std::string> dynamic_node_names){
+        auto dynamic_node_states = evaluateStates(dynamic_node_names);
+        for(auto node_name : dynamic_node_names){
+            setPriors(node_name+"_t_1", dynamic_node_states.at(node_name));
+        }
     }
 
     auto getNumberOfTimeSteps() const

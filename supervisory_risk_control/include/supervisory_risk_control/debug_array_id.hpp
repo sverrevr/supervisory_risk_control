@@ -5,9 +5,9 @@ namespace topic_indices
 enum topic_indices
 {
 motor_max,
-drone_roll_pitch,
+roll_pitch_js_error,
 yaw_moment,
 height_over_ground,
-turbulence
+roll_pitch_ref_error
 };
 }
