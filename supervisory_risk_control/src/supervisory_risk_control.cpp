@@ -1,6 +1,6 @@
 #include "mavros_msgs/DebugValue.h"
 #include "supervisory_risk_control/bayesian_network.h"
-#include "supervisory_risk_control/debug_array_id.hpp"
+#include "supervisory_risk_control/debug_array_id_real.hpp"
 #include <supervisory_risk_control_msgs/debug_display.h>
 #include <supervisory_risk_control_msgs/actions.h>
 #include <supervisory_risk_control_msgs/measurements.h>
@@ -65,7 +65,7 @@ class SupervisoryRiskControl
                                                                                    {
         motor_use = msg->data[topic_indices::motor_max];
         height_over_ground = msg->data[topic_indices::height_over_ground];
-        yaw_moment = msg->data[topic_indices::yaw_moment];
+        yaw_moment = abs(msg->data[topic_indices::yaw_moment]);
         roll_pitch_deviation = msg->data[topic_indices::roll_pitch_ref_error];
         drone_tilt = msg->data[topic_indices::roll_pitch_js_error]; 
         new_data=true;});
@@ -532,7 +532,7 @@ public:
                 run();
                 new_data = false;
             }
-            ros::Duration(0.5).sleep();
+            ros::Duration(1).sleep();
         }
     }
 };
