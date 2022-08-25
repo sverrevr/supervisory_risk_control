@@ -39,6 +39,7 @@ class SupervisoryRiskControl
 
     struct{
         bool dynamic;
+        bool only_update_on_measurements;
         double max_risk;
         struct{
             double max_yaw_moment, max_turbulence, max_number_of_filtered_points, motor_max, motor_min, max_tilt;
@@ -499,6 +500,7 @@ public:
     SupervisoryRiskControl()
     {
         nhp.getParam("dynamic", pars.dynamic);
+        nhp.getParam("only_update_on_measurements", pars.only_update_on_measurements);
         nhp.getParam("max_risk", pars.max_risk);
         nhp.getParam("measurement_conversion/max_yaw_moment", pars.measurement_conversion.max_yaw_moment);
         nhp.getParam("measurement_conversion/max_turbulence", pars.measurement_conversion.max_turbulence);
@@ -528,7 +530,7 @@ public:
 
         while(ros::ok()){
             ros::spinOnce();
-            if(new_data){
+            if(!pars.only_update_on_measurements || new_data){
                 run();
                 new_data = false;
             }
