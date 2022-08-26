@@ -40,6 +40,7 @@ class SupervisoryRiskControl
     struct{
         bool dynamic;
         bool only_update_on_measurements;
+        float saving_factor;
         double max_risk;
         struct{
             double max_yaw_moment, max_turbulence, max_number_of_filtered_points, motor_max, motor_min, max_tilt;
@@ -479,7 +480,7 @@ class SupervisoryRiskControl
         if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
             throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};*/
 
-        if(pars.dynamic) net.incrementTime1_5DBN(causal_node_names);
+        if(pars.dynamic) net.incrementTime1_5DBN(causal_node_names, pars.saving_factor);
 
         }
         catch(const std::string& str)
@@ -501,6 +502,7 @@ public:
     {
         nhp.getParam("dynamic", pars.dynamic);
         nhp.getParam("only_update_on_measurements", pars.only_update_on_measurements);
+        nhp.getParam("saving_factor", pars.saving_factor);
         nhp.getParam("max_risk", pars.max_risk);
         nhp.getParam("measurement_conversion/max_yaw_moment", pars.measurement_conversion.max_yaw_moment);
         nhp.getParam("measurement_conversion/max_turbulence", pars.measurement_conversion.max_turbulence);

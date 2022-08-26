@@ -56,6 +56,15 @@ private:
         return std::max(outcome_count, 1);
     }
 
+    auto getDefinition(std::string node_name){
+        const auto node_id = getNodeId(node_name);
+        auto node_definition = net_.GetNode(node_id)->Definition();
+        const DSL_Dmatrix **CPT;
+        node_definition->GetDefinition(CPT);
+        map_stringkey<double> definition;
+
+    }
+
     void setDefinition(std::string node_name, DSL_doubleArray &CPT)
     {
         double sum = 0;
@@ -290,15 +299,18 @@ public:
         }
     }
 
-    void setPriors(std::string node_name, const map_stringkey<double> &prior_distribution)
+    void setPriors(std::string node_name, const map_stringkey<double> &prior_distribution, double mem_factor=1)
     {
+        mem_factor = mem_factor>1 ? 1 : (mem_factor<0 ? 0 : mem_factor);
+
         const auto node_id = getNodeId(node_name);
         auto node_definition = net_.GetNode(node_id)->Definition();
         DSL_doubleArray CPT(node_definition->GetMatrix()->GetSize());
+        DSL_doubleArray prev_definition = node_definition->GetMatrix()->GetItems();
         for (const auto &[outcome_name, outcome_prob] : prior_distribution)
         {
             const auto outcome_id = getOutcomeId(node_name, outcome_name);
-            CPT[outcome_id] = outcome_prob;
+            CPT[outcome_id] = mem_factor*outcome_prob + (1-mem_factor)*prev_definition[outcome_id];
         }
         setDefinition(node_name, CPT);
     }
@@ -407,10 +419,10 @@ public:
         temporal_leaf_node_states_.push_back(newest_states);
     }
 
-    void incrementTime1_5DBN(std::vector<std::string> dynamic_node_names){
+    void incrementTime1_5DBN(std::vector<std::string> dynamic_node_names, double saving_factor = 1){
         auto dynamic_node_states = evaluateStates(dynamic_node_names);
         for(auto node_name : dynamic_node_names){
-            setPriors(node_name+"_t_1", dynamic_node_states.at(node_name));
+            setPriors(node_name+"_t_1", dynamic_node_states.at(node_name),saving_factor);
         }
     }
 

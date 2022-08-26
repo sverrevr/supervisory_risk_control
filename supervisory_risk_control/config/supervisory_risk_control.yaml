@@ -1,5 +1,6 @@
 dynamic: true
 only_update_on_measurements: false
+saving_factor: 1
 max_risk: 0.01
 
 # parameters converting measurements to states. Max is the lowest value that gives the worst case state

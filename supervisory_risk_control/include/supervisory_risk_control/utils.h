@@ -34,9 +34,10 @@ class map_stringkey : public std::map<std::string, t>{
 };
 
 double mean(map_stringkey<double> input){
+    int number_of_states = input.size();
     double mean = 0;
     double prob_sum = 0;
-    for(int i=0; i<10; ++i){
+    for(int i=0; i<number_of_states; ++i){
         mean+=i*input.at("State"+std::to_string(i));
         prob_sum += input.at("State"+std::to_string(i));
     }
