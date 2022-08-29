@@ -43,7 +43,7 @@ class SupervisoryRiskControl
         float saving_factor;
         double max_risk;
         struct{
-            double max_yaw_moment, max_turbulence, max_number_of_filtered_points, motor_max, motor_min, max_tilt;
+            double max_yaw_moment, max_turbulence, max_number_of_filtered_points, motor_max, motor_min, max_tilt, min_tilt;
         } measurement_conversion;
         struct{
             struct {
@@ -78,12 +78,15 @@ class SupervisoryRiskControl
                                                                              { camera_noise = msg->data; });
     ros::Subscriber max_speed_target_subscriber = nh.subscribe<std_msgs::Float32>("/supervisor/max_speed_target", 1, [&](std_msgs::Float32ConstPtr msg)
                                                                              { max_speed_target = std::clamp((int)(msg->data*10),0,9); 
-                                                                                last_set_target = last_set_target_type::speed;});
+                                                                                last_set_target = last_set_target_type::speed;
+                                                                                ROS_INFO("Setting max-speed target to: %d",max_speed_target);});
     ros::Subscriber safety_margin_target_subscriber = nh.subscribe<std_msgs::Float32>("/supervisor/safety_margin_target", 1, [&](std_msgs::Float32ConstPtr msg)
                                                                              { safety_margin_target = std::clamp((int)(msg->data*10),0,9); 
-                                                                                last_set_target = last_set_target_type::margin;});
+                                                                                last_set_target = last_set_target_type::margin;
+                                                                                ROS_INFO("Setting safety-margin_target to %d", safety_margin_target);});
     ros::Subscriber disable_target_subscriber = nh.subscribe<std_msgs::Float32>("/supervisor/disable_target", 1, [&](std_msgs::Float32ConstPtr msg)
-                                                                             { last_set_target = last_set_target_type::none;});
+                                                                             { last_set_target = last_set_target_type::none;
+                                                                             ROS_INFO("Disabling target.");});
 
     ros::Subscriber set_measurements_subscriber = nh.subscribe<supervisory_risk_control_msgs::measurements>("/supervisor/set_measurements", 1, [&](supervisory_risk_control_msgs::measurementsConstPtr msg)
     {
@@ -135,7 +138,7 @@ class SupervisoryRiskControl
         }
         {
             // Max roll/pitch
-            auto drone_tilt_state = std::clamp((int)std::floor(drone_tilt * 10 / pars.measurement_conversion.max_tilt), 0, 9);
+            auto drone_tilt_state = std::clamp((int)std::floor((drone_tilt-pars.measurement_conversion.min_tilt) * 10 / pars.measurement_conversion.max_tilt), 0, 9);
             net.setEvidence("drone_tilt", drone_tilt_state);
             ROS_INFO("%s: %.2f, %i", "drone_tilt", drone_tilt, drone_tilt_state);
             debug_display.measured_drone_roll_pitch = drone_tilt_state/10.0;
@@ -508,6 +511,7 @@ public:
         nhp.getParam("measurement_conversion/max_turbulence", pars.measurement_conversion.max_turbulence);
         nhp.getParam("measurement_conversion/max_number_of_filtered_points", pars.measurement_conversion.max_number_of_filtered_points);
         nhp.getParam("measurement_conversion/max_tilt", pars.measurement_conversion.max_tilt);
+        nhp.getParam("measurement_conversion/min_tilt", pars.measurement_conversion.min_tilt);
         nhp.getParam("measurement_conversion/motor_max", pars.measurement_conversion.motor_max);
         nhp.getParam("measurement_conversion/motor_min", pars.measurement_conversion.motor_min);
         nhp.getParam("risk/motor_saturation/constant", pars.risk.motor_saturation.constant);

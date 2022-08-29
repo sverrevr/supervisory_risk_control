@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<root>
+ <tabbed_widget name="Main Window" parent="main_window">
+  <Tab tab_name="measurements states" containers="1">
+   <Container>
+    <DockSplitter sizes="1" count="1" orientation="-">
+     <DockSplitter sizes="0.500351;0.499649" count="2" orientation="|">
+      <DockSplitter sizes="0.500508;0.499492" count="2" orientation="-">
+       <DockArea name="...">
+        <plot style="Lines" mode="TimeSeries" flip_x="false" flip_y="false">
+         <range left="0.000000" bottom="-0.010000" right="99.657921" top="0.910000"/>
+         <limitY max="0.91" min="-0.01"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_motor_wear" color="#1f77b4"/>
+         <curve name="/supervisory_risk_controller/debug_msg/measured_motoruse" color="#d62728"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_motoruse_for_whirlewind" color="#1ac938"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot style="Lines" mode="TimeSeries" flip_x="false" flip_y="false">
+         <range left="0.000000" bottom="-0.010000" right="99.657921" top="0.910000"/>
+         <limitY max="0.91" min="-0.01"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_dust" color="#1f77b4"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_enviornment_observability" color="#d62728"/>
+         <curve name="/supervisory_risk_controller/debug_msg/measured_lidar_flicker" color="#1ac938"/>
+         <curve name="/supervisory_risk_controller/debug_msg/measured_camera_noise" color="#ff7f0e"/>
+        </plot>
+       </DockArea>
+      </DockSplitter>
+      <DockSplitter sizes="0.5;0.5" count="2" orientation="-">
+       <DockArea name="...">
+        <plot style="Lines" mode="TimeSeries" flip_x="false" flip_y="false">
+         <range left="0.000000" bottom="-0.010000" right="99.657921" top="0.910000"/>
+         <limitY max="0.91" min="-0.01"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_motoruse_for_tether" color="#ff7f0e"/>
+         <curve name="/supervisory_risk_controller/debug_msg/measured_height_over_ground" color="#f14cc1"/>
+         <curve name="/supervisory_risk_controller/debug_msg/measured_drone_roll_pitch" color="#9467bd"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_tether_tension_motor_use_scaling_factor" color="#17becf"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot style="Lines" mode="TimeSeries" flip_x="false" flip_y="false">
+         <range left="0.000000" bottom="-0.010000" right="99.657921" top="0.910000"/>
+         <limitY max="0.91" min="-0.01"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_turbulence" color="#f14cc1"/>
+         <curve name="/supervisory_risk_controller/debug_msg/measured_velocity_deviation" color="#9467bd"/>
+        </plot>
+       </DockArea>
+      </DockSplitter>
+     </DockSplitter>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab tab_name="tab3" containers="1">
+   <Container>
+    <DockSplitter sizes="1" count="1" orientation="-">
+     <DockSplitter sizes="0.5;0.5" count="2" orientation="|">
+      <DockSplitter sizes="0.333503;0.332994;0.333503" count="3" orientation="-">
+       <DockArea name="...">
+        <plot style="Lines" mode="TimeSeries" flip_x="false" flip_y="false">
+         <range left="0.000000" bottom="-0.225000" right="99.657921" top="9.225000"/>
+         <limitY max="9.225" min="-0.225"/>
+         <curve name="/supervisory_risk_controller/debug_msg/optimal_max_acc" color="#1ac938"/>
+         <curve name="/supervisory_risk_controller/debug_msg/optimal_safety_margin" color="#ff7f0e"/>
+         <curve name="/supervisory_risk_controller/debug_msg/optimal_speed" color="#f14cc1"/>
+         <curve name="/supervisory_risk_controller/debug_msg/found_feasible_option" color="#1ac938"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot style="Lines" mode="TimeSeries" flip_x="false" flip_y="false">
+         <range left="0.000000" bottom="-0.022500" right="99.657921" top="0.922500"/>
+         <limitY max="0.9225" min="-0.0225"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_motor_wear" color="#9467bd"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_motoruse_for_whirlewind" color="#bcbd22"/>
+         <curve name="/supervisory_risk_controller/debug_msg/measured_motoruse" color="#17becf"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot style="Lines" mode="TimeSeries" flip_x="false" flip_y="false">
+         <range left="0.000000" bottom="-0.022500" right="99.657921" top="0.922500"/>
+         <limitY max="0.9225" min="-0.0225"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_turbulence" color="#d62728"/>
+         <curve name="/supervisory_risk_controller/debug_msg/measured_velocity_deviation" color="#bcbd22"/>
+        </plot>
+       </DockArea>
+      </DockSplitter>
+      <DockSplitter sizes="0.333503;0.332994;0.333503" count="3" orientation="-">
+       <DockArea name="...">
+        <plot style="Lines" mode="TimeSeries" flip_x="false" flip_y="false">
+         <range left="0.000000" bottom="-0.022500" right="99.657921" top="0.922500"/>
+         <limitY max="0.9225" min="-0.0225"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_frequency_of_breaking_distance_exceeding_safety_margin" color="#9467bd"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_frequency_of_contact_with_unobservable_obstacle" color="#17becf"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_frequency_of_exceeding_safety_margin_due_to_turbulence" color="#bcbd22"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_frequency_of_loss_of_control_due_to_motor_wear" color="#d62728"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_frequency_of_loss_of_control_due_to_turbulence" color="#1f77b4"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_frequency_of_motor_saturation_deviating_beyond_safety_margin" color="#d62728"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot style="Lines" mode="TimeSeries" flip_x="false" flip_y="false">
+         <range left="0.000000" bottom="-0.022500" right="99.657921" top="0.922500"/>
+         <limitY max="0.9225" min="-0.0225"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_motoruse_for_tether" color="#17becf"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_tether_tension_motor_use_scaling_factor" color="#1f77b4"/>
+         <curve name="/supervisory_risk_controller/debug_msg/measured_drone_roll_pitch" color="#ff7f0e"/>
+         <curve name="/supervisory_risk_controller/debug_msg/measured_height_over_ground" color="#f14cc1"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot style="Lines" mode="TimeSeries" flip_x="false" flip_y="false">
+         <range left="0.000000" bottom="-0.022500" right="99.657921" top="0.922500"/>
+         <limitY max="0.9225" min="-0.0225"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_dust" color="#ff7f0e"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mean_enviornment_observability" color="#f14cc1"/>
+         <curve name="/supervisory_risk_controller/debug_msg/measured_camera_noise" color="#1ac938"/>
+         <curve name="/supervisory_risk_controller/debug_msg/measured_lidar_flicker" color="#9467bd"/>
+        </plot>
+       </DockArea>
+      </DockSplitter>
+     </DockSplitter>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <currentTabIndex index="1"/>
+ </tabbed_widget>
+ <use_relative_time_offset enabled="1"/>
+ <!-- - - - - - - - - - - - - - - -->
+ <!-- - - - - - - - - - - - - - - -->
+ <Plugins>
+  <plugin ID="DataLoad CSV">
+   <default delimiter="0" time_axis=""/>
+  </plugin>
+  <plugin ID="DataLoad ROS bags">
+   <use_header_stamp value="false"/>
+   <discard_large_arrays value="true"/>
+   <max_array_size value="100"/>
+   <boolean_strings_to_number value="true"/>
+   <remove_suffix_from_strings value="true"/>
+  </plugin>
+  <plugin ID="DataLoad ULog"/>
+  <plugin ID="ROS Topic Subscriber">
+   <use_header_stamp value="false"/>
+   <discard_large_arrays value="true"/>
+   <max_array_size value="100"/>
+   <boolean_strings_to_number value="true"/>
+   <remove_suffix_from_strings value="true"/>
+  </plugin>
+  <plugin ID="UDP Server"/>
+  <plugin ID="WebSocket Server"/>
+  <plugin ID="Fast Fourier Transform"/>
+  <plugin ID="Quaternion to RPY"/>
+  <plugin ID="Reactive Script Editor">
+   <library code="--[[ Helper function to create a ScatterXY series from arrays.&#xa;&#xa; series_name: name of the created ScatterXY series&#xa; prefix:      prefix of the timeseries, before the index of the array&#xa; suffix_X:   suffix to complete the name of the series containing the X value.&#xa;             if [nil], the index of the array will be used.&#xa; suffix_Y:   suffix to complete the name of the series containing the Y value&#xa; timestamp:   usually the tracker_time variable&#xa;              &#xa; Example:&#xa; &#xa; Assuming we have multiple series in the form:&#xa; &#xa;   /trajectory/node.{X}/position/x&#xa;   /trajectory/node.{X}/position/y&#xa;   &#xa; where {N} is the index of the array (integer). We can create a reactive series from the array with:&#xa; &#xa;   CreateSeriesFromArray( &quot;my_trajectory&quot;, &quot;/trajectory/node&quot;,  &quot;position/x&quot;, &quot;position/y&quot;, tracker_time );&#xa;]]--&#xa;&#xa;function CreateSeriesFromArray( series_name, prefix, suffix_X, suffix_Y, timestamp )&#xa;  --- create a new series or overwite the previous one&#xa;  new_series = MutableScatterXY.new(series_name)&#xa;  &#xa;  --- Append points to new_series&#xa;  index = 0&#xa;  while(true) do&#xa;&#xa;    x = index;&#xa;    -- if not nil, get the X coordinate from a series&#xa;    if suffix_X ~= nil then &#xa;      series_x = TimeseriesView.find( string.format( &quot;%s.%d/%s&quot;, prefix, index, suffix_X) )&#xa;      if series_x == nil then break end&#xa;      x = series_x:atTime(timestamp)&#x9; &#xa;    end&#xa;    &#xa;    series_y = TimeseriesView.find( string.format( &quot;%s.%d/%s&quot;, prefix, index, suffix_Y) )&#xa;    if series_x == nil then break end &#xa;    y = series_y:atTime(timestamp)&#xa;    &#xa;    new_series:push_back(x,y)&#xa;    index = index+1&#xa;  end&#xa;end&#xa;"/>
+   <scripts/>
+  </plugin>
+  <plugin ID="CSV Exporter"/>
+  <plugin ID="ROS /rosout Visualization"/>
+  <plugin ID="ROS Topic Re-Publisher"/>
+ </Plugins>
+ <!-- - - - - - - - - - - - - - - -->
+ <previouslyLoaded_Datafiles/>
+ <previouslyLoaded_Streamer name="ROS Topic Subscriber"/>
+ <!-- - - - - - - - - - - - - - - -->
+ <customMathEquations/>
+ <snippets/>
+ <!-- - - - - - - - - - - - - - - -->
+</root>
+
