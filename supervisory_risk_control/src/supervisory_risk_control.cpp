@@ -35,7 +35,6 @@ class SupervisoryRiskControl
     enum class last_set_target_type {none, speed, margin} last_set_target = last_set_target_type::none;
     bool new_data = true;
     supervisory_risk_control_msgs::measurements measurement_msg;
-    bool use_direct_messages = false;
 
     struct{
         bool dynamic;
@@ -91,12 +90,16 @@ class SupervisoryRiskControl
     ros::Subscriber set_measurements_subscriber = nh.subscribe<supervisory_risk_control_msgs::measurements>("/supervisor/set_measurements", 1, [&](supervisory_risk_control_msgs::measurementsConstPtr msg)
     {
         measurement_msg = *msg;
-        use_direct_messages = true;
         new_data = true;
     });
 
     ros::Subscriber disable_direct_measurements = nh.subscribe<std_msgs::Int32>("/suervisor/disable_direct_measurements",1,[&](std_msgs::Int32ConstPtr msg){
-        use_direct_messages = false;
+        measurement_msg.camera_noise = -1;
+        measurement_msg.drone_tilt = -1;
+        measurement_msg.height_over_ground = -1;
+        measurement_msg.motor_mean = -1;
+        measurement_msg.number_of_filtered_away_points = -1;
+        measurement_msg.roll_pitch_deviation = -1;
     });
 
     ros::Publisher debug_display_publisher = nh.advertise<supervisory_risk_control_msgs::debug_display>("supervisory_risk_controller/debug_msg", 1);
@@ -130,18 +133,32 @@ class SupervisoryRiskControl
         // values are normalized to be within [0-10)
 
         {
+            if(measurement_msg.motor_mean<0){
             // motor saturation is at 1949
-            auto motor_use_state = std::clamp((int)std::floor(10*(motor_use-pars.measurement_conversion.motor_min)/(pars.measurement_conversion.motor_max-pars.measurement_conversion.motor_min)), 0, 9);
-            net.setEvidence("mean_motor", motor_use_state);
-            ROS_INFO("%s: %.2f, %i", "mean_motor", motor_use, motor_use_state);
-            debug_display.measured_motoruse = motor_use_state/10.0;
+                auto motor_use_state = std::clamp((int)std::floor(10*(motor_use-pars.measurement_conversion.motor_min)/(pars.measurement_conversion.motor_max-pars.measurement_conversion.motor_min)), 0, 9);
+                net.setEvidence("mean_motor", motor_use_state);
+                ROS_INFO("%s: %.2f, %i", "mean_motor", motor_use, motor_use_state);
+                debug_display.measured_motoruse = motor_use_state/10.0;
+            }
+            else{
+                net.setEvidence("mean_motor", measurement_msg.motor_mean);
+                ROS_INFO("%s: %i", "mean_motor", measurement_msg.motor_mean);
+                debug_display.measured_motoruse = measurement_msg.motor_mean/10.0;
+            }
         }
         {
+            if(measurement_msg.drone_tilt<0){
             // Max roll/pitch
             auto drone_tilt_state = std::clamp((int)std::floor((drone_tilt-pars.measurement_conversion.min_tilt) * 10 / pars.measurement_conversion.max_tilt), 0, 9);
             net.setEvidence("drone_tilt", drone_tilt_state);
             ROS_INFO("%s: %.2f, %i", "drone_tilt", drone_tilt, drone_tilt_state);
             debug_display.measured_drone_roll_pitch = drone_tilt_state/10.0;
+            }
+            else{
+                net.setEvidence("drone_tilt", measurement_msg.drone_tilt);
+            ROS_INFO("%s: %i", "drone_tilt", measurement_msg.drone_tilt);
+            debug_display.measured_drone_roll_pitch = measurement_msg.drone_tilt/10.0;
+            }
         }
         {
             /*auto yaw_moment_state = std::clamp((int)std::floor(yaw_moment * 10/pars.measurement_conversion.max_yaw_moment), 0, 9);
@@ -150,76 +167,60 @@ class SupervisoryRiskControl
             debug_display.measured_yaw_moment = yaw_moment_state/10.0;*/
         }
         {
+            if(measurement_msg.height_over_ground<0){
             // max height is 40m
             auto height_over_ground_state = std::clamp((int)std::floor(height_over_ground * 10 / 40), 0, 9);
             net.setEvidence("height_over_ground", height_over_ground_state);
             ROS_INFO("%s: %.2f, %i", "height_over_ground", height_over_ground, height_over_ground_state);
             debug_display.measured_height_over_ground = height_over_ground_state/10.0;
+            }
+            else{
+            net.setEvidence("height_over_ground", measurement_msg.height_over_ground);
+            ROS_INFO("%s: %i", "height_over_ground", measurement_msg.height_over_ground);
+            debug_display.measured_height_over_ground = measurement_msg.height_over_ground/10.0;
+            }
         }
         {
+            if(measurement_msg.roll_pitch_deviation<0){
             // High turbulence area has measurements of 0.004-0.007, define max to be slightly higher as there might be even worse cases.
             auto velocity_deviation_state = std::clamp((int)std::floor(roll_pitch_deviation * 10 / pars.measurement_conversion.max_turbulence), 0, 9);
             net.setEvidence("roll_pitch_deviation", velocity_deviation_state);
             ROS_INFO("%s: %.2f, %i", "roll_pitch_deviation", roll_pitch_deviation, velocity_deviation_state);
             debug_display.measured_velocity_deviation = velocity_deviation_state/10.0;
+            }
+            else{
+                net.setEvidence("roll_pitch_deviation", measurement_msg.roll_pitch_deviation);
+            ROS_INFO("%s: %i", "roll_pitch_deviation", measurement_msg.roll_pitch_deviation);
+            debug_display.measured_velocity_deviation = measurement_msg.roll_pitch_deviation/10.0;    
+            }
         }
         {
+            if(measurement_msg.camera_noise<0){
             // Human input of value between 0 and 1
             auto camera_noise_state = std::clamp((int)std::floor(camera_noise * 10), 0, 9);
             net.setEvidence("camera_noise", camera_noise_state);
             ROS_INFO("%s: %.2f, %i", "camera_noise", camera_noise, camera_noise_state);
             debug_display.measured_camera_noise = camera_noise_state/10.0;
+            }
+            else{
+                net.setEvidence("camera_noise", measurement_msg.camera_noise);
+            ROS_INFO("%s: %i", "camera_noise", measurement_msg.camera_noise);
+            debug_display.measured_camera_noise = measurement_msg.camera_noise/10.0;
+            }
         }
         {
+            if(measurement_msg.number_of_filtered_away_points<0){
             // Not a clear connection between worse conditions and increased number of points. 0 is defineatly good, and is 0 most of the time. 10 seems like a safe place to define as there being an undetectable obstacle close by
             auto number_of_filtered_points_state = std::clamp((int)std::floor(number_of_filtered_points * 10 / pars.measurement_conversion.max_number_of_filtered_points), 0, 9);
             net.setEvidence("number_of_filtered_away_points", number_of_filtered_points_state);
             ROS_INFO("%s: %i, %i", "number_of_filtered_away_points", number_of_filtered_points, number_of_filtered_points_state);
             debug_display.measured_lidar_flicker = number_of_filtered_points_state/10.0;
-        }
-    }
-
-    void set_observations_from_direct_measurements(){
-        {
-            // motor saturation is at 1949
-            net.setEvidence("mean_motor", measurement_msg.motor_mean);
-            ROS_INFO("%s: %i", "mean_motor", measurement_msg.motor_mean);
-            debug_display.measured_motoruse = measurement_msg.motor_mean/10.0;
-        }
-        {
-            // Max roll/pitch
-            net.setEvidence("drone_tilt", measurement_msg.drone_tilt);
-            ROS_INFO("%s: %i", "drone_tilt", measurement_msg.drone_tilt);
-            debug_display.measured_drone_roll_pitch = measurement_msg.drone_tilt/10.0;
-        }
-        {
-            /*net.setEvidence("yaw_moment", measurement_msg.yaw_moment);
-            ROS_INFO("%s: %i", "yaw_moment", measurement_msg.yaw_moment);
-            debug_display.measured_yaw_moment = measurement_msg.yaw_moment/10.0;*/
-        }
-        {
-            // max height is 40m
-            net.setEvidence("height_over_ground", measurement_msg.height_over_ground);
-            ROS_INFO("%s: %i", "height_over_ground", measurement_msg.height_over_ground);
-            debug_display.measured_height_over_ground = measurement_msg.height_over_ground/10.0;
-        }
-        {
-            // High turbulence area has measurements of 0.004-0.007, define max to be slightly higher as there might be even worse cases.
-            net.setEvidence("roll_pitch_deviation", measurement_msg.roll_pitch_deviation);
-            ROS_INFO("%s: %i", "roll_pitch_deviation", measurement_msg.roll_pitch_deviation);
-            debug_display.measured_velocity_deviation = measurement_msg.roll_pitch_deviation/10.0;
-        }
-        {
-            // Human input of value between 0 and 1
-            net.setEvidence("camera_noise", measurement_msg.camera_noise);
-            ROS_INFO("%s: %i", "camera_noise", measurement_msg.camera_noise);
-            debug_display.measured_camera_noise = measurement_msg.camera_noise/10.0;
-        }
-        {
-            // Not a clear connection between worse conditions and increased number of points. 0 is defineatly good, and is 0 most of the time. 10 seems like a safe place to define as there being an undetectable obstacle close by
-            net.setEvidence("number_of_filtered_away_points", measurement_msg.number_of_filtered_away_points);
+            }
+            else{
+                net.setEvidence("number_of_filtered_away_points", measurement_msg.number_of_filtered_away_points);
             ROS_INFO("%s: %i", "number_of_filtered_away_points", measurement_msg.number_of_filtered_away_points);
             debug_display.measured_lidar_flicker = measurement_msg.number_of_filtered_away_points/10.0;
+            }
         }
     }
 
@@ -399,12 +400,8 @@ class SupervisoryRiskControl
     void run()
     {
         try{
-        if(use_direct_messages){
-            set_observations_from_direct_measurements();
-        }
-        else{
-            set_observations();
-        }
+
+        set_observations();
 
         {
             auto output = net.evaluateStates(all_estimate_node_names);
@@ -531,6 +528,13 @@ public:
         nhp.getParam("cost_function_parameters/non_target_cost", pars.cost_function_parameters.non_target_cost);
         nhp.getParam("cost_function_parameters/acceleration_cost", pars.cost_function_parameters.acceleration_cost);
         nhp.getParam("cost_function_parameters/parameter_change_cost", pars.cost_function_parameters.parameter_change_cost);
+
+        measurement_msg.camera_noise = -1;
+        measurement_msg.drone_tilt = -1;
+        measurement_msg.height_over_ground = -1;
+        measurement_msg.motor_mean = -1;
+        measurement_msg.number_of_filtered_away_points = -1;
+        measurement_msg.roll_pitch_deviation = -1;
 
         std::string filename = pars.dynamic ? "net_dynamic.xdsl" : "net.xdsl";
         net.init(ros::package::getPath("supervisory_risk_control") + "/include/supervisory_risk_control/"+filename);
