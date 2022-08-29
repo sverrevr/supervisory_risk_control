@@ -27,7 +27,7 @@ class SupervisoryRiskControl
     double motor_use = 0;
     double yaw_moment = 0;
     double roll_pitch_deviation = 0;
-    int number_of_filtered_points = 0;
+    double number_of_filtered_points = 0;
     double camera_noise = 0;
     double drone_tilt = 0;
     int max_speed_target = 9;
@@ -43,7 +43,7 @@ class SupervisoryRiskControl
         float saving_factor;
         double max_risk;
         struct{
-            double max_yaw_moment, max_turbulence, max_number_of_filtered_points, motor_max, motor_min, max_tilt, min_tilt;
+            double max_yaw_moment, max_turbulence, max_number_of_filtered_points, motor_max, motor_min, max_tilt, min_tilt, filtered_point_lowpass_factor;
         } measurement_conversion;
         struct{
             struct {
@@ -72,8 +72,8 @@ class SupervisoryRiskControl
         drone_tilt = msg->data[topic_indices::roll_pitch_js_error]; 
         new_data=true;});
     ros::Subscriber number_of_filtered_points_subscriber = nh.subscribe<std_msgs::Int32>("/cloud_filter/number_of_removed_points", 1, [&](std_msgs::Int32ConstPtr msg)
-                                                                                         { //number_of_filtered_points = 0.9 * number_of_filtered_points + 0.1 * msg->data; 
-                                                                                         number_of_filtered_points=msg->data;});
+                                                                { number_of_filtered_points = pars.measurement_conversion.filtered_point_lowpass_factor * number_of_filtered_points 
+                                                                                            + (1-pars.measurement_conversion.filtered_point_lowpass_factor) * msg->data;});
     ros::Subscriber noise_level_subscriber = nh.subscribe<std_msgs::Float32>("/supervisor/noise_level", 1, [&](std_msgs::Float32ConstPtr msg)
                                                                              { camera_noise = msg->data; });
     ros::Subscriber max_speed_target_subscriber = nh.subscribe<std_msgs::Float32>("/supervisor/max_speed_target", 1, [&](std_msgs::Float32ConstPtr msg)
@@ -514,6 +514,7 @@ public:
         nhp.getParam("measurement_conversion/min_tilt", pars.measurement_conversion.min_tilt);
         nhp.getParam("measurement_conversion/motor_max", pars.measurement_conversion.motor_max);
         nhp.getParam("measurement_conversion/motor_min", pars.measurement_conversion.motor_min);
+        nhp.getParam("measurement_conversion/filtered_point_lowpass_factor", pars.measurement_conversion.filtered_point_lowpass_factor);
         nhp.getParam("risk/motor_saturation/constant", pars.risk.motor_saturation.constant);
         nhp.getParam("risk/motor_saturation/scale", pars.risk.motor_saturation.scale);
         nhp.getParam("risk/turbulence/constant", pars.risk.turbulence.constant);
