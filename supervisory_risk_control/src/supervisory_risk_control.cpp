@@ -37,10 +37,8 @@ class SupervisoryRiskControl
     supervisory_risk_control_msgs::measurements measurement_msg;
 
     struct{
-        bool dynamic;
-        bool only_update_on_measurements;
-        float saving_factor;
-        double max_risk;
+        bool dynamic, modify_parameters, only_update_on_measurements;
+        double saving_factor, max_risk;
         struct{
             double max_yaw_moment, max_turbulence, max_number_of_filtered_points, motor_max, motor_min, max_tilt, min_tilt, filtered_point_lowpass_factor;
         } measurement_conversion;
@@ -458,27 +456,31 @@ class SupervisoryRiskControl
         double risk_cost = evaluate_risk(output,exact_action,true);
         ROS_INFO("Optimal action - Margin: %i, Acc: %i, Speed: %i. Risk_cost: %f", exact_action.at("safety_margin"), exact_action.at("max_upwards_acceleration"), exact_action.at("max_speed"), risk_cost);
         */
+       
 
-        /*auto param_set = mavros_msgs::ParamSet{};
-        //TODO: tune inn verdiene her
-        param_set.request.param_id = "SA_DISTANCE";
-        param_set.request.value.real = action.at("safety_margin")*0.3+0.3;
-        if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
-            throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
+        if(pars.modify_parameters){
 
-        param_set.request.param_id = "MPC_XY_VEL_MAX";
-        param_set.request.value.real = action.at("max_speed")*0.29+0.1;
-        if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
-            throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
+            auto param_set = mavros_msgs::ParamSet{};
+            //TODO: tune inn verdiene her
+            param_set.request.param_id = "SA_DISTANCE";
+            param_set.request.value.real = action.at("safety_margin")*(1.09-0.1)/9.0+(0.1+0.21)/2;
+            if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
+                throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
 
-        param_set.request.param_id = "MPC_ACC_DOWN_MAX";
-        param_set.request.value.real = action.at("max_upwards_acceleration")*0.2+0.1;
-        if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
-            throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
-        param_set.request.param_id = "MPC_ACC_UP_MAX";
-        param_set.request.value.real = action.at("max_upwards_acceleration")*0.2+0.1;
-        if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
-            throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};*/
+            param_set.request.param_id = "MPC_XY_VEL_MAX";
+            param_set.request.value.real = action.at("max_speed")*(0.81-0.1)/9+(0.29+0.1)/2;
+            if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
+                throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
+
+            param_set.request.param_id = "MPC_ACC_DOWN_MAX";
+            param_set.request.value.real = action.at("max_upwards_acceleration")*(0.17-0.05)/4+(0.05+0.08)/2;
+            if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
+                throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
+            param_set.request.param_id = "MPC_ACC_UP_MAX";
+            if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
+                throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
+        }
+
 
         if(pars.dynamic) net.incrementTime1_5DBN(causal_node_names, pars.saving_factor);
 
@@ -501,6 +503,7 @@ public:
     SupervisoryRiskControl()
     {
         nhp.getParam("dynamic", pars.dynamic);
+        nhp.getParam("modify_parameters", pars.modify_parameters);
         nhp.getParam("only_update_on_measurements", pars.only_update_on_measurements);
         nhp.getParam("saving_factor", pars.saving_factor);
         nhp.getParam("max_risk", pars.max_risk);

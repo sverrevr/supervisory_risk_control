@@ -1,4 +1,5 @@
 dynamic: true
+modify_parameters: false
 only_update_on_measurements: false
 saving_factor: 1
 max_risk: 0.01
