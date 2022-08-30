@@ -36,6 +36,10 @@ class SupervisoryRiskControl
     bool new_data = true;
     supervisory_risk_control_msgs::measurements measurement_msg;
 
+    double previous_safety_margin=0.0;
+    double previous_max_speed=9.0;
+    double previous_max_acc=4.0;
+
     struct{
         bool dynamic, modify_parameters, only_update_on_measurements;
         double saving_factor, max_risk;
@@ -52,7 +56,7 @@ class SupervisoryRiskControl
         } risk;
 
         struct{
-            double target_cost, non_target_cost, acceleration_cost, parameter_change_cost;
+            double target_cost, non_target_cost, acceleration_cost, parameter_change_cost, parameter_change_delay_factor;
         } cost_function_parameters;
     } pars;
 
@@ -426,7 +430,31 @@ class SupervisoryRiskControl
 
         // auto action = heuristic_search();
         auto action = exact_search();
-        
+
+        {
+            double a  = pars.cost_function_parameters.parameter_change_delay_factor;
+            if(previous_max_speed < action.at("max_speed")){
+                previous_max_speed = (1-a)*previous_max_speed+a*action.at("max_speed");
+                action.at("max_speed") = (int)round(previous_max_speed);  
+            }
+            else
+                previous_max_speed = action.at("max_speed");
+
+            if(previous_safety_margin > action.at("safety_margin")){
+                previous_safety_margin = (1-a)*previous_safety_margin+a*action.at("safety_margin");
+                action.at("safety_margin") = (int)round(previous_safety_margin);  
+            }
+            else
+                previous_safety_margin = action.at("safety_margin");
+
+            if(previous_max_acc > action.at("max_upwards_acceleration")){
+                previous_max_acc = (1-a)*previous_max_acc+a*action.at("max_upwards_acceleration");
+                action.at("max_upwards_acceleration") = (int)round(previous_max_acc);  
+            }
+            else
+                previous_max_acc = action.at("max_upwards_acceleration");
+        }
+
         {
             net.setEvidence(action);
             auto output = net.evaluateStates(all_prediction_node_names);
@@ -531,6 +559,8 @@ public:
         nhp.getParam("cost_function_parameters/non_target_cost", pars.cost_function_parameters.non_target_cost);
         nhp.getParam("cost_function_parameters/acceleration_cost", pars.cost_function_parameters.acceleration_cost);
         nhp.getParam("cost_function_parameters/parameter_change_cost", pars.cost_function_parameters.parameter_change_cost);
+        nhp.getParam("cost_function_parameters/parameter_change_delay_factor", pars.cost_function_parameters.parameter_change_delay_factor);
+        
 
         measurement_msg.camera_noise = -1;
         measurement_msg.drone_tilt = -1;
