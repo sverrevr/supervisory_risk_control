@@ -447,7 +447,7 @@ class SupervisoryRiskControl
             else
                 previous_safety_margin = action.at("safety_margin");
 
-            if(previous_max_acc > action.at("max_upwards_acceleration")){
+            if(previous_max_acc < action.at("max_upwards_acceleration")){
                 previous_max_acc = (1-a)*previous_max_acc+a*action.at("max_upwards_acceleration");
                 action.at("max_upwards_acceleration") = (int)round(previous_max_acc);  
             }
