@@ -180,6 +180,7 @@ class SupervisoryRiskControl
             net.setEvidence("height_over_ground", measurement_msg.height_over_ground);
             ROS_INFO("%s: %i", "height_over_ground", measurement_msg.height_over_ground);
             debug_display.measured_height_over_ground = measurement_msg.height_over_ground/10.0;
+            height_over_ground = measurement_msg.height_over_ground*40.0/9.0;
             }
         }
         {

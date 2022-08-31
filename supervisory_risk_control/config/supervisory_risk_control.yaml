@@ -33,7 +33,7 @@ risk:
     scale: 0.4
   damage: #scaled by height
     constant: 0.1
-    scale: 0.4
+    scale: 0.3
   total: 
     damage_to_drone: 0.8
     loss_of_mission: 0.2
@@ -41,6 +41,6 @@ risk:
 cost_function_parameters:
   target_cost: 5
   non_target_cost: 1
-  acceleration_cost: 0.6
+  acceleration_cost: 0.5
   parameter_change_cost: 0
   parameter_change_delay_factor: 0.15
