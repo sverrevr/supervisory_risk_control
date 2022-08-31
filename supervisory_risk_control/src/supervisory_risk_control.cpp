@@ -39,6 +39,7 @@ class SupervisoryRiskControl
     double previous_safety_margin=0.0;
     double previous_max_speed=9.0;
     double previous_max_acc=4.0;
+    bool do_abort = false;
 
     struct{
         bool dynamic, modify_parameters, only_update_on_measurements, spam_states, no_delay;
@@ -88,6 +89,34 @@ class SupervisoryRiskControl
     ros::Subscriber disable_target_subscriber = nh.subscribe<std_msgs::Float32>("/supervisor/disable_target", 1, [&](std_msgs::Float32ConstPtr msg)
                                                                              { last_set_target = last_set_target_type::none;
                                                                              ROS_INFO("Disabling target.");});
+
+    ros::Subscriber abort_subscriber = nh.subscribe<std_msgs::Float32>("/supervisor/abort", 1, [&](std_msgs::Float32ConstPtr msg)
+            {  
+            auto param_set = mavros_msgs::ParamSet{};
+            param_set.request.param_id = "SA_DISTANCE";
+            param_set.request.value.real = 1.2;
+            if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
+                throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
+
+            param_set.request.param_id = "MPC_XY_VEL_MAX";
+            param_set.request.value.real = 1;
+            if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
+                throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
+            param_set.request.param_id = "MPC_VEL_MANUAL";
+            if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
+                throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
+            param_set.request.param_id = "MPC_XY_CRUISE";
+            if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
+                throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
+
+            param_set.request.param_id = "MPC_ACC_DOWN_MAX";
+            param_set.request.value.real = 2;
+            if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
+                throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
+            param_set.request.param_id = "MPC_ACC_UP_MAX";
+            if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
+                throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
+            do_abort = true;});
 
     ros::Subscriber set_measurements_subscriber = nh.subscribe<supervisory_risk_control_msgs::measurements>("/supervisor/set_measurements", 1, [&](supervisory_risk_control_msgs::measurementsConstPtr msg)
     {
@@ -511,9 +540,15 @@ class SupervisoryRiskControl
             param_set.request.value.real = action.at("max_speed")*(0.81-0.1)/9+(0.29+0.1)/2;
             if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
                 throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
+            param_set.request.param_id = "MPC_VEL_MANUAL";
+            if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
+                throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
+            param_set.request.param_id = "MPC_XY_CRUISE";
+            if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
+                throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
 
             param_set.request.param_id = "MPC_ACC_DOWN_MAX";
-            param_set.request.value.real = action.at("max_upwards_acceleration")*(0.17-0.05)/4+(0.05+0.08)/2;
+            param_set.request.value.real = action.at("max_upwards_acceleration")*(1.7-0.5)/4+(0.5+0.8)/2;
             if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
                 throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
             param_set.request.param_id = "MPC_ACC_UP_MAX";
@@ -588,6 +623,7 @@ public:
 
         while(ros::ok()){
             ros::spinOnce();
+            if(do_abort) return;
             if(!pars.only_update_on_measurements || new_data){
                 run();
                 new_data = false;
