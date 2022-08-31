@@ -41,7 +41,7 @@ class SupervisoryRiskControl
     double previous_max_acc=4.0;
 
     struct{
-        bool dynamic, modify_parameters, only_update_on_measurements;
+        bool dynamic, modify_parameters, only_update_on_measurements, spam_states, no_delay;
         double saving_factor, max_risk;
         struct{
             double max_yaw_moment, max_turbulence, max_number_of_filtered_points, motor_max, motor_min, max_tilt, min_tilt, filtered_point_lowpass_factor;
@@ -414,6 +414,16 @@ class SupervisoryRiskControl
             debug_display.mean_turbulence = mean(output.at("turbulence"));
             debug_display.mean_enviornment_observability = mean(output.at("enviornment_observability"));
             debug_display.mean_dust = mean(output.at("dust"));
+
+            if(pars.spam_states){
+                for(auto [node, states] : output){
+                    std::cout <<  node << ": ";
+                    for(auto [state, value] : states){
+                        std::cout << state << ":" << value << ", ";
+                    }
+                    std::cout << std::endl;
+                }
+            }
         }
 
         // Worst case:
@@ -470,6 +480,7 @@ class SupervisoryRiskControl
             debug_display.mean_frequency_of_exceeding_safety_margin_due_to_turbulence = log_mean(output.at("frequency_of_exceeding_safety_margin_due_to_turbulence"));
             debug_display.mean_frequency_of_contact_with_unobservable_obstacle = log_mean(output.at("frequency_of_contact_with_unobservable_obstacle"));
             debug_display.mean_frequency_of_breaking_distance_exceeding_safety_margin = log_mean(output.at("frequency_of_breaking_distance_exceeding_safety_margin"));
+
             
             debug_display_publisher.publish(debug_display);
         }
@@ -534,6 +545,8 @@ public:
         nhp.getParam("modify_parameters", pars.modify_parameters);
         nhp.getParam("only_update_on_measurements", pars.only_update_on_measurements);
         nhp.getParam("saving_factor", pars.saving_factor);
+        nhp.getParam("spam_states", pars.spam_states);
+        nhp.getParam("no_delay", pars.no_delay);
         nhp.getParam("max_risk", pars.max_risk);
         nhp.getParam("measurement_conversion/max_yaw_moment", pars.measurement_conversion.max_yaw_moment);
         nhp.getParam("measurement_conversion/max_turbulence", pars.measurement_conversion.max_turbulence);
@@ -578,7 +591,8 @@ public:
                 run();
                 new_data = false;
             }
-            ros::Duration(1).sleep();
+            if(!pars.no_delay)
+                ros::Duration(1).sleep();
         }
     }
 };
