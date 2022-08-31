@@ -1,0 +1,745 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This network was created in GeNIe Academic, which can be used for academic teaching and research purposes only -->
+<smile version="1.0" id="Network2" numsamples="10000" discsamples="10000">
+	<nodes>
+		<equation id="tether_tension_motor_use_scaling_factor_t_1">
+			<definition lower="0" upper="2">tether_tension_motor_use_scaling_factor_t_1=Uniform(0,2)</definition>
+			<discretization>
+				<interval label="State0" upper="0.2" />
+				<interval label="State1" upper="0.4" />
+				<interval label="State2" upper="0.6" />
+				<interval label="State3" upper="0.8" />
+				<interval label="State4" upper="1" />
+				<interval label="State5" upper="1.2" />
+				<interval label="State6" upper="1.4" />
+				<interval label="State7" upper="1.6" />
+				<interval label="State8" upper="1.8" />
+				<interval label="State9" upper="2" />
+			</discretization>
+		</equation>
+		<equation id="tether_tension_motor_use_scaling_factor">
+			<parents>tether_tension_motor_use_scaling_factor_t_1</parents>
+			<definition lower="0" upper="2">tether_tension_motor_use_scaling_factor=Normal(tether_tension_motor_use_scaling_factor_t_1,1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.2" />
+				<interval label="State1" upper="0.4" />
+				<interval label="State2" upper="0.6" />
+				<interval label="State3" upper="0.8" />
+				<interval label="State4" upper="1" />
+				<interval label="State5" upper="1.2" />
+				<interval label="State6" upper="1.4" />
+				<interval label="State7" upper="1.6" />
+				<interval label="State8" upper="1.8" />
+				<interval label="State9" upper="2" />
+			</discretization>
+		</equation>
+		<equation id="height_over_ground">
+			<definition lower="0" upper="1">height_over_ground=Uniform(0,1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="drone_tilt">
+			<definition lower="0" upper="1">drone_tilt=Uniform(0,1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="motoruse_for_tether">
+			<parents>height_over_ground tether_tension_motor_use_scaling_factor drone_tilt</parents>
+			<definition lower="0" upper="1">motoruse_for_tether=Trim(0.7*height_over_ground+tether_tension_motor_use_scaling_factor*drone_tilt-0.04,0,1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="random_disturbance_t_1">
+			<definition lower="0" upper="1.1">random_disturbance_t_1=Normal(0,0.6)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+				<interval label="State10" upper="1.1" />
+			</discretization>
+		</equation>
+		<equation id="random_disturbance">
+			<parents>random_disturbance_t_1</parents>
+			<definition lower="0" upper="1.1">random_disturbance=Trim(Normal(random_disturbance_t_1,0.2),0,1.1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+				<interval label="State10" upper="1.1" />
+			</discretization>
+		</equation>
+		<equation id="motor_wear_t_1">
+			<definition lower="0" upper="1">motor_wear_t_1=Normal(0,0.01)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="motor_wear">
+			<parents>motor_wear_t_1</parents>
+			<definition lower="0" upper="1">motor_wear=Normal(motor_wear_t_1,0.01)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="turbulence_t_1">
+			<definition lower="0" upper="1">turbulence_t_1=Normal(0,0.3)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="turbulence">
+			<parents>turbulence_t_1</parents>
+			<definition lower="0" upper="1">turbulence=Normal(turbulence_t_1,0.1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="motoruse_for_other">
+			<parents>motor_wear turbulence random_disturbance</parents>
+			<definition lower="0" upper="1.1">motoruse_for_other=Trim(motor_wear+0.2*turbulence+random_disturbance-0.05,0,1.1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+				<interval label="State10" upper="1.1" />
+			</discretization>
+		</equation>
+		<equation id="mean_motor">
+			<parents>motoruse_for_tether motoruse_for_other</parents>
+			<definition lower="0" upper="1.1">mean_motor=Trim(Normal(motoruse_for_tether+motoruse_for_other-0.025,0.1)-Exponential(2),0,1.1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+				<interval label="State10" upper="1.1" />
+			</discretization>
+		</equation>
+		<equation id="frequency_of_loss_of_control_due_to_motor_wear">
+			<parents>motor_wear</parents>
+			<definition lower="0" upper="1">frequency_of_loss_of_control_due_to_motor_wear=Trim(motor_wear^5,0,1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.005908012045062" />
+				<interval label="State1" upper="0.01527158011626" />
+				<interval label="State2" upper="0.03011183540944" />
+				<interval label="State3" upper="0.053632054998" />
+				<interval label="State4" upper="0.09090909090909" />
+				<interval label="State5" upper="0.1499892113597" />
+				<interval label="State6" upper="0.2436248920717" />
+				<interval label="State7" upper="0.3920274450035" />
+				<interval label="State8" upper="0.6272296408891" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="max_upwards_acceleration">
+			<definition lower="0.05" upper="0.2">max_upwards_acceleration=Uniform(0,1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.08" />
+				<interval label="State1" upper="0.11" />
+				<interval label="State2" upper="0.14" />
+				<interval label="State3" upper="0.17" />
+				<interval label="State4" upper="0.2" />
+			</discretization>
+		</equation>
+		<equation id="safety_margin">
+			<definition lower="0.1" upper="1.2">safety_margin=Uniform(0,1.2)</definition>
+			<discretization>
+				<interval label="State0" upper="0.21" />
+				<interval label="State1" upper="0.32" />
+				<interval label="State2" upper="0.43" />
+				<interval label="State3" upper="0.54" />
+				<interval label="State4" upper="0.65" />
+				<interval label="State5" upper="0.76" />
+				<interval label="State6" upper="0.87" />
+				<interval label="State7" upper="0.98" />
+				<interval label="State8" upper="1.09" />
+				<interval label="State9" upper="1.2" />
+			</discretization>
+		</equation>
+		<equation id="motoruse_for_other_prediction_side">
+			<parents>motor_wear turbulence random_disturbance</parents>
+			<definition lower="0" upper="1">motoruse_for_other_prediction_side=Trim(motor_wear+0.2*turbulence+random_disturbance*0.7-0.05,0,1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="mean_motor_use">
+			<parents>max_upwards_acceleration motoruse_for_tether motoruse_for_other_prediction_side</parents>
+			<definition lower="0" upper="1">mean_motor_use=Trim(motoruse_for_tether+motoruse_for_other_prediction_side+max_upwards_acceleration-0.112,0,1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="frequency_of_exceeding_safety_margin_due_to_turbulence">
+			<parents>safety_margin turbulence</parents>
+			<definition lower="0" upper="1">frequency_of_exceeding_safety_margin_due_to_turbulence=Trim(Max(1*turbulence-1*safety_margin+0.6,0)^20,0,1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.005908012045062" />
+				<interval label="State1" upper="0.01527158011626" />
+				<interval label="State2" upper="0.03011183540944" />
+				<interval label="State3" upper="0.053632054998" />
+				<interval label="State4" upper="0.09090909090909" />
+				<interval label="State5" upper="0.1499892113597" />
+				<interval label="State6" upper="0.2436248920717" />
+				<interval label="State7" upper="0.3920274450035" />
+				<interval label="State8" upper="0.6272296408891" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="enviornment_observability_t_1">
+			<definition lower="0" upper="1">enviornment_observability_t_1=Normal(0,0.4)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="enviornment_observability">
+			<parents>enviornment_observability_t_1</parents>
+			<definition lower="0" upper="1">enviornment_observability=Normal(enviornment_observability_t_1,0.1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="frequency_of_contact_with_unobservable_obstacle">
+			<parents>enviornment_observability</parents>
+			<definition lower="0" upper="1">frequency_of_contact_with_unobservable_obstacle=enviornment_observability^3</definition>
+			<discretization>
+				<interval label="State0" upper="0.005908012045062" />
+				<interval label="State1" upper="0.01527158011626" />
+				<interval label="State2" upper="0.03011183540944" />
+				<interval label="State3" upper="0.053632054998" />
+				<interval label="State4" upper="0.09090909090909" />
+				<interval label="State5" upper="0.1499892113597" />
+				<interval label="State6" upper="0.2436248920717" />
+				<interval label="State7" upper="0.3920274450035" />
+				<interval label="State8" upper="0.6272296408891" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="roll_pitch_deviation">
+			<parents>turbulence</parents>
+			<definition lower="0" upper="1">roll_pitch_deviation=Normal(turbulence,0.2)-Exponential(2)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="dust_t_1">
+			<definition lower="0" upper="1">dust_t_1=Normal(0,0.3)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="dust">
+			<parents>dust_t_1</parents>
+			<definition lower="0" upper="1">dust=Normal(dust_t_1,0.1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="number_of_filtered_away_points">
+			<parents>enviornment_observability dust</parents>
+			<definition lower="0" upper="1">number_of_filtered_away_points=Trim(Max(Normal(enviornment_observability,0.05)-Exponential(1),Normal(dust,0)),0,1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="camera_noise">
+			<parents>dust</parents>
+			<definition lower="0" upper="1">camera_noise=Trim(Abs(Normal(dust,0.1)),0,1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="max_speed">
+			<definition lower="0.1" upper="2">max_speed=Uniform(0,2)</definition>
+			<discretization>
+				<interval label="State0" upper="0.29" />
+				<interval label="State1" upper="0.48" />
+				<interval label="State2" upper="0.67" />
+				<interval label="State3" upper="0.86" />
+				<interval label="State4" upper="1.05" />
+				<interval label="State5" upper="1.24" />
+				<interval label="State6" upper="1.43" />
+				<interval label="State7" upper="1.62" />
+				<interval label="State8" upper="1.81" />
+				<interval label="State9" upper="2" />
+			</discretization>
+		</equation>
+		<equation id="frequency_of_breaking_distance_exceeding_safety_margin">
+			<parents>safety_margin max_speed</parents>
+			<definition lower="0" upper="1">frequency_of_breaking_distance_exceeding_safety_margin=Trim((0.25*max_speed^2-safety_margin+0.75)^10,0,1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.005908012045062" />
+				<interval label="State1" upper="0.01527158011626" />
+				<interval label="State2" upper="0.03011183540944" />
+				<interval label="State3" upper="0.053632054998" />
+				<interval label="State4" upper="0.09090909090909" />
+				<interval label="State5" upper="0.1499892113597" />
+				<interval label="State6" upper="0.2436248920717" />
+				<interval label="State7" upper="0.3920274450035" />
+				<interval label="State8" upper="0.6272296408891" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="frequency_of_motor_saturation_deviating_beyond_safety_margin">
+			<parents>mean_motor_use safety_margin</parents>
+			<definition lower="0" upper="1">frequency_of_motor_saturation_deviating_beyond_safety_margin=Trim(mean_motor_use^8*(0.1+0.95*(1-safety_margin)),0,1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.005908012045062" />
+				<interval label="State1" upper="0.01527158011626" />
+				<interval label="State2" upper="0.03011183540944" />
+				<interval label="State3" upper="0.053632054998" />
+				<interval label="State4" upper="0.09090909090909" />
+				<interval label="State5" upper="0.1499892113597" />
+				<interval label="State6" upper="0.2436248920717" />
+				<interval label="State7" upper="0.3920274450035" />
+				<interval label="State8" upper="0.6272296408891" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="frequency_of_loss_of_control_due_to_turbulence">
+			<parents>turbulence</parents>
+			<definition lower="0" upper="1">frequency_of_loss_of_control_due_to_turbulence=(0.8*turbulence)^10</definition>
+			<discretization>
+				<interval label="State0" upper="0.005908012045062" />
+				<interval label="State1" upper="0.01527158011626" />
+				<interval label="State2" upper="0.03011183540944" />
+				<interval label="State3" upper="0.053632054998" />
+				<interval label="State4" upper="0.09090909090909" />
+				<interval label="State5" upper="0.1499892113597" />
+				<interval label="State6" upper="0.2436248920717" />
+				<interval label="State7" upper="0.3920274450035" />
+				<interval label="State8" upper="0.6272296408891" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+	</nodes>
+	<extensions>
+		<genie version="1.0" app="GeNIe 4.0.1922.0 ACADEMIC" name="Network2">
+			<node id="turbulence_t_1">
+				<name>turbulence t-1</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>851 630 915 670</position>
+				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="enviornment_observability_t_1">
+				<name>enviornment observability t-1</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1383 628 1481 686</position>
+				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="dust_t_1">
+				<name>dust t-1</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1212 632 1271 676</position>
+				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="tether_tension_motor_use_scaling_factor_t_1">
+				<name>tether tension motor use scaling factor t-1</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>160 850 238 898</position>
+				<barchart active="true" width="128" height="216" />
+			</node>
+			<node id="height_over_ground">
+				<name>height over ground</name>
+				<interior color="339966" />
+				<outline color="003300" />
+				<font color="000000" name="Arial" size="8" />
+				<position>32 543 127 602</position>
+				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="motoruse_for_tether">
+				<name>motoruse for tether</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>193 584 269 631</position>
+				<barchart active="true" width="128" height="216" />
+			</node>
+			<node id="mean_motor">
+				<name>mean motor</name>
+				<interior color="339966" />
+				<outline color="003300" />
+				<font color="000000" name="Arial" size="8" />
+				<position>323 881 426 931</position>
+				<comment>må på forhånd filtrere ut alle kjente faktorer, slik som joystick input</comment>
+				<barchart active="true" width="128" height="216" />
+			</node>
+			<node id="tether_tension_motor_use_scaling_factor">
+				<name>tether tension motor use scaling factor</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>210 814 288 862</position>
+				<barchart active="true" width="128" height="216" />
+			</node>
+			<node id="mean_motor_use">
+				<name>mean motor use</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>259 312 361 375</position>
+				<barchart active="true" width="128" height="203" />
+			</node>
+			<node id="safety_margin">
+				<name>safety margin</name>
+				<interior color="33cccd" />
+				<outline color="003366" />
+				<font color="000000" name="Arial" size="8" />
+				<position>692 686 770 734</position>
+				<comment>0 - maximum margin\n1 - minimum margin</comment>
+				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="frequency_of_loss_of_control_due_to_motor_wear">
+				<name>frequency of loss of control due to motor wear</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>537 139 670 215</position>
+				<barchart active="true" width="128" height="233" />
+			</node>
+			<node id="drone_tilt">
+				<name>drone tilt</name>
+				<interior color="339966" />
+				<outline color="003300" />
+				<font color="000000" name="Arial" size="8" />
+				<position>31 752 124 810</position>
+				<barchart active="true" width="128" height="199" />
+			</node>
+			<node id="turbulence">
+				<name>turbulence</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>879 645 943 685</position>
+				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="frequency_of_exceeding_safety_margin_due_to_turbulence">
+				<name>frequency of exceeding safety margin due to turbulence</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>721 255 854 338</position>
+				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="frequency_of_contact_with_unobservable_obstacle">
+				<name>frequency of contact with unobservable obstacle</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1257 244 1379 320</position>
+				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="enviornment_observability">
+				<name>enviornment observability</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1435 661 1520 714</position>
+				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="roll_pitch_deviation">
+				<name>roll-pitch deviation</name>
+				<interior color="339966" />
+				<outline color="003300" />
+				<font color="000000" name="Arial" size="8" />
+				<position>872 888 965 946</position>
+				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="number_of_filtered_away_points">
+				<name>number of filtered away points</name>
+				<interior color="339966" />
+				<outline color="003300" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1351 902 1454 966</position>
+				<barchart active="true" width="128" height="220" />
+			</node>
+			<node id="max_upwards_acceleration">
+				<name>max upwards acceleration</name>
+				<interior color="33cccd" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>47 358 146 419</position>
+				<barchart active="true" width="128" height="108" />
+			</node>
+			<node id="camera_noise">
+				<name>camera noise</name>
+				<interior color="339966" />
+				<outline color="003300" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1180 925 1256 972</position>
+				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="dust">
+				<name>dust</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1267 679 1308 704</position>
+				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="max_speed">
+				<name>max speed</name>
+				<interior color="33cccd" />
+				<outline color="003366" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1031 675 1109 723</position>
+				<comment>0 - maximum margin\n1 - minimum margin</comment>
+				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="frequency_of_breaking_distance_exceeding_safety_margin">
+				<name>frequency of breaking distance exceeding safety margin</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1031 243 1164 326</position>
+				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="frequency_of_motor_saturation_deviating_beyond_safety_margin">
+				<name>frequency of motor saturation deviating beyond safety margin</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>367 141 507 228</position>
+				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="frequency_of_loss_of_control_due_to_turbulence">
+				<name>frequency of loss of control due to turbulence</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>869 238 992 314</position>
+				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="motoruse_for_other">
+				<name>motoruse for other</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>536 637 627 693</position>
+				<barchart active="true" width="128" height="216" />
+			</node>
+			<node id="motor_wear_t_1">
+				<name>motor wear t-1</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>346 583 415 626</position>
+				<barchart active="true" width="128" height="216" />
+			</node>
+			<node id="motor_wear">
+				<name>motor wear</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>395 620 464 663</position>
+				<barchart active="true" width="128" height="216" />
+			</node>
+			<node id="random_disturbance">
+				<name>random disturbance</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>519 894 588 937</position>
+				<barchart active="true" width="128" height="216" />
+			</node>
+			<node id="random_disturbance_t_1">
+				<name>random disturbance t-1</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>711 952 780 995</position>
+				<barchart active="true" width="128" height="216" />
+			</node>
+			<node id="motoruse_for_other_prediction_side">
+				<name>motoruse for other prediction side</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>574 403 682 470</position>
+				<barchart active="true" width="128" height="198" />
+			</node>
+		</genie>
+	</extensions>
+</smile>
