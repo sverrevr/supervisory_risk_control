@@ -361,7 +361,7 @@
 		</equation>
 		<equation id="number_of_filtered_away_points">
 			<parents>dust presence_of_unobservable_obstacle</parents>
-			<definition lower="0" upper="1">number_of_filtered_away_points=If(presence_of_unobservable_obstacle&gt;0.5,Uniform(0,1),Normal(dust,0.2))</definition>
+			<definition lower="0" upper="1">number_of_filtered_away_points=Trim(If(presence_of_unobservable_obstacle&gt;0.5,Uniform(0,1),0)+Normal(dust,0.2),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
