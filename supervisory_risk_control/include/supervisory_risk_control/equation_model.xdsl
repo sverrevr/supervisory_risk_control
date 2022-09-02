@@ -282,7 +282,7 @@
 			</discretization>
 		</equation>
 		<equation id="presence_of_unobservable_obstacle_t_1">
-			<definition lower="0" upper="1">presence_of_unobservable_obstacle_t_1=Bernoulli(0.1)</definition>
+			<definition lower="0" upper="1">presence_of_unobservable_obstacle_t_1=Bernoulli(0.01)</definition>
 			<discretization>
 				<interval label="State0" upper="0.5" />
 				<interval label="State1" upper="1" />
@@ -298,7 +298,7 @@
 		</equation>
 		<equation id="frequency_of_exceeding_safety_margin_due_to_turbulence">
 			<parents>safety_margin turbulence presence_of_unobservable_obstacle</parents>
-			<definition lower="0" upper="1">frequency_of_exceeding_safety_margin_due_to_turbulence=Trim(Max(1*turbulence-If(presence_of_unobservable_obstacle&gt;0.5,0,safety_margin)+0.6,0)^20,0,1)</definition>
+			<definition lower="0" upper="1">frequency_of_exceeding_safety_margin_due_to_turbulence=Trim(Max(1*turbulence-If(presence_of_unobservable_obstacle&gt;0.5,0,safety_margin)+0.5,0)^20,0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.005908012045062" />
 				<interval label="State1" upper="0.01527158011626" />
@@ -314,7 +314,7 @@
 		</equation>
 		<equation id="roll_pitch_deviation">
 			<parents>turbulence</parents>
-			<definition lower="0" upper="1">roll_pitch_deviation=Normal(turbulence,0.2)-Exponential(2)</definition>
+			<definition lower="0" upper="1">roll_pitch_deviation=Normal(turbulence,0.3)-Exponential(2)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -361,7 +361,7 @@
 		</equation>
 		<equation id="number_of_filtered_away_points">
 			<parents>dust presence_of_unobservable_obstacle</parents>
-			<definition lower="0" upper="1">number_of_filtered_away_points=Trim(If(presence_of_unobservable_obstacle&gt;0.5,Uniform(0,1),0)+Normal(dust,0.2),0,1)</definition>
+			<definition lower="0" upper="1">number_of_filtered_away_points=Trim(Max(If(presence_of_unobservable_obstacle&gt;0.5,Uniform(0,1),0),Normal(dust,0.3)),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
