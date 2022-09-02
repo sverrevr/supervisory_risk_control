@@ -290,7 +290,7 @@
 		</equation>
 		<equation id="presence_of_unobservable_obstacle">
 			<parents>presence_of_unobservable_obstacle_t_1</parents>
-			<definition lower="0" upper="1">presence_of_unobservable_obstacle=If(presence_of_unobservable_obstacle_t_1&gt;0.5,Bernoulli(0.999),Bernoulli(0.1))</definition>
+			<definition lower="0" upper="1">presence_of_unobservable_obstacle=If(presence_of_unobservable_obstacle_t_1&gt;0.5,Bernoulli(0.999),Bernoulli(0.01))</definition>
 			<discretization>
 				<interval label="State0" upper="0.5" />
 				<interval label="State1" upper="1" />
