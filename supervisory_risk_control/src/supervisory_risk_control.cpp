@@ -609,6 +609,8 @@ public:
         std::string filename = pars.dynamic ? "net_dynamic.xdsl" : "net.xdsl";
         net.init(ros::package::getPath("supervisory_risk_control") + "/include/supervisory_risk_control/"+filename);
 
+        ros::Rate r(1);
+
         while(ros::ok()){
             ros::spinOnce();
             if(do_abort) return;
@@ -617,7 +619,7 @@ public:
                 new_data = false;
             }
             if(!pars.no_delay)
-                ros::Duration(1).sleep();
+                r.sleep();
         }
     }
 };
