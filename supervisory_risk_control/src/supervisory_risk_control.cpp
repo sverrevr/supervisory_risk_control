@@ -270,7 +270,7 @@ class SupervisoryRiskControl
             mean_frequency_of_motor_saturation_deviating_beyond_safety_margin * (pars.risk.motor_saturation.constant+ pars.risk.motor_saturation.scale * std::pow(max_speed, 2)) 
             + mean_frequency_of_turbulence_causing_deviation_beyond_safety_margin * (pars.risk.turbulence.constant + pars.risk.turbulence.scale * std::pow(max_speed, 2)) 
             + mean_frequency_of_contact_with_unobservable_obstacle * (pars.risk.unobservable_obs.constant + pars.risk.unobservable_obs.scale * std::pow(max_speed, 2))
-            + mean_frequency_of_breaking_distance_exceeding_safety_margin * (pars.risk.breaking_distance.constant + pars.risk.breaking_distance.scale * std::pow(max_speed, 2));
+            + mean_frequency_of_breaking_distance_exceeding_safety_margin * (pars.risk.breaking_distance.constant + pars.risk.breaking_distance.scale * std::pow(max_speed-safety_margin/0.9, 2));
 
         double mean_frequency_of_motor_wear_causing_loss_of_control = log_mean(output.at("frequency_of_loss_of_control_due_to_motor_wear"));
         double mean_frequency_of_loss_of_control_due_to_turbulence = log_mean(output.at("frequency_of_loss_of_control_due_to_turbulence"));
