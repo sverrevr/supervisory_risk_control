@@ -45,7 +45,7 @@ class SupervisoryRiskControl
         bool dynamic, modify_parameters, only_update_on_measurements, spam_states, no_delay;
         double saving_factor, max_risk;
         struct{
-            double max_yaw_moment, max_turbulence, max_number_of_filtered_points, motor_max, motor_min, max_tilt, min_tilt, filtered_point_lowpass_factor;
+            double max_yaw_moment, max_turbulence, min_turbulence, max_number_of_filtered_points, motor_max, motor_min, max_tilt, min_tilt, filtered_point_lowpass_factor;
         } measurement_conversion;
         struct{
             struct {
@@ -209,7 +209,7 @@ class SupervisoryRiskControl
         {
             if(measurement_msg.roll_pitch_deviation<0){
             // High turbulence area has measurements of 0.004-0.007, define max to be slightly higher as there might be even worse cases.
-            auto velocity_deviation_state = std::clamp((int)std::floor(roll_pitch_deviation * 10 / pars.measurement_conversion.max_turbulence), 0, 9);
+            auto velocity_deviation_state = std::clamp((int)std::floor(10*(roll_pitch_deviation-pars.measurement_conversion.min_turbulence)/(pars.measurement_conversion.max_turbulence-pars.measurement_conversion.min_turbulence)), 0, 9);
             net.setEvidence("roll_pitch_deviation", velocity_deviation_state);
             ROS_INFO("%s: %.2f, %i", "roll_pitch_deviation", roll_pitch_deviation, velocity_deviation_state);
             debug_display.measured_velocity_deviation = velocity_deviation_state/10.0;
@@ -573,6 +573,7 @@ public:
         nhp.getParam("max_risk", pars.max_risk);
         nhp.getParam("measurement_conversion/max_yaw_moment", pars.measurement_conversion.max_yaw_moment);
         nhp.getParam("measurement_conversion/max_turbulence", pars.measurement_conversion.max_turbulence);
+        nhp.getParam("measurement_conversion/min_turbulence", pars.measurement_conversion.min_turbulence);
         nhp.getParam("measurement_conversion/max_number_of_filtered_points", pars.measurement_conversion.max_number_of_filtered_points);
         nhp.getParam("measurement_conversion/max_tilt", pars.measurement_conversion.max_tilt);
         nhp.getParam("measurement_conversion/min_tilt", pars.measurement_conversion.min_tilt);

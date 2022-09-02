@@ -1,15 +1,16 @@
 dynamic: true
 modify_parameters: true
-only_update_on_measurements: false
+only_update_on_measurements: true
 saving_factor: 1
 max_risk: 0.01
-spam_states: true
+spam_states: false
 no_delay: false
 
 # parameters converting measurements to states. Max is the lowest value that gives the worst case state
 measurement_conversion:
   max_yaw_moment: 0.25
-  max_turbulence: 0.01
+  max_turbulence: 0.03
+  min_turbulence: 0.002
   max_tilt: 0.1
   min_tilt: 0.03
   max_number_of_filtered_points: 6
