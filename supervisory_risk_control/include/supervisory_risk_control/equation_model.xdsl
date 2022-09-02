@@ -225,13 +225,13 @@
 			</discretization>
 		</equation>
 		<equation id="max_upwards_acceleration">
-			<definition lower="0.05" upper="0.2">max_upwards_acceleration=Uniform(0,1)</definition>
+			<definition lower="0.5" upper="2">max_upwards_acceleration=Uniform(0,1)</definition>
 			<discretization>
-				<interval label="State0" upper="0.08" />
-				<interval label="State1" upper="0.11" />
-				<interval label="State2" upper="0.14" />
-				<interval label="State3" upper="0.17" />
-				<interval label="State4" upper="0.2" />
+				<interval label="State0" upper="0.8" />
+				<interval label="State1" upper="1.1" />
+				<interval label="State2" upper="1.4" />
+				<interval label="State3" upper="1.7" />
+				<interval label="State4" upper="2" />
 			</discretization>
 		</equation>
 		<equation id="safety_margin">
@@ -267,7 +267,7 @@
 		</equation>
 		<equation id="mean_motor_use">
 			<parents>max_upwards_acceleration motoruse_for_tether motoruse_for_other_prediction_side</parents>
-			<definition lower="0" upper="1">mean_motor_use=Trim(motoruse_for_tether+motoruse_for_other_prediction_side+max_upwards_acceleration-0.112,0,1)</definition>
+			<definition lower="0" upper="1">mean_motor_use=Trim(motoruse_for_tether+motoruse_for_other_prediction_side+max_upwards_acceleration/10-0.112,0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -424,23 +424,23 @@
 			</discretization>
 		</equation>
 		<equation id="max_speed">
-			<definition lower="0.1" upper="2">max_speed=Uniform(0,2)</definition>
+			<definition lower="0.1" upper="1.5">max_speed=Uniform(0.1,1.5)</definition>
 			<discretization>
-				<interval label="State0" upper="0.29" />
-				<interval label="State1" upper="0.48" />
-				<interval label="State2" upper="0.67" />
-				<interval label="State3" upper="0.86" />
-				<interval label="State4" upper="1.05" />
-				<interval label="State5" upper="1.24" />
-				<interval label="State6" upper="1.43" />
-				<interval label="State7" upper="1.62" />
-				<interval label="State8" upper="1.81" />
-				<interval label="State9" upper="2" />
+				<interval label="State0" upper="0.24" />
+				<interval label="State1" upper="0.38" />
+				<interval label="State2" upper="0.52" />
+				<interval label="State3" upper="0.66" />
+				<interval label="State4" upper="0.8" />
+				<interval label="State5" upper="0.9399999999999999" />
+				<interval label="State6" upper="1.08" />
+				<interval label="State7" upper="1.22" />
+				<interval label="State8" upper="1.36" />
+				<interval label="State9" upper="1.5" />
 			</discretization>
 		</equation>
 		<equation id="frequency_of_breaking_distance_exceeding_safety_margin">
 			<parents>safety_margin max_speed</parents>
-			<definition lower="0" upper="1">frequency_of_breaking_distance_exceeding_safety_margin=Trim((0.25*max_speed^2-safety_margin+0.75)^10,0,1)</definition>
+			<definition lower="0" upper="1">frequency_of_breaking_distance_exceeding_safety_margin=Trim((0.9*max_speed-safety_margin+0.6)^10,0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.005908012045062" />
 				<interval label="State1" upper="0.01527158011626" />
@@ -567,7 +567,7 @@
 				<interior color="33cccd" />
 				<outline color="003366" />
 				<font color="000000" name="Arial" size="8" />
-				<position>692 686 770 734</position>
+				<position>684 639 762 687</position>
 				<comment>0 - maximum margin\n1 - minimum margin</comment>
 				<barchart active="true" width="128" height="198" />
 			</node>
@@ -600,7 +600,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>721 255 854 338</position>
+				<position>678 232 811 315</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="frequency_of_contact_with_unobservable_obstacle">
@@ -673,7 +673,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>1031 243 1164 326</position>
+				<position>1026 244 1159 327</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="frequency_of_motor_saturation_deviating_beyond_safety_margin">
@@ -689,7 +689,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>869 238 992 314</position>
+				<position>828 236 951 312</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="motoruse_for_other">

@@ -29,7 +29,7 @@ risk:
     constant: 0.03
     scale: 0.4
   breaking_distance:
-    constant: 0.03
+    constant: 0.1
     scale: 0.4
   damage: #scaled by height
     constant: 0.1
