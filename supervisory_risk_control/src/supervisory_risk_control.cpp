@@ -496,7 +496,7 @@ class SupervisoryRiskControl
             debug_display.optimal_safety_margin = action.at("safety_margin");
             debug_display.optimal_max_acc = action.at("max_upwards_acceleration");
             debug_display.optimal_speed = action.at("max_speed");
-            debug_display.found_feasible_option = debug_display.risk_cost < pars.max_risk;
+            debug_display.found_feasible_option = debug_display.risk_cost <= pars.max_risk;
 
             debug_display.mean_frequency_of_motor_saturation_deviating_beyond_safety_margin = log_mean(output.at("frequency_of_motor_saturation_deviating_beyond_safety_margin"));
             debug_display.mean_frequency_of_loss_of_control_due_to_motor_wear = log_mean(output.at("frequency_of_loss_of_control_due_to_motor_wear"));
