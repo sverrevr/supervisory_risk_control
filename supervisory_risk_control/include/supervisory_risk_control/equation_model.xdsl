@@ -281,56 +281,24 @@
 				<interval label="State9" upper="1" />
 			</discretization>
 		</equation>
+		<equation id="presence_of_unobservable_obstacle_t_1">
+			<definition lower="0" upper="1">presence_of_unobservable_obstacle_t_1=Bernoulli(0.1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.5" />
+				<interval label="State1" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="presence_of_unobservable_obstacle">
+			<parents>presence_of_unobservable_obstacle_t_1</parents>
+			<definition lower="0" upper="1">presence_of_unobservable_obstacle=If(presence_of_unobservable_obstacle_t_1&gt;0.5,Bernoulli(0.999),Bernoulli(0.1))</definition>
+			<discretization>
+				<interval label="State0" upper="0.5" />
+				<interval label="State1" upper="1" />
+			</discretization>
+		</equation>
 		<equation id="frequency_of_exceeding_safety_margin_due_to_turbulence">
-			<parents>safety_margin turbulence</parents>
-			<definition lower="0" upper="1">frequency_of_exceeding_safety_margin_due_to_turbulence=Trim(Max(1*turbulence-1*safety_margin+0.6,0)^20,0,1)</definition>
-			<discretization>
-				<interval label="State0" upper="0.005908012045062" />
-				<interval label="State1" upper="0.01527158011626" />
-				<interval label="State2" upper="0.03011183540944" />
-				<interval label="State3" upper="0.053632054998" />
-				<interval label="State4" upper="0.09090909090909" />
-				<interval label="State5" upper="0.1499892113597" />
-				<interval label="State6" upper="0.2436248920717" />
-				<interval label="State7" upper="0.3920274450035" />
-				<interval label="State8" upper="0.6272296408891" />
-				<interval label="State9" upper="1" />
-			</discretization>
-		</equation>
-		<equation id="enviornment_observability_t_1">
-			<definition lower="0" upper="1">enviornment_observability_t_1=Normal(0,0.4)</definition>
-			<discretization>
-				<interval label="State0" upper="0.1" />
-				<interval label="State1" upper="0.2" />
-				<interval label="State2" upper="0.3" />
-				<interval label="State3" upper="0.4" />
-				<interval label="State4" upper="0.5" />
-				<interval label="State5" upper="0.6" />
-				<interval label="State6" upper="0.7" />
-				<interval label="State7" upper="0.8" />
-				<interval label="State8" upper="0.9" />
-				<interval label="State9" upper="1" />
-			</discretization>
-		</equation>
-		<equation id="enviornment_observability">
-			<parents>enviornment_observability_t_1</parents>
-			<definition lower="0" upper="1">enviornment_observability=Normal(enviornment_observability_t_1,0.1)</definition>
-			<discretization>
-				<interval label="State0" upper="0.1" />
-				<interval label="State1" upper="0.2" />
-				<interval label="State2" upper="0.3" />
-				<interval label="State3" upper="0.4" />
-				<interval label="State4" upper="0.5" />
-				<interval label="State5" upper="0.6" />
-				<interval label="State6" upper="0.7" />
-				<interval label="State7" upper="0.8" />
-				<interval label="State8" upper="0.9" />
-				<interval label="State9" upper="1" />
-			</discretization>
-		</equation>
-		<equation id="frequency_of_contact_with_unobservable_obstacle">
-			<parents>enviornment_observability</parents>
-			<definition lower="0" upper="1">frequency_of_contact_with_unobservable_obstacle=enviornment_observability^3</definition>
+			<parents>safety_margin turbulence presence_of_unobservable_obstacle</parents>
+			<definition lower="0" upper="1">frequency_of_exceeding_safety_margin_due_to_turbulence=Trim(Max(1*turbulence-If(presence_of_unobservable_obstacle&gt;0.5,0,safety_margin)+0.6,0)^20,0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.005908012045062" />
 				<interval label="State1" upper="0.01527158011626" />
@@ -392,8 +360,8 @@
 			</discretization>
 		</equation>
 		<equation id="number_of_filtered_away_points">
-			<parents>enviornment_observability dust</parents>
-			<definition lower="0" upper="1">number_of_filtered_away_points=Trim(Max(Normal(enviornment_observability,0.05)-Exponential(1),Normal(dust,0)),0,1)</definition>
+			<parents>dust presence_of_unobservable_obstacle</parents>
+			<definition lower="0" upper="1">number_of_filtered_away_points=If(presence_of_unobservable_obstacle&gt;0.5,Uniform(0,1),Normal(dust,0.2))</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -439,8 +407,8 @@
 			</discretization>
 		</equation>
 		<equation id="frequency_of_breaking_distance_exceeding_safety_margin">
-			<parents>safety_margin max_speed</parents>
-			<definition lower="0" upper="1">frequency_of_breaking_distance_exceeding_safety_margin=Trim((0.9*max_speed-safety_margin+0.6)^10,0,1)</definition>
+			<parents>safety_margin max_speed presence_of_unobservable_obstacle</parents>
+			<definition lower="0" upper="1">frequency_of_breaking_distance_exceeding_safety_margin=Trim((0.9*max_speed-If(presence_of_unobservable_obstacle&gt;0.5,0,safety_margin)+0.6)^10,0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.005908012045062" />
 				<interval label="State1" upper="0.01527158011626" />
@@ -455,8 +423,8 @@
 			</discretization>
 		</equation>
 		<equation id="frequency_of_motor_saturation_deviating_beyond_safety_margin">
-			<parents>mean_motor_use safety_margin</parents>
-			<definition lower="0" upper="1">frequency_of_motor_saturation_deviating_beyond_safety_margin=Trim(mean_motor_use^8*(0.1+0.95*(1-safety_margin)),0,1)</definition>
+			<parents>mean_motor_use safety_margin presence_of_unobservable_obstacle</parents>
+			<definition lower="0" upper="1">frequency_of_motor_saturation_deviating_beyond_safety_margin=Trim(mean_motor_use^8*(0.1+0.95*(1-If(presence_of_unobservable_obstacle&gt;0.5,0,safety_margin))),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.005908012045062" />
 				<interval label="State1" upper="0.01527158011626" />
@@ -495,14 +463,6 @@
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
 				<position>851 630 915 670</position>
-				<barchart active="true" width="128" height="198" />
-			</node>
-			<node id="enviornment_observability_t_1">
-				<name>enviornment observability t-1</name>
-				<interior color="e5f6f7" />
-				<outline color="000080" />
-				<font color="000000" name="Arial" size="8" />
-				<position>1383 628 1481 686</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="dust_t_1">
@@ -559,7 +519,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>259 312 361 375</position>
+				<position>222 310 324 373</position>
 				<barchart active="true" width="128" height="203" />
 			</node>
 			<node id="safety_margin">
@@ -567,7 +527,7 @@
 				<interior color="33cccd" />
 				<outline color="003366" />
 				<font color="000000" name="Arial" size="8" />
-				<position>684 639 762 687</position>
+				<position>687 630 765 678</position>
 				<comment>0 - maximum margin\n1 - minimum margin</comment>
 				<barchart active="true" width="128" height="198" />
 			</node>
@@ -600,23 +560,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>678 232 811 315</position>
-				<barchart active="true" width="128" height="198" />
-			</node>
-			<node id="frequency_of_contact_with_unobservable_obstacle">
-				<name>frequency of contact with unobservable obstacle</name>
-				<interior color="e5f6f7" />
-				<outline color="000080" />
-				<font color="000000" name="Arial" size="8" />
-				<position>1257 244 1379 320</position>
-				<barchart active="true" width="128" height="198" />
-			</node>
-			<node id="enviornment_observability">
-				<name>enviornment observability</name>
-				<interior color="e5f6f7" />
-				<outline color="000080" />
-				<font color="000000" name="Arial" size="8" />
-				<position>1435 661 1520 714</position>
+				<position>681 232 814 315</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="roll_pitch_deviation">
@@ -664,7 +608,7 @@
 				<interior color="33cccd" />
 				<outline color="003366" />
 				<font color="000000" name="Arial" size="8" />
-				<position>1031 675 1109 723</position>
+				<position>1035 646 1113 694</position>
 				<comment>0 - maximum margin\n1 - minimum margin</comment>
 				<barchart active="true" width="128" height="198" />
 			</node>
@@ -681,7 +625,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>367 141 507 228</position>
+				<position>376 111 516 198</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="frequency_of_loss_of_control_due_to_turbulence">
@@ -737,8 +681,24 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>574 403 682 470</position>
+				<position>423 401 531 468</position>
 				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="presence_of_unobservable_obstacle_t_1">
+				<name>presence of unobservable obstacle t-1</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1281 453 1386 518</position>
+				<barchart active="true" width="128" height="108" />
+			</node>
+			<node id="presence_of_unobservable_obstacle">
+				<name>presence of unobservable obstacle</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1378 519 1483 584</position>
+				<barchart active="true" width="128" height="108" />
 			</node>
 		</genie>
 	</extensions>
