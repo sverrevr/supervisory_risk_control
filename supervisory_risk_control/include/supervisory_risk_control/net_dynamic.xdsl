@@ -274,7 +274,7 @@
 			<state id="State1" />
 			<intervals>0 0.5 1</intervals>
 			<parents>presence_of_unobservable_obstacle_t_1</parents>
-			<probabilities>0.9505 0.0495 0.0012 0.9988</probabilities>
+			<probabilities>0.9429999999999999 0.057 9.999000099990002e-05 0.9999000099990001</probabilities>
 		</cpt>
 		<cpt id="frequency_of_exceeding_safety_margin_due_to_turbulence">
 			<state id="State0" />

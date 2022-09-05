@@ -290,7 +290,7 @@
 		</equation>
 		<equation id="presence_of_unobservable_obstacle">
 			<parents>presence_of_unobservable_obstacle_t_1</parents>
-			<definition lower="0" upper="1">presence_of_unobservable_obstacle=If(presence_of_unobservable_obstacle_t_1&gt;0.5,Bernoulli(0.999),Bernoulli(0.05))</definition>
+			<definition lower="0" upper="1">presence_of_unobservable_obstacle=If(presence_of_unobservable_obstacle_t_1&gt;0.5,Bernoulli(0.9999),Bernoulli(0.05))</definition>
 			<discretization>
 				<interval label="State0" upper="0.5" />
 				<interval label="State1" upper="1" />
@@ -527,7 +527,7 @@
 				<interior color="33cccd" />
 				<outline color="003366" />
 				<font color="000000" name="Arial" size="8" />
-				<position>687 630 765 678</position>
+				<position>690 642 768 690</position>
 				<comment>0 - maximum margin\n1 - minimum margin</comment>
 				<barchart active="true" width="128" height="198" />
 			</node>
