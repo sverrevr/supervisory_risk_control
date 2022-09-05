@@ -367,10 +367,13 @@ class SupervisoryRiskControl
 
     auto exact_search(double probability_of_unobservable_obs)
     {
-        map_stringkey<int> optimal_action;
-        optimal_action["safety_margin"] = 9;
-        optimal_action["max_upwards_acceleration"] = 0;
-        optimal_action["max_speed"] = 0;
+        struct{
+            map_stringkey<int> optimal_action;
+            double found_feasable_solution=false;
+        }ret;
+        ret.optimal_action["safety_margin"] = 9;
+        ret.optimal_action["max_upwards_acceleration"] = 0;
+        ret.optimal_action["max_speed"] = 0;
         map_stringkey<int> action;
         double optimal_cost = INFINITY;
 
@@ -413,13 +416,14 @@ class SupervisoryRiskControl
 
                     if (is_feasible && total_cost < optimal_cost)
                     {
-                        optimal_action = action;
+                        ret.optimal_action = action;
                         optimal_cost = total_cost;
+                        ret.found_feasable_solution = true;
                     }
                 }
             }
         }
-        return optimal_action;
+        return ret;
     }
 
     void run()
@@ -463,40 +467,40 @@ class SupervisoryRiskControl
         }*/
 
         // auto action = heuristic_search();
-        auto action = exact_search(estimate_node_states.at("presence_of_unobservable_obstacle").at("State1"));
+        auto search_result = exact_search(estimate_node_states.at("presence_of_unobservable_obstacle").at("State1"));
 
         {
             double a  = pars.cost_function_parameters.parameter_change_delay_factor;
-            if(previous_max_speed < action.at("max_speed")){
-                previous_max_speed = (1-a)*previous_max_speed+a*action.at("max_speed");
-                action.at("max_speed") = (int)round(previous_max_speed);  
+            if(previous_max_speed < search_result.optimal_action.at("max_speed")){
+                previous_max_speed = (1-a)*previous_max_speed+a*search_result.optimal_action.at("max_speed");
+                search_result.optimal_action.at("max_speed") = (int)round(previous_max_speed);  
             }
             else
-                previous_max_speed = action.at("max_speed");
+                previous_max_speed = search_result.optimal_action.at("max_speed");
 
-            if(previous_safety_margin > action.at("safety_margin")){
-                previous_safety_margin = (1-a)*previous_safety_margin+a*action.at("safety_margin");
-                action.at("safety_margin") = (int)round(previous_safety_margin);  
+            if(previous_safety_margin > search_result.optimal_action.at("safety_margin")){
+                previous_safety_margin = (1-a)*previous_safety_margin+a*search_result.optimal_action.at("safety_margin");
+                search_result.optimal_action.at("safety_margin") = (int)round(previous_safety_margin);  
             }
             else
-                previous_safety_margin = action.at("safety_margin");
+                previous_safety_margin = search_result.optimal_action.at("safety_margin");
 
-            if(previous_max_acc < action.at("max_upwards_acceleration")){
-                previous_max_acc = (1-a)*previous_max_acc+a*action.at("max_upwards_acceleration");
-                action.at("max_upwards_acceleration") = (int)round(previous_max_acc);  
+            if(previous_max_acc < search_result.optimal_action.at("max_upwards_acceleration")){
+                previous_max_acc = (1-a)*previous_max_acc+a*search_result.optimal_action.at("max_upwards_acceleration");
+                search_result.optimal_action.at("max_upwards_acceleration") = (int)round(previous_max_acc);  
             }
             else
-                previous_max_acc = action.at("max_upwards_acceleration");
+                previous_max_acc = search_result.optimal_action.at("max_upwards_acceleration");
         }
 
         {
-            net.setEvidence(action);
+            net.setEvidence(search_result.optimal_action);
             auto output = net.evaluateStates(all_prediction_node_names);
-            debug_display.risk_cost = evaluate_risk(output, action, true);
-            debug_display.optimal_safety_margin = action.at("safety_margin");
-            debug_display.optimal_max_acc = action.at("max_upwards_acceleration");
-            debug_display.optimal_speed = action.at("max_speed");
-            debug_display.found_feasible_option = debug_display.risk_cost <= pars.max_risk;
+            debug_display.risk_cost = evaluate_risk(output, search_result.optimal_action, true);
+            debug_display.optimal_safety_margin = search_result.optimal_action.at("safety_margin");
+            debug_display.optimal_max_acc = search_result.optimal_action.at("max_upwards_acceleration");
+            debug_display.optimal_speed = search_result.optimal_action.at("max_speed");
+            debug_display.found_feasible_option = search_result.found_feasable_solution;
 
             debug_display.mean_frequency_of_motor_saturation_deviating_beyond_safety_margin = log_mean(output.at("frequency_of_motor_saturation_deviating_beyond_safety_margin"));
             debug_display.mean_frequency_of_loss_of_control_due_to_motor_wear = log_mean(output.at("frequency_of_loss_of_control_due_to_motor_wear"));
@@ -508,9 +512,9 @@ class SupervisoryRiskControl
             debug_display_publisher.publish(debug_display);
         }
 
-        ROS_INFO("Optimal action - Margin: %i, Acc: %i, Speed: %i. Risk_cost: %f", action.at("safety_margin"), action.at("max_upwards_acceleration"), action.at("max_speed"), debug_display.risk_cost);
+        ROS_INFO("Optimal action - Margin: %i, Acc: %i, Speed: %i. Risk_cost: %f", search_result.optimal_action.at("safety_margin"), search_result.optimal_action.at("max_upwards_acceleration"), search_result.optimal_action.at("max_speed"), debug_display.risk_cost);
         
-        previous_action = action;
+        previous_action = search_result.optimal_action;
 
         /*auto exact_action = exact_search();
         net.setEvidence(exact_action);
@@ -525,17 +529,17 @@ class SupervisoryRiskControl
             auto param_set = mavros_msgs::ParamSet{};
             //TODO: tune inn verdiene her
             param_set.request.param_id = "SA_DISTANCE";
-            param_set.request.value.real = action.at("safety_margin")*(1.09-0.1)/9.0+(0.1+0.21)/2+0.31;
+            param_set.request.value.real = search_result.optimal_action.at("safety_margin")*(1.09-0.1)/9.0+(0.1+0.21)/2+0.31;
             if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
                 throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
 
             param_set.request.param_id = "MPC_VEL_MANUAL";
-            param_set.request.value.real = action.at("max_speed")*(1.36-0.1)/9+(0.24+0.1)/2;
+            param_set.request.value.real = search_result.optimal_action.at("max_speed")*(1.36-0.1)/9+(0.24+0.1)/2;
             if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
                 throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
 
             param_set.request.param_id = "MPC_ACC_DOWN_MAX";
-            param_set.request.value.real = action.at("max_upwards_acceleration")*(1.7-0.5)/4+(0.5+0.8)/2;
+            param_set.request.value.real = search_result.optimal_action.at("max_upwards_acceleration")*(1.7-0.5)/4+(0.5+0.8)/2;
             if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
                 throw std::string{"Failed to write PX4 parameter " + param_set.request.param_id};
             param_set.request.param_id = "MPC_ACC_UP_MAX";
