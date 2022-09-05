@@ -36,3 +36,4 @@ float32 mean_motoruse_for_whirlewind
 float32 mean_turbulence
 float32 mean_dust
 float32 mean_enviornment_observability
+float32 presence_of_unobservable_obstacle

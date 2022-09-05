@@ -61,7 +61,7 @@ class SupervisoryRiskControl
         } cost_function_parameters;
     } pars;
 
-    const std::vector<std::string> causal_node_names = {"presence_of_unobservable_obstacle","tether_tension_motor_use_scaling_factor", "motor_wear", "random_disturbance", "turbulence", "dust"};
+    const std::vector<std::string> causal_node_names = {"environment_observability","tether_tension_motor_use_scaling_factor", "motor_wear", "random_disturbance", "turbulence", "dust"};
 
     BayesianNetwork net;
 
@@ -134,7 +134,7 @@ class SupervisoryRiskControl
 
     const std::vector<std::string> output_node_names = {"frequency_of_motor_saturation_deviating_beyond_safety_margin", "frequency_of_loss_of_control_due_to_motor_wear", "frequency_of_exceeding_safety_margin_due_to_turbulence", "frequency_of_breaking_distance_exceeding_safety_margin", "frequency_of_loss_of_control_due_to_turbulence"};
     const std::vector<std::string> intermediate_estimation_node_names = {
-        "motoruse_for_tether",
+        "motoruse_for_tether", "presence_of_unobservable_obstacle"
     };
     const std::vector<std::string> intermediate_binary_prediction_node_names = {};
     const std::vector<std::string> intermediate_linear_prediction_node_names = {};
@@ -440,7 +440,8 @@ class SupervisoryRiskControl
             debug_display.mean_motoruse_for_whirlewind = mean(estimate_node_states.at("random_disturbance"));
             debug_display.mean_motoruse_for_tether = mean(estimate_node_states.at("motoruse_for_tether"));
             debug_display.mean_turbulence = mean(estimate_node_states.at("turbulence"));
-            debug_display.mean_enviornment_observability = estimate_node_states.at("presence_of_unobservable_obstacle").at("State1");;
+            debug_display.mean_enviornment_observability = mean(estimate_node_states.at("environment_observability"));
+            debug_display.presence_of_unobservable_obstacle = estimate_node_states.at("presence_of_unobservable_obstacle").at("State1");
             debug_display.mean_dust = mean(estimate_node_states.at("dust"));
 
             if(pars.spam_states){

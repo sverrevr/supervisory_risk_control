@@ -24,7 +24,7 @@ risk:
     constant: 0.3
     scale: 0.1
   turbulence:
-    constant: 0.3
+    constant: 0.2
     scale: 0.1
   unobservable_obs:
     constant: 0.03

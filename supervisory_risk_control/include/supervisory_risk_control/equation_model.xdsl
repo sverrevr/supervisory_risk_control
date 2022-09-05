@@ -160,7 +160,7 @@
 		</equation>
 		<equation id="turbulence">
 			<parents>turbulence_t_1</parents>
-			<definition lower="0" upper="1">turbulence=Normal(turbulence_t_1,0.1)</definition>
+			<definition lower="0" upper="1">turbulence=Normal(0.95*turbulence_t_1,0.05)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -281,16 +281,40 @@
 				<interval label="State9" upper="1" />
 			</discretization>
 		</equation>
-		<equation id="presence_of_unobservable_obstacle_t_1">
-			<definition lower="0" upper="1">presence_of_unobservable_obstacle_t_1=Bernoulli(0.01)</definition>
+		<equation id="environment_observability_t_1">
+			<definition lower="0" upper="1">environment_observability_t_1=Normal(0,0.2)</definition>
 			<discretization>
-				<interval label="State0" upper="0.5" />
-				<interval label="State1" upper="1" />
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="environment_observability">
+			<parents>environment_observability_t_1</parents>
+			<definition lower="0" upper="1">environment_observability=Normal(0.97*environment_observability_t_1,0.07)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
 			</discretization>
 		</equation>
 		<equation id="presence_of_unobservable_obstacle">
-			<parents>presence_of_unobservable_obstacle_t_1</parents>
-			<definition lower="0" upper="1">presence_of_unobservable_obstacle=If(presence_of_unobservable_obstacle_t_1&gt;0.5,Bernoulli(0.999),Bernoulli(0.1))</definition>
+			<parents>environment_observability</parents>
+			<definition lower="0" upper="1">presence_of_unobservable_obstacle=Bernoulli(environment_observability^4)</definition>
 			<discretization>
 				<interval label="State0" upper="0.5" />
 				<interval label="State1" upper="1" />
@@ -298,7 +322,7 @@
 		</equation>
 		<equation id="frequency_of_exceeding_safety_margin_due_to_turbulence">
 			<parents>safety_margin turbulence presence_of_unobservable_obstacle</parents>
-			<definition lower="0" upper="1">frequency_of_exceeding_safety_margin_due_to_turbulence=Trim(Max(1*turbulence-If(presence_of_unobservable_obstacle&gt;0.5,0,safety_margin)+0.5,0)^20,0,1)</definition>
+			<definition lower="0" upper="1">frequency_of_exceeding_safety_margin_due_to_turbulence=Trim(Max(1*turbulence-If(presence_of_unobservable_obstacle&gt;0.5,0,safety_margin)+0.4,0)^5,0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.005908012045062" />
 				<interval label="State1" upper="0.01527158011626" />
@@ -314,7 +338,7 @@
 		</equation>
 		<equation id="roll_pitch_deviation">
 			<parents>turbulence</parents>
-			<definition lower="0" upper="1">roll_pitch_deviation=Normal(turbulence,0.3)-Exponential(2)</definition>
+			<definition lower="0" upper="1">roll_pitch_deviation=Trim(Normal(turbulence,0.1)-Exponential(2),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -360,8 +384,8 @@
 			</discretization>
 		</equation>
 		<equation id="number_of_filtered_away_points">
-			<parents>dust presence_of_unobservable_obstacle</parents>
-			<definition lower="0" upper="1">number_of_filtered_away_points=Trim(Max(If(presence_of_unobservable_obstacle&gt;0.5,Exponential(3),0),Normal(dust,0.2)),0,1)</definition>
+			<parents>dust environment_observability</parents>
+			<definition lower="0" upper="1">number_of_filtered_away_points=Trim(Normal(Max(environment_observability,dust),0.2)-Exponential(2),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -377,7 +401,7 @@
 		</equation>
 		<equation id="camera_noise">
 			<parents>dust</parents>
-			<definition lower="0" upper="1">camera_noise=Trim(Abs(Normal(dust,0.1)),0,1)</definition>
+			<definition lower="0" upper="1">camera_noise=Trim(Abs(Normal(dust,0)),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -440,7 +464,7 @@
 		</equation>
 		<equation id="frequency_of_loss_of_control_due_to_turbulence">
 			<parents>turbulence</parents>
-			<definition lower="0" upper="1">frequency_of_loss_of_control_due_to_turbulence=(0.8*turbulence)^10</definition>
+			<definition lower="0" upper="1">frequency_of_loss_of_control_due_to_turbulence=(0.9*turbulence)^15</definition>
 			<discretization>
 				<interval label="State0" upper="0.005908012045062" />
 				<interval label="State1" upper="0.01527158011626" />
@@ -470,7 +494,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>1212 632 1271 676</position>
+				<position>1193 624 1252 668</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="tether_tension_motor_use_scaling_factor_t_1">
@@ -560,7 +584,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>681 232 814 315</position>
+				<position>684 248 817 331</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="roll_pitch_deviation">
@@ -568,7 +592,7 @@
 				<interior color="339966" />
 				<outline color="003300" />
 				<font color="000000" name="Arial" size="8" />
-				<position>872 888 965 946</position>
+				<position>860 865 953 923</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="number_of_filtered_away_points">
@@ -592,7 +616,7 @@
 				<interior color="339966" />
 				<outline color="003300" />
 				<font color="000000" name="Arial" size="8" />
-				<position>1180 925 1256 972</position>
+				<position>1180 926 1256 973</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="dust">
@@ -600,7 +624,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>1267 679 1308 704</position>
+				<position>1235 678 1276 703</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="max_speed">
@@ -633,7 +657,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>828 236 951 312</position>
+				<position>860 252 983 328</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="motoruse_for_other">
@@ -684,21 +708,29 @@
 				<position>423 401 531 468</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
-			<node id="presence_of_unobservable_obstacle_t_1">
-				<name>presence of unobservable obstacle t-1</name>
-				<interior color="e5f6f7" />
-				<outline color="000080" />
-				<font color="000000" name="Arial" size="8" />
-				<position>1281 453 1386 518</position>
-				<barchart active="true" width="128" height="108" />
-			</node>
 			<node id="presence_of_unobservable_obstacle">
 				<name>presence of unobservable obstacle</name>
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>1378 519 1483 584</position>
+				<position>1210 422 1315 487</position>
 				<barchart active="true" width="128" height="108" />
+			</node>
+			<node id="environment_observability_t_1">
+				<name>environment observability t-1</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1405 557 1446 582</position>
+				<barchart active="true" width="128" height="218" />
+			</node>
+			<node id="environment_observability">
+				<name>environment observability</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1382 647 1423 672</position>
+				<barchart active="true" width="128" height="218" />
 			</node>
 		</genie>
 	</extensions>
