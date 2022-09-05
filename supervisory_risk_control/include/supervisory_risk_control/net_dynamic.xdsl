@@ -297,7 +297,7 @@
 			<state id="State1" />
 			<intervals>0 0.5 1</intervals>
 			<parents>environment_observability</parents>
-			<probabilities>0.9999000099990001 9.999000099990002e-05 0.9991 0.0009 0.9954 0.0046 0.9854000000000001 0.0146 0.9593 0.0407 0.905 0.095 0.8196 0.1804 0.6847 0.3153 0.4702 0.5298 0.1888 0.8112</probabilities>
+			<probabilities>0.9998 0.0002 0.9954 0.0046 0.9837 0.0163 0.9585 0.0415 0.9109 0.0891 0.826 0.174 0.7192 0.2808 0.5707 0.4293 0.3819 0.6181 0.1417 0.8583</probabilities>
 		</cpt>
 		<cpt id="frequency_of_exceeding_safety_margin_due_to_turbulence">
 			<state id="State0" />
