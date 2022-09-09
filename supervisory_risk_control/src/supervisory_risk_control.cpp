@@ -61,9 +61,7 @@ class SupervisoryRiskControl
         } cost_function_parameters;
     } pars;
 
-    //const std::vector<std::string> causal_node_names = {"environment_observability", "motor_wear", "random_disturbance", "turbulence"};
-
-const std::vector<std::string> causal_node_names = {"environment_observability", "motor_wear", "turbulence"};
+    const std::vector<std::string> causal_node_names = {"environment_observability", "motor_wear", "random_disturbance", "turbulence"};
     BayesianNetwork net;
 
     ros::Subscriber debug_value_subscriber = nh.subscribe<mavros_msgs::DebugValue>("/mavros/debug_value/debug_float_array", 1, [&](mavros_msgs::DebugValueConstPtr msg)
@@ -135,7 +133,7 @@ const std::vector<std::string> causal_node_names = {"environment_observability",
 
     const std::vector<std::string> output_node_names = {"frequency_of_motor_saturation_deviating_beyond_safety_margin", "frequency_of_loss_of_control_due_to_motor_wear", "frequency_of_exceeding_safety_margin_due_to_turbulence", "frequency_of_breaking_distance_exceeding_safety_margin", "frequency_of_loss_of_control_due_to_turbulence","effective_safety_margin"};
     const std::vector<std::string> intermediate_estimation_node_names = {
-        "motoruse_for_tether", "presence_of_unobservable_obstacle", "effective_safety_margin"
+        "motoruse_for_tether", "presence_of_unobservable_obstacle", "effective_safety_margin", "filtered_motor_use"
     };
     const std::vector<std::string> intermediate_binary_prediction_node_names = {};
     const std::vector<std::string> intermediate_linear_prediction_node_names = {};
@@ -436,11 +434,12 @@ const std::vector<std::string> causal_node_names = {"environment_observability",
         auto estimate_node_states = net.evaluateStates(all_estimate_node_names);
         {
             debug_display.mean_motor_wear = mean(estimate_node_states.at("motor_wear"));
-            //debug_display.mean_motoruse_for_whirlewind = mean(estimate_node_states.at("random_disturbance"));
+            debug_display.mean_motoruse_for_whirlewind = mean(estimate_node_states.at("random_disturbance"));
             debug_display.mean_motoruse_for_tether = mean(estimate_node_states.at("motoruse_for_tether"));
             debug_display.mean_turbulence = mean(estimate_node_states.at("turbulence"));
             debug_display.mean_enviornment_observability = mean(estimate_node_states.at("environment_observability"));
             debug_display.presence_of_unobservable_obstacle = estimate_node_states.at("presence_of_unobservable_obstacle").at("State1");
+            debug_display.mean_dust = mean(estimate_node_states.at("filtered_motor_use"));
 
             if(pars.spam_states){
                 for(auto [node, states] : estimate_node_states){

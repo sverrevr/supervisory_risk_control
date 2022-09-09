@@ -50,7 +50,7 @@
 		</equation>
 		<equation id="motor_wear">
 			<parents>motor_wear_t_1</parents>
-			<definition lower="0" upper="1">motor_wear=Trim(motor_wear_t_1+Max(Normal(0,0.0001),0),0,1)</definition>
+			<definition lower="0" upper="1">motor_wear=Trim(motor_wear_t_1+Max(Normal(0,0.001),0),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -127,7 +127,7 @@
 		</equation>
 		<equation id="random_disturbance">
 			<parents>random_disturbance_t_1</parents>
-			<definition lower="0" upper="1">random_disturbance=Trim(Normal(random_disturbance_t_1,0.2),0,1)</definition>
+			<definition lower="0" upper="1">random_disturbance=Trim(random_disturbance_t_1-Max(Normal(0,0.1),0)+Bernoulli(0.05)*Uniform(0,1-random_disturbance_t_1),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -142,8 +142,8 @@
 			</discretization>
 		</equation>
 		<equation id="filtered_motor_use">
-			<parents>motor_wear random_disturbance</parents>
-			<definition lower="0" upper="1">filtered_motor_use=Trim(motor_wear+random_disturbance,0,1)</definition>
+			<parents>motor_wear random_disturbance motoruse_for_tether turbulence</parents>
+			<definition lower="0" upper="1">filtered_motor_use=Trim(motor_wear+random_disturbance+motoruse_for_tether+0.4*turbulence,0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -159,7 +159,7 @@
 		</equation>
 		<equation id="mean_motor">
 			<parents>filtered_motor_use</parents>
-			<definition lower="0" upper="1">mean_motor=Trim(Normal(filtered_motor_use,0.1)-Exponential(2),0,1)</definition>
+			<definition lower="0" upper="1">mean_motor=Trim(Normal(filtered_motor_use+0.2,0.1)-Exponential(1),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
