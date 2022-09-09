@@ -1,9 +1,9 @@
 dynamic: true
-modify_parameters: true
-only_update_on_measurements: true
+modify_parameters: false
+only_update_on_measurements: false
 saving_factor: 1
 max_risk: 0.01
-spam_states: false
+spam_states: true
 no_delay: false
 
 # parameters converting measurements to states. Max is the lowest value that gives the worst case state
@@ -26,11 +26,8 @@ risk:
   turbulence:
     constant: 0.2
     scale: 0.1
-  unobservable_obs:
-    constant: 0.03
-    scale: 0.4
   breaking_distance:
-    constant: 0.1
+    constant: 0
     scale: 0.4
   damage: #scaled by height
     constant: 0.1
