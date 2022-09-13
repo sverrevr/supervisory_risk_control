@@ -34,7 +34,7 @@
 			</discretization>
 		</equation>
 		<equation id="motor_wear_t_1">
-			<definition lower="0" upper="1">motor_wear_t_1=Normal(0,0)</definition>
+			<definition lower="0" upper="1">motor_wear_t_1=Normal(0,0.01)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -96,7 +96,7 @@
 		</equation>
 		<equation id="motoruse_for_tether">
 			<parents>height_over_ground drone_tilt</parents>
-			<definition lower="0" upper="1">motoruse_for_tether=Trim(0.7*height_over_ground+drone_tilt*Normal(1,0.3),0,1)</definition>
+			<definition lower="0" upper="1">motoruse_for_tether=Trim(0.7*Round(10*height_over_ground-0.5)/10+Round(10*drone_tilt-0.5)*0.1*Max(Normal(1,0.3),0),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -127,7 +127,23 @@
 		</equation>
 		<equation id="random_disturbance">
 			<parents>random_disturbance_t_1</parents>
-			<definition lower="0" upper="1">random_disturbance=Trim(random_disturbance_t_1-Max(Normal(0,0.1),0)+Bernoulli(0.05)*Uniform(0,1-random_disturbance_t_1),0,1)</definition>
+			<definition lower="0" upper="1">random_disturbance=Trim(random_disturbance_t_1-Max(Normal(0,0.1),0)+Bernoulli(0.1)*Uniform(0,1-random_disturbance_t_1),0,1)</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="motor_sum_other">
+			<parents>motor_wear random_disturbance</parents>
+			<definition lower="0" upper="1">motor_sum_other=Trim(Round(motor_wear*10-0.5)/10+Round(random_disturbance*10-0.5)/10,0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -142,8 +158,8 @@
 			</discretization>
 		</equation>
 		<equation id="filtered_motor_use">
-			<parents>motor_wear random_disturbance motoruse_for_tether turbulence</parents>
-			<definition lower="0" upper="1">filtered_motor_use=Trim(motor_wear+random_disturbance+motoruse_for_tether+0.4*turbulence,0,1)</definition>
+			<parents>motoruse_for_tether turbulence motor_sum_other</parents>
+			<definition lower="0" upper="1">filtered_motor_use=Trim(Round(motor_sum_other*10-0.5)/10+Round(motoruse_for_tether*10-0.5)/10+Trim(Normal(0.3,0.1),0,1)*Round(turbulence*10-0.5)/10,0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -175,7 +191,7 @@
 		</equation>
 		<equation id="frequency_of_loss_of_control_due_to_motor_wear">
 			<parents>motor_wear</parents>
-			<definition lower="0" upper="1">frequency_of_loss_of_control_due_to_motor_wear=Trim(motor_wear^5,0,1)</definition>
+			<definition lower="0" upper="1">frequency_of_loss_of_control_due_to_motor_wear=Trim(motor_wear^3,0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.005908012045062" />
 				<interval label="State1" upper="0.01527158011626" />
@@ -215,7 +231,7 @@
 			</discretization>
 		</equation>
 		<equation id="environment_observability_t_1">
-			<definition lower="0" upper="1">environment_observability_t_1=Normal(0,0.2)</definition>
+			<definition lower="0" upper="1">environment_observability_t_1=Trim(Normal(0,0.2),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -231,7 +247,7 @@
 		</equation>
 		<equation id="environment_observability">
 			<parents>environment_observability_t_1</parents>
-			<definition lower="0" upper="1">environment_observability=Trim(Normal(0.9*environment_observability_t_1,0.3),0,1)</definition>
+			<definition lower="0" upper="1">environment_observability=Trim(0.95*Normal(environment_observability_t_1,0.2),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -247,7 +263,7 @@
 		</equation>
 		<equation id="presence_of_unobservable_obstacle">
 			<parents>environment_observability</parents>
-			<definition lower="0" upper="1">presence_of_unobservable_obstacle=Bernoulli(environment_observability)</definition>
+			<definition lower="0" upper="1">presence_of_unobservable_obstacle=Bernoulli(Trim(environment_observability^4,0,1))</definition>
 			<discretization>
 				<interval label="State0" upper="0.5" />
 				<interval label="State1" upper="1" />
@@ -272,7 +288,7 @@
 		</equation>
 		<equation id="frequency_of_exceeding_safety_margin_due_to_turbulence">
 			<parents>turbulence effective_safety_margin</parents>
-			<definition lower="0" upper="1">frequency_of_exceeding_safety_margin_due_to_turbulence=Trim(Max(1*turbulence-effective_safety_margin+0.4,0)^5,0,1)</definition>
+			<definition lower="0" upper="1">frequency_of_exceeding_safety_margin_due_to_turbulence=Trim(Max(1.1*turbulence^0.5-effective_safety_margin,0)^3,0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.005908012045062" />
 				<interval label="State1" upper="0.01527158011626" />
@@ -288,7 +304,7 @@
 		</equation>
 		<equation id="roll_pitch_deviation">
 			<parents>turbulence</parents>
-			<definition lower="0" upper="1">roll_pitch_deviation=Trim(Normal(turbulence,0.1)-Exponential(2),0,1)</definition>
+			<definition lower="0" upper="1">roll_pitch_deviation=Trim(Normal(turbulence+0.1,0.1)-Exponential(1),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -311,7 +327,7 @@
 		</equation>
 		<equation id="number_of_filtered_away_points">
 			<parents>environment_observability camera_noise</parents>
-			<definition lower="0" upper="1">number_of_filtered_away_points=If(camera_noise&lt;0.5,Trim(Normal(environment_observability,0.1)-Exponential(2),0,1),Uniform(0,1))</definition>
+			<definition lower="0" upper="1">number_of_filtered_away_points=Trim(If(camera_noise&lt;0.5,Normal(environment_observability+0.1,0.1)-Exponential(1),Uniform(0,1)),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -358,7 +374,7 @@
 		</equation>
 		<equation id="frequency_of_motor_saturation_deviating_beyond_safety_margin">
 			<parents>effective_safety_margin max_upwards_acceleration filtered_motor_use</parents>
-			<definition lower="0" upper="1">frequency_of_motor_saturation_deviating_beyond_safety_margin=Trim((filtered_motor_use+max_upwards_acceleration/10)^8*(0.1+0.95*(1-effective_safety_margin)),0,1)</definition>
+			<definition lower="0" upper="1">frequency_of_motor_saturation_deviating_beyond_safety_margin=Trim((Round(filtered_motor_use*10-0.5)/10+max_upwards_acceleration/10)^6*(0.05+0.95*(1-effective_safety_margin)^3),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.005908012045062" />
 				<interval label="State1" upper="0.01527158011626" />
@@ -374,7 +390,23 @@
 		</equation>
 		<equation id="frequency_of_loss_of_control_due_to_turbulence">
 			<parents>turbulence</parents>
-			<definition lower="0" upper="1">frequency_of_loss_of_control_due_to_turbulence=(0.9*turbulence)^15</definition>
+			<definition lower="0" upper="1">frequency_of_loss_of_control_due_to_turbulence=turbulence^30</definition>
+			<discretization>
+				<interval label="State0" upper="0.005908012045062" />
+				<interval label="State1" upper="0.01527158011626" />
+				<interval label="State2" upper="0.03011183540944" />
+				<interval label="State3" upper="0.053632054998" />
+				<interval label="State4" upper="0.09090909090909" />
+				<interval label="State5" upper="0.1499892113597" />
+				<interval label="State6" upper="0.2436248920717" />
+				<interval label="State7" upper="0.3920274450035" />
+				<interval label="State8" upper="0.6272296408891" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
+		<equation id="frequency_of_loss_of_control_due_to_braking_distance_exceeding_safety_margin">
+			<parents>max_speed effective_safety_margin frequency_of_breaking_distance_exceeding_safety_margin</parents>
+			<definition lower="0" upper="1">frequency_of_loss_of_control_due_to_braking_distance_exceeding_safety_margin=frequency_of_breaking_distance_exceeding_safety_margin*0.4*(max_speed-effective_safety_margin/0.9)^2</definition>
 			<discretization>
 				<interval label="State0" upper="0.005908012045062" />
 				<interval label="State1" upper="0.01527158011626" />
@@ -396,7 +428,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>851 630 915 670</position>
+				<position>851 710 915 750</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="height_over_ground">
@@ -404,7 +436,7 @@
 				<interior color="339966" />
 				<outline color="003300" />
 				<font color="000000" name="Arial" size="8" />
-				<position>427 1030 522 1089</position>
+				<position>427 1110 522 1169</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="mean_motor">
@@ -412,7 +444,7 @@
 				<interior color="339966" />
 				<outline color="003300" />
 				<font color="000000" name="Arial" size="8" />
-				<position>78 778 181 828</position>
+				<position>78 858 181 908</position>
 				<comment>må på forhånd filtrere ut alle kjente faktorer, slik som joystick input</comment>
 				<barchart active="true" width="128" height="216" />
 			</node>
@@ -421,7 +453,7 @@
 				<interior color="33cccd" />
 				<outline color="003366" />
 				<font color="000000" name="Arial" size="8" />
-				<position>690 642 768 690</position>
+				<position>690 722 768 770</position>
 				<comment>0 - maximum margin\n1 - minimum margin</comment>
 				<barchart active="true" width="128" height="198" />
 			</node>
@@ -430,7 +462,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>548 120 681 196</position>
+				<position>548 200 681 276</position>
 				<barchart active="true" width="128" height="233" />
 			</node>
 			<node id="drone_tilt">
@@ -438,7 +470,7 @@
 				<interior color="339966" />
 				<outline color="003300" />
 				<font color="000000" name="Arial" size="8" />
-				<position>263 1020 356 1078</position>
+				<position>263 1100 356 1158</position>
 				<barchart active="true" width="128" height="199" />
 			</node>
 			<node id="turbulence">
@@ -446,7 +478,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>879 644 943 684</position>
+				<position>879 724 943 764</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="frequency_of_exceeding_safety_margin_due_to_turbulence">
@@ -454,7 +486,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>742 126 875 209</position>
+				<position>742 206 875 289</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="roll_pitch_deviation">
@@ -462,7 +494,7 @@
 				<interior color="339966" />
 				<outline color="003300" />
 				<font color="000000" name="Arial" size="8" />
-				<position>860 865 953 923</position>
+				<position>858 946 951 1004</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="number_of_filtered_away_points">
@@ -470,7 +502,7 @@
 				<interior color="339966" />
 				<outline color="003300" />
 				<font color="000000" name="Arial" size="8" />
-				<position>1351 902 1454 966</position>
+				<position>1312 991 1415 1055</position>
 				<barchart active="true" width="128" height="220" />
 			</node>
 			<node id="max_upwards_acceleration">
@@ -478,7 +510,7 @@
 				<interior color="33cccd" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>46 358 145 419</position>
+				<position>46 438 145 499</position>
 				<barchart active="true" width="128" height="108" />
 			</node>
 			<node id="camera_noise">
@@ -486,7 +518,7 @@
 				<interior color="339966" />
 				<outline color="003300" />
 				<font color="000000" name="Arial" size="8" />
-				<position>1194 645 1270 692</position>
+				<position>1193 718 1269 765</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="max_speed">
@@ -494,7 +526,7 @@
 				<interior color="33cccd" />
 				<outline color="003366" />
 				<font color="000000" name="Arial" size="8" />
-				<position>1035 646 1113 694</position>
+				<position>1035 726 1113 774</position>
 				<comment>0 - maximum margin\n1 - minimum margin</comment>
 				<barchart active="true" width="128" height="198" />
 			</node>
@@ -503,7 +535,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>1063 164 1196 247</position>
+				<position>1109 312 1242 395</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="frequency_of_motor_saturation_deviating_beyond_safety_margin">
@@ -511,7 +543,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>314 176 454 263</position>
+				<position>314 256 454 343</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="frequency_of_loss_of_control_due_to_turbulence">
@@ -519,7 +551,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>926 120 1049 196</position>
+				<position>896 208 1019 284</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="motor_wear_t_1">
@@ -527,7 +559,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>520 776 589 819</position>
+				<position>586 879 655 922</position>
 				<barchart active="true" width="128" height="216" />
 			</node>
 			<node id="motor_wear">
@@ -535,7 +567,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>376 774 445 817</position>
+				<position>486 857 555 900</position>
 				<barchart active="true" width="128" height="216" />
 			</node>
 			<node id="presence_of_unobservable_obstacle">
@@ -543,7 +575,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>1210 422 1315 487</position>
+				<position>1209 502 1314 567</position>
 				<barchart active="true" width="128" height="108" />
 			</node>
 			<node id="environment_observability_t_1">
@@ -551,23 +583,23 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>1405 557 1446 582</position>
-				<barchart active="true" width="128" height="218" />
+				<position>1441 671 1482 696</position>
+				<barchart active="true" width="128" height="234" />
 			</node>
 			<node id="environment_observability">
 				<name>environment observability</name>
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>1382 647 1423 672</position>
-				<barchart active="true" width="128" height="218" />
+				<position>1393 722 1434 747</position>
+				<barchart active="true" width="128" height="234" />
 			</node>
 			<node id="effective_safety_margin">
 				<name>effective safety margin</name>
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>683 388 761 436</position>
+				<position>683 468 761 516</position>
 				<comment>0 - maximum margin\n1 - minimum margin</comment>
 				<barchart active="true" width="128" height="216" />
 			</node>
@@ -576,21 +608,21 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>183 603 269 656</position>
+				<position>183 683 269 736</position>
 			</node>
 			<node id="motoruse_for_tether">
 				<name>motoruse for tether</name>
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>244 792 330 845</position>
+				<position>244 872 330 925</position>
 			</node>
 			<node id="random_disturbance_t_1">
 				<name>random_disturbance t-1</name>
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>510 521 579 564</position>
+				<position>584 578 653 621</position>
 				<barchart active="true" width="128" height="216" />
 			</node>
 			<node id="random_disturbance">
@@ -598,8 +630,23 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>364 538 433 581</position>
+				<position>457 582 526 625</position>
 				<barchart active="true" width="128" height="216" />
+			</node>
+			<node id="frequency_of_loss_of_control_due_to_braking_distance_exceeding_safety_margin">
+				<name>frequency_of_loss_of_control_due_to_braking_distance_exceeding_safety_margin</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1039 81 1172 164</position>
+				<barchart active="true" width="128" height="198" />
+			</node>
+			<node id="motor_sum_other">
+				<name>motor sum other</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>296 621 385 676</position>
 			</node>
 		</genie>
 	</extensions>

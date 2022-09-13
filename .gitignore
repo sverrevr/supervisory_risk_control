@@ -1,2 +1,5 @@
 .vscode/*
 smile_license.h
+build/catkin_generated/installspace/
+
+build/

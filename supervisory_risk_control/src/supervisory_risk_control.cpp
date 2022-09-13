@@ -62,6 +62,7 @@ class SupervisoryRiskControl
     } pars;
 
     const std::vector<std::string> causal_node_names = {"environment_observability", "motor_wear", "random_disturbance", "turbulence"};
+    //const std::vector<std::string> causal_node_names = {"presence_of_unobservable_obstacle", "motor_wear", "random_disturbance", "turbulence"};
     BayesianNetwork net;
 
     ros::Subscriber debug_value_subscriber = nh.subscribe<mavros_msgs::DebugValue>("/mavros/debug_value/debug_float_array", 1, [&](mavros_msgs::DebugValueConstPtr msg)
@@ -131,7 +132,7 @@ class SupervisoryRiskControl
 
     map_stringkey<int> previous_action{std::map<std::string,int>{{"max_speed",9}, {"safety_margin",0}, {"max_upwards_acceleration",4}}};
 
-    const std::vector<std::string> output_node_names = {"frequency_of_motor_saturation_deviating_beyond_safety_margin", "frequency_of_loss_of_control_due_to_motor_wear", "frequency_of_exceeding_safety_margin_due_to_turbulence", "frequency_of_breaking_distance_exceeding_safety_margin", "frequency_of_loss_of_control_due_to_turbulence","effective_safety_margin"};
+    const std::vector<std::string> output_node_names = {"frequency_of_motor_saturation_deviating_beyond_safety_margin", "frequency_of_loss_of_control_due_to_motor_wear", "frequency_of_exceeding_safety_margin_due_to_turbulence", "frequency_of_loss_of_control_due_to_braking_distance_exceeding_safety_margin", "frequency_of_loss_of_control_due_to_turbulence","effective_safety_margin"};
     const std::vector<std::string> intermediate_estimation_node_names = {
         "motoruse_for_tether", "presence_of_unobservable_obstacle", "effective_safety_margin", "filtered_motor_use"
     };
@@ -162,12 +163,12 @@ class SupervisoryRiskControl
                 auto motor_use_state = std::clamp((int)std::floor(10*(motor_use-pars.measurement_conversion.motor_min)/(pars.measurement_conversion.motor_max-pars.measurement_conversion.motor_min)), 0, 9);
                 net.setEvidence("mean_motor", motor_use_state);
                 ROS_INFO("%s: %.2f, %i", "mean_motor", motor_use, motor_use_state);
-                debug_display.measured_motoruse = motor_use_state/10.0;
+                debug_display.m_mtr = motor_use_state/10.0;
             }
             else{
                 net.setEvidence("mean_motor", measurement_msg.motor_mean);
                 ROS_INFO("%s: %i", "mean_motor", measurement_msg.motor_mean);
-                debug_display.measured_motoruse = measurement_msg.motor_mean/10.0;
+                debug_display.m_mtr = measurement_msg.motor_mean/10.0;
             }
         }
         {
@@ -176,12 +177,12 @@ class SupervisoryRiskControl
             auto drone_tilt_state = std::clamp((int)std::floor((drone_tilt-pars.measurement_conversion.min_tilt) * 10 / pars.measurement_conversion.max_tilt), 0, 9);
             net.setEvidence("drone_tilt", drone_tilt_state);
             ROS_INFO("%s: %.2f, %i", "drone_tilt", drone_tilt, drone_tilt_state);
-            debug_display.measured_drone_roll_pitch = drone_tilt_state/10.0;
+            debug_display.m_tilt = drone_tilt_state/10.0;
             }
             else{
                 net.setEvidence("drone_tilt", measurement_msg.drone_tilt);
             ROS_INFO("%s: %i", "drone_tilt", measurement_msg.drone_tilt);
-            debug_display.measured_drone_roll_pitch = measurement_msg.drone_tilt/10.0;
+            debug_display.m_tilt = measurement_msg.drone_tilt/10.0;
             }
         }
         {
@@ -196,12 +197,12 @@ class SupervisoryRiskControl
             auto height_over_ground_state = std::clamp((int)std::floor(height_over_ground * 10 / 40), 0, 9);
             net.setEvidence("height_over_ground", height_over_ground_state);
             ROS_INFO("%s: %.2f, %i", "height_over_ground", height_over_ground, height_over_ground_state);
-            debug_display.measured_height_over_ground = height_over_ground_state/10.0;
+            debug_display.m_height = height_over_ground_state/10.0;
             }
             else{
             net.setEvidence("height_over_ground", measurement_msg.height_over_ground);
             ROS_INFO("%s: %i", "height_over_ground", measurement_msg.height_over_ground);
-            debug_display.measured_height_over_ground = measurement_msg.height_over_ground/10.0;
+            debug_display.m_height = measurement_msg.height_over_ground/10.0;
             height_over_ground = measurement_msg.height_over_ground*40.0/9.0;
             }
         }
@@ -211,12 +212,12 @@ class SupervisoryRiskControl
             auto velocity_deviation_state = std::clamp((int)std::floor(10*(roll_pitch_deviation-pars.measurement_conversion.min_turbulence)/(pars.measurement_conversion.max_turbulence-pars.measurement_conversion.min_turbulence)), 0, 9);
             net.setEvidence("roll_pitch_deviation", velocity_deviation_state);
             ROS_INFO("%s: %.2f, %i", "roll_pitch_deviation", roll_pitch_deviation, velocity_deviation_state);
-            debug_display.measured_velocity_deviation = velocity_deviation_state/10.0;
+            debug_display.m_rp_er = velocity_deviation_state/10.0;
             }
             else{
                 net.setEvidence("roll_pitch_deviation", measurement_msg.roll_pitch_deviation);
             ROS_INFO("%s: %i", "roll_pitch_deviation", measurement_msg.roll_pitch_deviation);
-            debug_display.measured_velocity_deviation = measurement_msg.roll_pitch_deviation/10.0;    
+            debug_display.m_rp_er = measurement_msg.roll_pitch_deviation/10.0;    
             }
         }
         {
@@ -225,12 +226,12 @@ class SupervisoryRiskControl
             auto camera_noise_state = std::clamp((int)std::floor(camera_noise * 10), 0, 9);
             net.setEvidence("camera_noise", camera_noise_state);
             ROS_INFO("%s: %.2f, %i", "camera_noise", camera_noise, camera_noise_state);
-            debug_display.measured_camera_noise = camera_noise_state/10.0;
+            debug_display.m_visual_dust = camera_noise_state/10.0;
             }
             else{
                 net.setEvidence("camera_noise", measurement_msg.camera_noise);
             ROS_INFO("%s: %i", "camera_noise", measurement_msg.camera_noise);
-            debug_display.measured_camera_noise = measurement_msg.camera_noise/10.0;
+            debug_display.m_visual_dust = measurement_msg.camera_noise/10.0;
             }
         }
         {
@@ -239,31 +240,29 @@ class SupervisoryRiskControl
             auto number_of_filtered_points_state = std::clamp((int)std::floor(number_of_filtered_points * 10 / pars.measurement_conversion.max_number_of_filtered_points), 0, 9);
             net.setEvidence("number_of_filtered_away_points", number_of_filtered_points_state);
             ROS_INFO("%s: %i, %i", "number_of_filtered_away_points", number_of_filtered_points, number_of_filtered_points_state);
-            debug_display.measured_lidar_flicker = number_of_filtered_points_state/10.0;
+            debug_display.m_lidar_dust = number_of_filtered_points_state/10.0;
             }
             else{
                 net.setEvidence("number_of_filtered_away_points", measurement_msg.number_of_filtered_away_points);
             ROS_INFO("%s: %i", "number_of_filtered_away_points", measurement_msg.number_of_filtered_away_points);
-            debug_display.measured_lidar_flicker = measurement_msg.number_of_filtered_away_points/10.0;
+            debug_display.m_lidar_dust = measurement_msg.number_of_filtered_away_points/10.0;
             }
         }
     }
 
-    double evaluate_risk(const map_stringkey<map_stringkey<double>> &output, const map_stringkey<int> &actions, double probability_of_unobservable_obs, bool do_print = false) const
+    double evaluate_risk(const map_stringkey<map_stringkey<double>> &output, const map_stringkey<int> &actions, bool do_print = false) const
     {
         double max_speed = actions.at("max_speed") / 9.0;
         double safety_margin = actions.at("safety_margin") / 9.0;
 
         double mean_frequency_of_motor_saturation_deviating_beyond_safety_margin = log_mean(output.at("frequency_of_motor_saturation_deviating_beyond_safety_margin"));
         double mean_frequency_of_turbulence_causing_deviation_beyond_safety_margin = log_mean(output.at("frequency_of_exceeding_safety_margin_due_to_turbulence"));
-        double mean_frequency_of_breaking_distance_exceeding_safety_margin = log_mean(output.at("frequency_of_breaking_distance_exceeding_safety_margin"));
+        double mean_frequency_of_loss_of_control_due_to_braking_distance_exceeding_safety_margin = log_mean(output.at("frequency_of_loss_of_control_due_to_braking_distance_exceeding_safety_margin"));
 
         double mean_frequency_of_contact_causing_loss_of_control =
             mean_frequency_of_motor_saturation_deviating_beyond_safety_margin * (pars.risk.motor_saturation.constant+ pars.risk.motor_saturation.scale * std::pow(max_speed, 2)) 
             + mean_frequency_of_turbulence_causing_deviation_beyond_safety_margin * (pars.risk.turbulence.constant + pars.risk.turbulence.scale * std::pow(max_speed, 2)) 
-            + mean_frequency_of_breaking_distance_exceeding_safety_margin * (pars.risk.breaking_distance.constant 
-                        + pars.risk.breaking_distance.scale * ((1-probability_of_unobservable_obs)*std::pow(max_speed-safety_margin/0.9, 2)
-                        +probability_of_unobservable_obs*std::pow(max_speed, 2)));
+            + mean_frequency_of_loss_of_control_due_to_braking_distance_exceeding_safety_margin;
 
         double mean_frequency_of_motor_wear_causing_loss_of_control = log_mean(output.at("frequency_of_loss_of_control_due_to_motor_wear"));
         double mean_frequency_of_loss_of_control_due_to_turbulence = log_mean(output.at("frequency_of_loss_of_control_due_to_turbulence"));
@@ -278,7 +277,7 @@ class SupervisoryRiskControl
         {
             std::cout << "Mean freq of motor saturation deviating beyond: " << mean_frequency_of_motor_saturation_deviating_beyond_safety_margin
                       << "\nMean freq of turbulence deviation beyond: " << mean_frequency_of_turbulence_causing_deviation_beyond_safety_margin
-                      << "\nMean freq of breaking dist exceeding: " << mean_frequency_of_breaking_distance_exceeding_safety_margin
+                      << "\nMean freq of loc due to breaking dist exceeding: " << mean_frequency_of_loss_of_control_due_to_braking_distance_exceeding_safety_margin
                       << "\nMean freq of contact causing loss of control: " << mean_frequency_of_contact_causing_loss_of_control
                       << "\nMean freq of motor wear causing loss of control: " << mean_frequency_of_motor_wear_causing_loss_of_control
                       << "\nMean freq of turbulence causing loss of control: " << mean_frequency_of_loss_of_control_due_to_turbulence
@@ -364,7 +363,7 @@ class SupervisoryRiskControl
         return action;
     }*/
 
-    auto exact_search(double probability_of_unobservable_obs)
+    auto exact_search()
     {
         struct{
             map_stringkey<int> optimal_action;
@@ -403,7 +402,7 @@ class SupervisoryRiskControl
                     action["max_speed"] = max_speed;
                     net.setEvidence(action);
                     auto output = net.evaluateStates(output_node_names);
-                    double risk =  evaluate_risk(output, action,probability_of_unobservable_obs);
+                    double risk =  evaluate_risk(output, action);
                     bool is_feasible = risk< pars.max_risk;
                     double parameter_cost = safety_margin_cost*std::pow(safety_margin, 1) 
                         + pars.cost_function_parameters.acceleration_cost * std::pow(4 - acceleration_limit, 1) 
@@ -433,13 +432,13 @@ class SupervisoryRiskControl
 
         auto estimate_node_states = net.evaluateStates(all_estimate_node_names);
         {
-            debug_display.mean_motor_wear = mean(estimate_node_states.at("motor_wear"));
-            debug_display.mean_motoruse_for_whirlewind = mean(estimate_node_states.at("random_disturbance"));
-            debug_display.mean_motoruse_for_tether = mean(estimate_node_states.at("motoruse_for_tether"));
-            debug_display.mean_turbulence = mean(estimate_node_states.at("turbulence"));
-            debug_display.mean_enviornment_observability = mean(estimate_node_states.at("environment_observability"));
-            debug_display.presence_of_unobservable_obstacle = estimate_node_states.at("presence_of_unobservable_obstacle").at("State1");
-            debug_display.mean_dust = mean(estimate_node_states.at("filtered_motor_use"));
+            debug_display.mtr_wear = mean(estimate_node_states.at("motor_wear"));
+            debug_display.mtr_rand = mean(estimate_node_states.at("random_disturbance"));
+            debug_display.mtr_tether = mean(estimate_node_states.at("motoruse_for_tether"));
+            debug_display.dist = mean(estimate_node_states.at("turbulence"));
+            debug_display.env_obs = mean(estimate_node_states.at("environment_observability"));
+            debug_display.S1_inv_obs = estimate_node_states.at("presence_of_unobservable_obstacle").at("State1");
+            debug_display.mtr = mean(estimate_node_states.at("filtered_motor_use"));
 
             if(pars.spam_states){
                 for(auto [node, states] : estimate_node_states){
@@ -465,7 +464,7 @@ class SupervisoryRiskControl
         }*/
 
         // auto action = heuristic_search();
-        auto search_result = exact_search(estimate_node_states.at("presence_of_unobservable_obstacle").at("State1"));
+        auto search_result = exact_search();
 
         {
             double a  = pars.cost_function_parameters.parameter_change_delay_factor;
@@ -495,16 +494,16 @@ class SupervisoryRiskControl
             net.setEvidence(search_result.optimal_action);
             auto output = net.evaluateStates(all_prediction_node_names);
             debug_display.risk_cost = evaluate_risk(output, search_result.optimal_action, true);
-            debug_display.optimal_safety_margin = search_result.optimal_action.at("safety_margin");
-            debug_display.optimal_max_acc = search_result.optimal_action.at("max_upwards_acceleration");
-            debug_display.optimal_speed = search_result.optimal_action.at("max_speed");
-            debug_display.found_feasible_option = search_result.found_feasable_solution;
+            debug_display.safety_margin = search_result.optimal_action.at("safety_margin");
+            debug_display.max_acc = search_result.optimal_action.at("max_upwards_acceleration");
+            debug_display.speed = search_result.optimal_action.at("max_speed");
+            debug_display.abort = 1-search_result.found_feasable_solution;
 
-            debug_display.mean_frequency_of_motor_saturation_deviating_beyond_safety_margin = log_mean(output.at("frequency_of_motor_saturation_deviating_beyond_safety_margin"));
-            debug_display.mean_frequency_of_loss_of_control_due_to_motor_wear = log_mean(output.at("frequency_of_loss_of_control_due_to_motor_wear"));
-            debug_display.mean_frequency_of_loss_of_control_due_to_turbulence = log_mean(output.at("frequency_of_loss_of_control_due_to_turbulence"));
-            debug_display.mean_frequency_of_exceeding_safety_margin_due_to_turbulence = log_mean(output.at("frequency_of_exceeding_safety_margin_due_to_turbulence"));
-            debug_display.mean_frequency_of_breaking_distance_exceeding_safety_margin = log_mean(output.at("frequency_of_breaking_distance_exceeding_safety_margin"));
+            debug_display.S4_mtr_saturation_sm = log_mean(output.at("frequency_of_motor_saturation_deviating_beyond_safety_margin"));
+            debug_display.S6_mtr_failure = log_mean(output.at("frequency_of_loss_of_control_due_to_motor_wear"));
+            debug_display.S7_disturbance = log_mean(output.at("frequency_of_loss_of_control_due_to_turbulence"));
+            debug_display.S3_turbulence_sm = log_mean(output.at("frequency_of_exceeding_safety_margin_due_to_turbulence"));
+            debug_display.S2_braking_dist_sm = log_mean(output.at("frequency_of_loss_of_control_due_to_braking_distance_exceeding_safety_margin"));
 
             
             debug_display_publisher.publish(debug_display);

@@ -3,8 +3,8 @@ modify_parameters: false
 only_update_on_measurements: false
 saving_factor: 1
 max_risk: 0.01
-spam_states: true
-no_delay: false
+spam_states: false
+no_delay: true
 
 # parameters converting measurements to states. Max is the lowest value that gives the worst case state
 measurement_conversion:

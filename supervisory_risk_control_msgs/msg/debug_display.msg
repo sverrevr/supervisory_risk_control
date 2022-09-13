@@ -1,39 +1,35 @@
 #Optimal actions
 float32 risk_cost
-float32 optimal_safety_margin
-float32 optimal_max_acc
-float32 optimal_speed
-bool found_feasible_option
+float32 safety_margin
+float32 max_acc
+float32 speed
+bool abort
 
 #Probability of binary predictions with this choise:
 
 #Mean frequency of prediction with this choise:
-float32 mean_frequency_of_motor_saturation_deviating_beyond_safety_margin
-float32 mean_frequency_of_loss_of_control_due_to_motor_wear
-float32 mean_frequency_of_loss_of_control_due_to_turbulence
-float32 mean_frequency_of_exceeding_safety_margin_due_to_turbulence
-float32 mean_frequency_of_contact_with_unobservable_obstacle
-float32 mean_frequency_of_breaking_distance_exceeding_safety_margin
-
-#Mean value of intermediate predictions with this choise:
+float32 S1_inv_obs
+float32 S2_braking_dist_sm
+float32 S3_turbulence_sm
+float32 S4_mtr_saturation_sm
+float32 S5_obstacle
+float32 S6_mtr_failure
+float32 S7_disturbance
 
 #measurements
-float32 measured_height_over_ground
-float32 measured_motoruse
-float32 measured_yaw_moment
-float32 measured_drone_roll_pitch
-float32 measured_velocity_deviation
-float32 measured_camera_noise
-float32 measured_lidar_flicker
+float32 m_height
+float32 m_mtr
+float32 m_tilt
+float32 m_rp_er
+float32 m_visual_dust
+float32 m_lidar_dust
 
 #Mean intermediate estimation variables
-float32 mean_motoruse_for_tether
+float32 mtr_tether
+float32 mtr
 
 #Mean of underlying varaibles
-float32 mean_tether_tension_motor_use_scaling_factor
-float32 mean_motor_wear
-float32 mean_motoruse_for_whirlewind
-float32 mean_turbulence
-float32 mean_dust
-float32 mean_enviornment_observability
-float32 presence_of_unobservable_obstacle
+float32 mtr_wear
+float32 mtr_rand
+float32 dist
+float32 env_obs

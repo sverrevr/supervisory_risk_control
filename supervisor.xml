@@ -1,48 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <root>
- <tabbed_widget name="Main Window" parent="main_window">
-  <Tab tab_name="measurements states" containers="1">
+ <tabbed_widget parent="main_window" name="Main Window">
+  <Tab containers="1" tab_name="measurements states">
    <Container>
-    <DockSplitter orientation="-" count="1" sizes="1">
-     <DockSplitter orientation="|" count="2" sizes="0.500311;0.499689">
-      <DockSplitter orientation="-" count="2" sizes="0.500501;0.499499">
+    <DockSplitter orientation="-" sizes="1" count="1">
+     <DockSplitter orientation="|" sizes="0.5;0.5" count="2">
+      <DockSplitter orientation="-" sizes="0.5;0.5" count="2">
        <DockArea name="...">
-        <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
-         <range left="173.743609" top="0.910000" right="232.755605" bottom="-0.010000"/>
-         <limitY min="-0.01" max="0.91"/>
-         <curve color="#1f77b4" name="/supervisory_risk_controller/debug_msg/mean_motor_wear"/>
-         <curve color="#d62728" name="/supervisory_risk_controller/debug_msg/measured_motoruse"/>
-         <curve color="#1ac938" name="/supervisory_risk_controller/debug_msg/mean_motoruse_for_whirlewind"/>
+        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
+         <range bottom="0.000000" right="1.000000" top="1.000000" left="0.000000"/>
+         <limitY max="0.91" min="-0.01"/>
         </plot>
        </DockArea>
        <DockArea name="...">
-        <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
-         <range left="173.743609" top="0.910000" right="232.755605" bottom="-0.010000"/>
-         <limitY min="-0.01" max="0.91"/>
-         <curve color="#1f77b4" name="/supervisory_risk_controller/debug_msg/mean_dust"/>
-         <curve color="#d62728" name="/supervisory_risk_controller/debug_msg/mean_enviornment_observability"/>
-         <curve color="#1ac938" name="/supervisory_risk_controller/debug_msg/measured_lidar_flicker"/>
-         <curve color="#ff7f0e" name="/supervisory_risk_controller/debug_msg/measured_camera_noise"/>
+        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
+         <range bottom="0.000000" right="1.000000" top="1.000000" left="0.000000"/>
+         <limitY max="0.91" min="-0.01"/>
         </plot>
        </DockArea>
       </DockSplitter>
-      <DockSplitter orientation="-" count="2" sizes="0.5;0.5">
+      <DockSplitter orientation="-" sizes="0.5;0.5" count="2">
        <DockArea name="...">
-        <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
-         <range left="173.743609" top="0.910000" right="232.755605" bottom="-0.010000"/>
-         <limitY min="-0.01" max="0.91"/>
-         <curve color="#ff7f0e" name="/supervisory_risk_controller/debug_msg/mean_motoruse_for_tether"/>
-         <curve color="#f14cc1" name="/supervisory_risk_controller/debug_msg/measured_height_over_ground"/>
-         <curve color="#9467bd" name="/supervisory_risk_controller/debug_msg/measured_drone_roll_pitch"/>
-         <curve color="#17becf" name="/supervisory_risk_controller/debug_msg/mean_tether_tension_motor_use_scaling_factor"/>
+        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
+         <range bottom="0.000000" right="1.000000" top="1.000000" left="0.000000"/>
+         <limitY max="0.91" min="-0.01"/>
         </plot>
        </DockArea>
        <DockArea name="...">
-        <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
-         <range left="173.743609" top="0.910000" right="232.755605" bottom="-0.010000"/>
-         <limitY min="-0.01" max="0.91"/>
-         <curve color="#f14cc1" name="/supervisory_risk_controller/debug_msg/mean_turbulence"/>
-         <curve color="#9467bd" name="/supervisory_risk_controller/debug_msg/measured_velocity_deviation"/>
+        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
+         <range bottom="0.000000" right="1.000000" top="1.000000" left="0.000000"/>
+         <limitY max="0.91" min="-0.01"/>
         </plot>
        </DockArea>
       </DockSplitter>
@@ -50,89 +37,66 @@
     </DockSplitter>
    </Container>
   </Tab>
-  <Tab tab_name="tab3" containers="1">
+  <Tab containers="1" tab_name="tab3">
    <Container>
-    <DockSplitter orientation="-" count="1" sizes="1">
-     <DockSplitter orientation="|" count="2" sizes="0.5;0.5">
-      <DockSplitter orientation="-" count="3" sizes="0.3335;0.332999;0.3335">
+    <DockSplitter orientation="-" sizes="1" count="1">
+     <DockSplitter orientation="|" sizes="0.5;0.5" count="2">
+      <DockSplitter orientation="-" sizes="0.33383;0.33234;0.33383" count="3">
        <DockArea name="...">
-        <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
-         <range left="173.743609" top="9.225000" right="232.755605" bottom="-0.225000"/>
-         <limitY min="-0.225" max="9.225"/>
-         <curve color="#1ac938" name="/supervisory_risk_controller/debug_msg/optimal_max_acc"/>
-         <curve color="#ff7f0e" name="/supervisory_risk_controller/debug_msg/optimal_safety_margin"/>
-         <curve color="#f14cc1" name="/supervisory_risk_controller/debug_msg/optimal_speed"/>
-         <curve color="#1ac938" name="/supervisory_risk_controller/debug_msg/found_feasible_option"/>
+        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
+         <range bottom="-0.225000" right="102.003205" top="9.225000" left="2.992191"/>
+         <limitY max="9.225" min="-0.225"/>
+         <curve name="/supervisory_risk_controller/debug_msg/max_acc" color="#1f77b4"/>
+         <curve name="/supervisory_risk_controller/debug_msg/safety_margin" color="#d62728"/>
+         <curve name="/supervisory_risk_controller/debug_msg/speed" color="#1ac938"/>
         </plot>
        </DockArea>
        <DockArea name="...">
-        <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
-         <range left="173.743609" top="0.922500" right="232.755605" bottom="-0.022500"/>
-         <limitY min="-0.0225" max="0.9225"/>
-         <curve color="#9467bd" name="/supervisory_risk_controller/debug_msg/mean_motor_wear"/>
-         <curve color="#bcbd22" name="/supervisory_risk_controller/debug_msg/mean_motoruse_for_whirlewind"/>
-         <curve color="#17becf" name="/supervisory_risk_controller/debug_msg/measured_motoruse"/>
+        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
+         <range bottom="-0.022500" right="102.003205" top="0.922500" left="2.992191"/>
+         <limitY max="0.9225" min="-0.0225"/>
+         <curve name="/supervisory_risk_controller/debug_msg/m_mtr" color="#9467bd"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mtr" color="#f14cc1"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mtr_rand" color="#17becf"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mtr_tether" color="#bcbd22"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mtr_wear" color="#1f77b4"/>
         </plot>
        </DockArea>
        <DockArea name="...">
-        <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
-         <range left="173.743609" top="0.922500" right="232.755605" bottom="-0.022500"/>
-         <limitY min="-0.0225" max="0.9225"/>
-         <curve color="#d62728" name="/supervisory_risk_controller/debug_msg/mean_turbulence"/>
-         <curve color="#bcbd22" name="/supervisory_risk_controller/debug_msg/measured_velocity_deviation"/>
+        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
+         <range bottom="-0.022500" right="102.003205" top="0.922500" left="2.992191"/>
+         <limitY max="0.9225" min="-0.0225"/>
+         <curve name="/supervisory_risk_controller/debug_msg/m_rp_er" color="#d62728"/>
+         <curve name="/supervisory_risk_controller/debug_msg/dist" color="#1ac938"/>
         </plot>
        </DockArea>
       </DockSplitter>
-      <DockSplitter orientation="-" count="4" sizes="0.0966934;0.234469;0.418838;0.25">
+      <DockSplitter orientation="-" sizes="0.33383;0.33234;0.33383" count="3">
        <DockArea name="...">
-        <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
-         <range left="173.743609" top="1.025000" right="232.755605" bottom="-0.022500"/>
-         <limitY min="-0.0225" max="1.025"/>
-         <curve color="#1ac938" name="/supervisory_risk_controller/debug_msg/found_feasible_option"/>
+        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
+         <range bottom="-0.022500" right="102.003205" top="1.025000" left="2.992191"/>
+         <limitY max="1.025" min="-0.0225"/>
+         <curve name="/supervisory_risk_controller/debug_msg/abort" color="#ff7f0e"/>
         </plot>
        </DockArea>
        <DockArea name="...">
-        <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
-         <range left="173.743609" top="0.016774" right="232.755605" bottom="0.005278"/>
+        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
+         <range bottom="-0.093694" right="102.003205" top="0.106306" left="2.992191"/>
          <limitY/>
-         <curve color="#d62728" name="/supervisory_risk_controller/debug_msg/risk_cost"/>
+         <curve name="/supervisory_risk_controller/debug_msg/risk_cost" color="#d62728"/>
         </plot>
        </DockArea>
        <DockArea name="...">
-        <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
-         <range left="173.743609" top="0.922500" right="232.755605" bottom="-0.022500"/>
-         <limitY min="-0.0225" max="0.9225"/>
-         <curve color="#17becf" name="/supervisory_risk_controller/debug_msg/mean_motoruse_for_tether"/>
-         <curve color="#1f77b4" name="/supervisory_risk_controller/debug_msg/mean_tether_tension_motor_use_scaling_factor"/>
-         <curve color="#ff7f0e" name="/supervisory_risk_controller/debug_msg/measured_drone_roll_pitch"/>
-         <curve color="#f14cc1" name="/supervisory_risk_controller/debug_msg/measured_height_over_ground"/>
-        </plot>
-       </DockArea>
-       <DockArea name="...">
-        <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
-         <range left="173.743609" top="0.922500" right="232.755605" bottom="-0.022500"/>
-         <limitY min="-0.0225" max="0.9225"/>
-         <curve color="#ff7f0e" name="/supervisory_risk_controller/debug_msg/mean_dust"/>
-         <curve color="#f14cc1" name="/supervisory_risk_controller/debug_msg/mean_enviornment_observability"/>
-         <curve color="#1ac938" name="/supervisory_risk_controller/debug_msg/measured_camera_noise"/>
-         <curve color="#9467bd" name="/supervisory_risk_controller/debug_msg/measured_lidar_flicker"/>
+        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
+         <range bottom="-0.022500" right="102.003205" top="0.922500" left="2.992191"/>
+         <limitY max="0.9225" min="-0.0225"/>
+         <curve name="/supervisory_risk_controller/debug_msg/m_lidar_dust" color="#ff7f0e"/>
+         <curve name="/supervisory_risk_controller/debug_msg/m_visual_dust" color="#f14cc1"/>
+         <curve name="/supervisory_risk_controller/debug_msg/env_obs" color="#9467bd"/>
         </plot>
        </DockArea>
       </DockSplitter>
      </DockSplitter>
-    </DockSplitter>
-   </Container>
-  </Tab>
-  <Tab tab_name="tab2" containers="1">
-   <Container>
-    <DockSplitter orientation="-" count="1" sizes="1">
-     <DockArea name="...">
-      <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
-       <range left="172.960334" top="0.034426" right="232.876905" bottom="-0.000840"/>
-       <limitY/>
-       <curve color="#1f77b4" name="/mavros/debug_value/debug_float_array/data.18"/>
-      </plot>
-     </DockArea>
     </DockSplitter>
    </Container>
   </Tab>
@@ -143,7 +107,7 @@
  <!-- - - - - - - - - - - - - - - -->
  <Plugins>
   <plugin ID="DataLoad CSV">
-   <default time_axis="" delimiter="0"/>
+   <default delimiter="0" time_axis=""/>
   </plugin>
   <plugin ID="DataLoad ROS bags">
    <use_header_stamp value="false"/>
@@ -153,7 +117,6 @@
    <remove_suffix_from_strings value="true"/>
   </plugin>
   <plugin ID="DataLoad ULog"/>
-  <plugin ID="MQTT Subscriber (Mosquitto)"/>
   <plugin ID="ROS Topic Subscriber">
    <use_header_stamp value="false"/>
    <discard_large_arrays value="true"/>
@@ -163,7 +126,6 @@
   </plugin>
   <plugin ID="UDP Server"/>
   <plugin ID="WebSocket Server"/>
-  <plugin ID="ZMQ Subscriber"/>
   <plugin ID="Fast Fourier Transform"/>
   <plugin ID="Quaternion to RPY"/>
   <plugin ID="Reactive Script Editor">
