@@ -288,7 +288,7 @@
 		</equation>
 		<equation id="frequency_of_exceeding_safety_margin_due_to_turbulence">
 			<parents>turbulence effective_safety_margin</parents>
-			<definition lower="0" upper="1">frequency_of_exceeding_safety_margin_due_to_turbulence=Trim(Max(1.1*turbulence^0.5-effective_safety_margin,0)^3,0,1)</definition>
+			<definition lower="0" upper="1">frequency_of_exceeding_safety_margin_due_to_turbulence=Trim(Max(turbulence^0.5-effective_safety_margin,0)^3,0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.005908012045062" />
 				<interval label="State1" upper="0.01527158011626" />
