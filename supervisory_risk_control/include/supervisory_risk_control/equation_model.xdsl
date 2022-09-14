@@ -50,7 +50,7 @@
 		</equation>
 		<equation id="motor_wear">
 			<parents>motor_wear_t_1</parents>
-			<definition lower="0" upper="1">motor_wear=Trim(motor_wear_t_1+Max(Normal(0,0.001),0),0,1)</definition>
+			<definition lower="0" upper="1">motor_wear=Trim(motor_wear_t_1+Max(Normal(0,0.0001),0),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
