@@ -3,32 +3,32 @@
  <tabbed_widget parent="main_window" name="Main Window">
   <Tab containers="1" tab_name="measurements states">
    <Container>
-    <DockSplitter orientation="-" sizes="1" count="1">
-     <DockSplitter orientation="|" sizes="0.5;0.5" count="2">
-      <DockSplitter orientation="-" sizes="0.5;0.5" count="2">
+    <DockSplitter count="1" orientation="-" sizes="1">
+     <DockSplitter count="2" orientation="|" sizes="0.5;0.5">
+      <DockSplitter count="2" orientation="-" sizes="0.50025;0.49975">
        <DockArea name="...">
-        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
-         <range bottom="0.000000" right="1.000000" top="1.000000" left="0.000000"/>
+        <plot flip_y="false" mode="TimeSeries" flip_x="false" style="Lines">
+         <range bottom="0.000000" top="1.000000" right="1.000000" left="0.000000"/>
          <limitY max="0.91" min="-0.01"/>
         </plot>
        </DockArea>
        <DockArea name="...">
-        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
-         <range bottom="0.000000" right="1.000000" top="1.000000" left="0.000000"/>
+        <plot flip_y="false" mode="TimeSeries" flip_x="false" style="Lines">
+         <range bottom="0.000000" top="1.000000" right="1.000000" left="0.000000"/>
          <limitY max="0.91" min="-0.01"/>
         </plot>
        </DockArea>
       </DockSplitter>
-      <DockSplitter orientation="-" sizes="0.5;0.5" count="2">
+      <DockSplitter count="2" orientation="-" sizes="0.50025;0.49975">
        <DockArea name="...">
-        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
-         <range bottom="0.000000" right="1.000000" top="1.000000" left="0.000000"/>
+        <plot flip_y="false" mode="TimeSeries" flip_x="false" style="Lines">
+         <range bottom="0.000000" top="1.000000" right="1.000000" left="0.000000"/>
          <limitY max="0.91" min="-0.01"/>
         </plot>
        </DockArea>
        <DockArea name="...">
-        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
-         <range bottom="0.000000" right="1.000000" top="1.000000" left="0.000000"/>
+        <plot flip_y="false" mode="TimeSeries" flip_x="false" style="Lines">
+         <range bottom="0.000000" top="1.000000" right="1.000000" left="0.000000"/>
          <limitY max="0.91" min="-0.01"/>
         </plot>
        </DockArea>
@@ -39,12 +39,12 @@
   </Tab>
   <Tab containers="1" tab_name="tab3">
    <Container>
-    <DockSplitter orientation="-" sizes="1" count="1">
-     <DockSplitter orientation="|" sizes="0.5;0.5" count="2">
-      <DockSplitter orientation="-" sizes="0.33383;0.33234;0.33383" count="3">
+    <DockSplitter count="1" orientation="-" sizes="1">
+     <DockSplitter count="2" orientation="|" sizes="0.5;0.5">
+      <DockSplitter count="3" orientation="-" sizes="0.334168;0.331663;0.334168">
        <DockArea name="...">
-        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
-         <range bottom="-0.225000" right="102.003205" top="9.225000" left="2.992191"/>
+        <plot flip_y="false" mode="TimeSeries" flip_x="false" style="Lines">
+         <range bottom="-0.225000" top="9.225000" right="255.233080" left="196.233087"/>
          <limitY max="9.225" min="-0.225"/>
          <curve name="/supervisory_risk_controller/debug_msg/max_acc" color="#1f77b4"/>
          <curve name="/supervisory_risk_controller/debug_msg/safety_margin" color="#d62728"/>
@@ -52,8 +52,8 @@
         </plot>
        </DockArea>
        <DockArea name="...">
-        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
-         <range bottom="-0.022500" right="102.003205" top="0.922500" left="2.992191"/>
+        <plot flip_y="false" mode="TimeSeries" flip_x="false" style="Lines">
+         <range bottom="-0.022500" top="0.922500" right="255.233080" left="196.233087"/>
          <limitY max="0.9225" min="-0.0225"/>
          <curve name="/supervisory_risk_controller/debug_msg/m_mtr" color="#9467bd"/>
          <curve name="/supervisory_risk_controller/debug_msg/mtr" color="#f14cc1"/>
@@ -63,32 +63,43 @@
         </plot>
        </DockArea>
        <DockArea name="...">
-        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
-         <range bottom="-0.022500" right="102.003205" top="0.922500" left="2.992191"/>
+        <plot flip_y="false" mode="TimeSeries" flip_x="false" style="Lines">
+         <range bottom="-0.022500" top="0.922500" right="255.233080" left="196.233087"/>
          <limitY max="0.9225" min="-0.0225"/>
          <curve name="/supervisory_risk_controller/debug_msg/m_rp_er" color="#d62728"/>
          <curve name="/supervisory_risk_controller/debug_msg/dist" color="#1ac938"/>
         </plot>
        </DockArea>
       </DockSplitter>
-      <DockSplitter orientation="-" sizes="0.33383;0.33234;0.33383" count="3">
+      <DockSplitter count="4" orientation="-" sizes="0.250125;0.250125;0.249624;0.250125">
        <DockArea name="...">
-        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
-         <range bottom="-0.022500" right="102.003205" top="1.025000" left="2.992191"/>
+        <plot flip_y="false" mode="TimeSeries" flip_x="false" style="Lines">
+         <range bottom="-0.022500" top="1.025000" right="255.233080" left="196.233087"/>
          <limitY max="1.025" min="-0.0225"/>
          <curve name="/supervisory_risk_controller/debug_msg/abort" color="#ff7f0e"/>
         </plot>
        </DockArea>
        <DockArea name="...">
-        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
-         <range bottom="-0.093694" right="102.003205" top="0.106306" left="2.992191"/>
+        <plot flip_y="false" mode="TimeSeries" flip_x="false" style="Lines">
+         <range bottom="0.008641" top="0.009996" right="255.233080" left="196.233087"/>
          <limitY/>
          <curve name="/supervisory_risk_controller/debug_msg/risk_cost" color="#d62728"/>
         </plot>
        </DockArea>
        <DockArea name="...">
-        <plot flip_y="false" flip_x="false" mode="TimeSeries" style="Lines">
-         <range bottom="-0.022500" right="102.003205" top="0.922500" left="2.992191"/>
+        <plot flip_y="false" mode="TimeSeries" flip_x="false" style="Lines">
+         <range bottom="-0.002500" top="0.902500" right="255.233080" left="196.233087"/>
+         <limitY max="0.9025" min="-0.0025"/>
+         <curve name="/supervisory_risk_controller/debug_msg/m_tilt" color="#1f77b4"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mtr_tether" color="#d62728"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mtr_trblnc" color="#1ac938"/>
+         <curve name="/supervisory_risk_controller/debug_msg/mtr" color="#ff7f0e"/>
+         <curve name="/supervisory_risk_controller/debug_msg/m_mtr" color="#f14cc1"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot flip_y="false" mode="TimeSeries" flip_x="false" style="Lines">
+         <range bottom="-0.022500" top="0.922500" right="255.233080" left="196.233087"/>
          <limitY max="0.9225" min="-0.0225"/>
          <curve name="/supervisory_risk_controller/debug_msg/m_lidar_dust" color="#ff7f0e"/>
          <curve name="/supervisory_risk_controller/debug_msg/m_visual_dust" color="#f14cc1"/>
@@ -107,7 +118,7 @@
  <!-- - - - - - - - - - - - - - - -->
  <Plugins>
   <plugin ID="DataLoad CSV">
-   <default delimiter="0" time_axis=""/>
+   <default time_axis="" delimiter="0"/>
   </plugin>
   <plugin ID="DataLoad ROS bags">
    <use_header_stamp value="false"/>
@@ -117,6 +128,7 @@
    <remove_suffix_from_strings value="true"/>
   </plugin>
   <plugin ID="DataLoad ULog"/>
+  <plugin ID="MQTT Subscriber (Mosquitto)"/>
   <plugin ID="ROS Topic Subscriber">
    <use_header_stamp value="false"/>
    <discard_large_arrays value="true"/>
@@ -126,6 +138,7 @@
   </plugin>
   <plugin ID="UDP Server"/>
   <plugin ID="WebSocket Server"/>
+  <plugin ID="ZMQ Subscriber"/>
   <plugin ID="Fast Fourier Transform"/>
   <plugin ID="Quaternion to RPY"/>
   <plugin ID="Reactive Script Editor">
