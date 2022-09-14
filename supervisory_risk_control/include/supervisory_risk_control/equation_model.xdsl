@@ -159,7 +159,7 @@
 		</equation>
 		<equation id="motor_for_turbulence">
 			<parents>turbulence</parents>
-			<definition lower="0" upper="1">motor_for_turbulence=Trim(Normal(0.5,0.1),0,1)*turbulence</definition>
+			<definition lower="0" upper="1">motor_for_turbulence=Trim(Normal(0.75,0.3),0,1)*turbulence</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
