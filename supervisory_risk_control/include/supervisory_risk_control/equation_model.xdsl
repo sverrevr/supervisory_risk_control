@@ -327,7 +327,7 @@
 		</equation>
 		<equation id="number_of_filtered_away_points">
 			<parents>environment_observability camera_noise</parents>
-			<definition lower="0" upper="1">number_of_filtered_away_points=Trim(If(camera_noise&lt;0.5,Normal(environment_observability+0.1,0.1)-Exponential(1),Uniform(0,1)),0,1)</definition>
+			<definition lower="0" upper="1">number_of_filtered_away_points=Trim(If(camera_noise&lt;0.5,Normal(environment_observability+0.1,0.2)-Exponential(1),Uniform(0,1)),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
