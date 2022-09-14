@@ -374,7 +374,7 @@
 		</equation>
 		<equation id="frequency_of_motor_saturation_deviating_beyond_safety_margin">
 			<parents>effective_safety_margin max_upwards_acceleration filtered_motor_use</parents>
-			<definition lower="0" upper="1">frequency_of_motor_saturation_deviating_beyond_safety_margin=Trim((1.2*Round(filtered_motor_use*10-0.5)/10-0.1+max_upwards_acceleration/10)^4*(0.05+0.95*(1-effective_safety_margin)^3),0,1)</definition>
+			<definition lower="0" upper="1">frequency_of_motor_saturation_deviating_beyond_safety_margin=Trim((1.2*Round(filtered_motor_use*10-0.5)/10-0.1+max_upwards_acceleration/10)^3*(0.05+0.95*(1-effective_safety_margin)^2),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.005908012045062" />
 				<interval label="State1" upper="0.01527158011626" />
@@ -543,7 +543,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>314 256 454 343</position>
+				<position>309 249 449 336</position>
 				<barchart active="true" width="128" height="198" />
 			</node>
 			<node id="frequency_of_loss_of_control_due_to_turbulence">
