@@ -390,7 +390,7 @@
 		</equation>
 		<equation id="frequency_of_motor_saturation_deviating_beyond_safety_margin">
 			<parents>effective_safety_margin max_upwards_acceleration filtered_motor_use</parents>
-			<definition lower="0" upper="1">frequency_of_motor_saturation_deviating_beyond_safety_margin=Trim(Max(1.2*Round(filtered_motor_use*10-0.5)/10-0.1+max_upwards_acceleration/10,0)^3*(0.01+0.99*Max(1.2-effective_safety_margin,0)^2),0,1)</definition>
+			<definition lower="0" upper="1">frequency_of_motor_saturation_deviating_beyond_safety_margin=Trim(Max(1.1*Round(filtered_motor_use*10-0.5)/10-0.1+max_upwards_acceleration/10,0)^4*(0.01+0.99*Max(1.2-effective_safety_margin,0)^2),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.005908012045062" />
 				<interval label="State1" upper="0.01527158011626" />
