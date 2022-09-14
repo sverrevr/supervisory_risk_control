@@ -96,7 +96,7 @@
 		</equation>
 		<equation id="motoruse_for_tether">
 			<parents>height_over_ground drone_tilt</parents>
-			<definition lower="0" upper="1">motoruse_for_tether=Trim(0.7*Round(10*height_over_ground-0.5)/10+Round(10*drone_tilt-0.5)*0.1*Max(Normal(1,0.3),0),0,1)</definition>
+			<definition lower="0" upper="1">motoruse_for_tether=Trim(0.6*Round(10*height_over_ground-0.5)/10+Round(10*drone_tilt-0.5)*0.1*Max(Normal(1,0.3),0),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
