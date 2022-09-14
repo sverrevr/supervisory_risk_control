@@ -374,7 +374,7 @@
 		</equation>
 		<equation id="frequency_of_motor_saturation_deviating_beyond_safety_margin">
 			<parents>effective_safety_margin max_upwards_acceleration filtered_motor_use</parents>
-			<definition lower="0" upper="1">frequency_of_motor_saturation_deviating_beyond_safety_margin=Trim((Round(filtered_motor_use*10-0.5)/10+max_upwards_acceleration/10)^6*(0.05+0.95*(1-effective_safety_margin)^3),0,1)</definition>
+			<definition lower="0" upper="1">frequency_of_motor_saturation_deviating_beyond_safety_margin=Trim(1.2*(Round(filtered_motor_use*10-0.5)/10-0.2+max_upwards_acceleration/10)^6*(0.05+0.95*(1-effective_safety_margin)^3),0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.005908012045062" />
 				<interval label="State1" upper="0.01527158011626" />
@@ -599,7 +599,7 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
-				<position>683 468 761 516</position>
+				<position>725 473 803 521</position>
 				<comment>0 - maximum margin\n1 - minimum margin</comment>
 				<barchart active="true" width="128" height="216" />
 			</node>
