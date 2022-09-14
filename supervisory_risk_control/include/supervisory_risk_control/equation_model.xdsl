@@ -191,7 +191,7 @@
 		</equation>
 		<equation id="frequency_of_loss_of_control_due_to_motor_wear">
 			<parents>motor_wear</parents>
-			<definition lower="0" upper="1">frequency_of_loss_of_control_due_to_motor_wear=Trim(motor_wear^5,0,1)</definition>
+			<definition lower="0" upper="1">frequency_of_loss_of_control_due_to_motor_wear=Trim(motor_wear^3,0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.005908012045062" />
 				<interval label="State1" upper="0.01527158011626" />
