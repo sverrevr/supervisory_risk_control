@@ -27,6 +27,7 @@ float32 m_lidar_dust
 #Mean intermediate estimation variables
 float32 mtr_tether
 float32 mtr
+float32 mtr_trblnc
 
 #Mean of underlying varaibles
 float32 mtr_wear

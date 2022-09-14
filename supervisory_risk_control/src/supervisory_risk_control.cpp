@@ -134,7 +134,7 @@ class SupervisoryRiskControl
 
     const std::vector<std::string> output_node_names = {"frequency_of_motor_saturation_deviating_beyond_safety_margin", "frequency_of_loss_of_control_due_to_motor_wear", "frequency_of_exceeding_safety_margin_due_to_turbulence", "frequency_of_loss_of_control_due_to_braking_distance_exceeding_safety_margin", "frequency_of_loss_of_control_due_to_turbulence","effective_safety_margin"};
     const std::vector<std::string> intermediate_estimation_node_names = {
-        "motoruse_for_tether", "presence_of_unobservable_obstacle", "effective_safety_margin", "filtered_motor_use"
+        "motoruse_for_tether", "motor_for_turbulence", "presence_of_unobservable_obstacle", "effective_safety_margin", "filtered_motor_use"
     };
     const std::vector<std::string> intermediate_binary_prediction_node_names = {};
     const std::vector<std::string> intermediate_linear_prediction_node_names = {};
@@ -435,6 +435,7 @@ class SupervisoryRiskControl
             debug_display.mtr_wear = mean(estimate_node_states.at("motor_wear"));
             debug_display.mtr_rand = mean(estimate_node_states.at("random_disturbance"));
             debug_display.mtr_tether = mean(estimate_node_states.at("motoruse_for_tether"));
+            debug_display.mtr_trblnc = mean(estimate_node_states.at("motor_for_turbulence"));
             debug_display.dist = mean(estimate_node_states.at("turbulence"));
             debug_display.env_obs = mean(estimate_node_states.at("environment_observability"));
             debug_display.S1_inv_obs = estimate_node_states.at("presence_of_unobservable_obstacle").at("State1");

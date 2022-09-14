@@ -157,9 +157,25 @@
 				<interval label="State9" upper="1" />
 			</discretization>
 		</equation>
+		<equation id="motor_for_turbulence">
+			<parents>turbulence</parents>
+			<definition lower="0" upper="1">motor_for_turbulence=Trim(Normal(0.5,0.1),0,1)*turbulence</definition>
+			<discretization>
+				<interval label="State0" upper="0.1" />
+				<interval label="State1" upper="0.2" />
+				<interval label="State2" upper="0.3" />
+				<interval label="State3" upper="0.4" />
+				<interval label="State4" upper="0.5" />
+				<interval label="State5" upper="0.6" />
+				<interval label="State6" upper="0.7" />
+				<interval label="State7" upper="0.8" />
+				<interval label="State8" upper="0.9" />
+				<interval label="State9" upper="1" />
+			</discretization>
+		</equation>
 		<equation id="filtered_motor_use">
-			<parents>motoruse_for_tether turbulence motor_sum_other</parents>
-			<definition lower="0" upper="1">filtered_motor_use=Trim(Round(motor_sum_other*10-0.5)/10+Round(motoruse_for_tether*10-0.5)/10+Trim(Normal(0.3,0.1),0,1)*Round(turbulence*10-0.5)/10,0,1)</definition>
+			<parents>motoruse_for_tether motor_sum_other motor_for_turbulence</parents>
+			<definition lower="0" upper="1">filtered_motor_use=Trim(Round(motor_sum_other*10-0.5)/10+Round(motoruse_for_tether*10-0.5)/10+Round(motor_for_turbulence*10-0.5)/10,0,1)</definition>
 			<discretization>
 				<interval label="State0" upper="0.1" />
 				<interval label="State1" upper="0.2" />
@@ -647,6 +663,13 @@
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="8" />
 				<position>296 621 385 676</position>
+			</node>
+			<node id="motor_for_turbulence">
+				<name>motor for turbulence</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>303 740 392 795</position>
 			</node>
 		</genie>
 	</extensions>
