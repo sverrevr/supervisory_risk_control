@@ -44,7 +44,7 @@ double mean(map_stringkey<double> input){
     if(prob_sum<0.98 || prob_sum > 1.02){
         throw std::string("Probability sum does not sum to 1 when evaluating mean!");
     }
-    return mean/10;
+    return mean/number_of_states;
 }
 /*double log_mean(std::map<std::string,double> input){
     double mean = 0;
