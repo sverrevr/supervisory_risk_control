@@ -1,5 +1,4 @@
 <launch>
-    <!--node name="test_bbn" pkg="supervisory_risk_control" type="test_bayesian_network" respawn="false" output="screen" launch-prefix=""/!-->
     <node name="supervisor" pkg="supervisory_risk_control" type="supervisory_risk_control" respawn="false" output="screen" launch-prefix="">
         <rosparam file="$(find supervisory_risk_control)/config/supervisory_risk_control.yaml"/>
     </node>

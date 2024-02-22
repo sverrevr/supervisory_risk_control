@@ -37,12 +37,6 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${CMAKE_SOURCE_DIR}/in
 install(TARGETS ${PROJECT_NAME}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
-add_executable(test_bayesian_network src/test_bayesian_network.cpp)
-add_dependencies(test_bayesian_network ${catkin_EXPORTED_TARGETS})
-target_link_libraries(test_bayesian_network ${catkin_LIBRARIES} ${CMAKE_SOURCE_DIR}/include/smile/libsmile.a)
-install(TARGETS test_bayesian_network
-        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-
 install(
   DIRECTORY launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}

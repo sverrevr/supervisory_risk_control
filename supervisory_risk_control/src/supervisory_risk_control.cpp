@@ -62,7 +62,6 @@ class SupervisoryRiskControl
     } pars;
 
     const std::vector<std::string> causal_node_names = {"environment_observability", "motor_wear", "random_disturbance", "turbulence"};
-    //const std::vector<std::string> causal_node_names = {"presence_of_unobservable_obstacle", "motor_wear", "random_disturbance", "turbulence"};
     BayesianNetwork net;
 
     ros::Subscriber debug_value_subscriber = nh.subscribe<mavros_msgs::DebugValue>("/mavros/debug_value/debug_float_array", 1, [&](mavros_msgs::DebugValueConstPtr msg)
@@ -288,81 +287,6 @@ class SupervisoryRiskControl
         return total_risk;
     }
 
-    /*bool evaluate_action_feasibility(const map_stringkey<int> &actions)
-    {
-        net.setEvidence(actions);
-        auto output = net.evaluateStates(output_node_names);
-        return evaluate_risk(output, actions) < pars.max_risk;
-    }*/
-
-    /*auto heuristic_search()
-    {
-        map_stringkey<int> action;
-        action["safety_margin"] = 0; // OBS denne er definert feil vei, finn ut hva å gjøre med det
-        action["max_upwards_acceleration"] = 0;
-        action["max_speed"] = 0;
-
-        std::vector<std::string> active_parameters = {"safety_margin", "max_upwards_acceleration", "max_speed"};
-        map_stringkey<int> parameter_max;
-        parameter_max["safety_margin"] = 9;
-        parameter_max["max_upwards_acceleration"] = 4;
-        parameter_max["max_speed"] = 9;
-        bool search_failed = false;
-        bool search_completed = false;
-        while (active_parameters.size() > 0)
-        {
-            if (!evaluate_action_feasibility(action))
-            {
-                // If not feasible, go back to previous feasible value
-                for (const auto &param : active_parameters)
-                {
-                    action.at(param)--;
-                    if (action.at(param) < 0)
-                    {
-                        // there is not feasable solution, end the search;
-                        action.at(param) = 0;
-                        search_failed = true;
-                        break;
-                    }
-                }
-                if (search_failed)
-                    break;
-                // Find a parameter that cannot be improved
-                bool did_erase_something = false;
-                for (auto param = active_parameters.begin(); param != active_parameters.end(); ++param)
-                {
-                    action.at(*param)++;
-                    bool feasible = evaluate_action_feasibility(action);
-                    action.at(*param)--;
-                    if (feasible == false)
-                    {
-                        active_parameters.erase(param);
-                        // then continue the search without modifying this parameter
-                        did_erase_something = true;
-                        break;
-                    }
-                }
-                if (!did_erase_something)
-                {
-                    active_parameters.pop_back();
-                }
-            }
-            for (const auto &param : active_parameters)
-            {
-                action.at(param)++;
-                if (action.at(param) > parameter_max.at(param))
-                {
-                    search_completed = true;
-                    action.at(param) = parameter_max.at(param);
-                    break;
-                }
-            }
-            if (search_completed)
-                break;
-        }
-        return action;
-    }*/
-
     auto exact_search()
     {
         struct{
@@ -452,19 +376,6 @@ class SupervisoryRiskControl
             }
         }
 
-        // Worst case:
-        /*{
-        map_stringkey<int> action;
-        action["safety_margin"]  = 9; //OBS denne er definert feil vei, finn ut hva å gjøre med det
-        action["max_upwards_acceleration"]  = 4;
-        action["max_speed"]  = 9;
-        net.setEvidence(action);
-        auto output = net.evaluateStates(all_prediction_node_names);
-        double risk_cost = evaluate_risk(output,action,true);
-        ROS_INFO("Optimal action - Margin: %i, Acc: %i, Speed: %i. Risk_cost: %f", action.at("safety_margin"), action.at("max_upwards_acceleration"), action.at("max_speed"), risk_cost);
-        }*/
-
-        // auto action = heuristic_search();
         auto search_result = exact_search();
 
         {
@@ -513,19 +424,11 @@ class SupervisoryRiskControl
         ROS_INFO("Optimal action - Margin: %i, Acc: %i, Speed: %i. Risk_cost: %f", search_result.optimal_action.at("safety_margin"), search_result.optimal_action.at("max_upwards_acceleration"), search_result.optimal_action.at("max_speed"), debug_display.risk_cost);
         
         previous_action = search_result.optimal_action;
-
-        /*auto exact_action = exact_search();
-        net.setEvidence(exact_action);
-        output = net.evaluateStates(all_prediction_node_names);
-        double risk_cost = evaluate_risk(output,exact_action,true);
-        ROS_INFO("Optimal action - Margin: %i, Acc: %i, Speed: %i. Risk_cost: %f", exact_action.at("safety_margin"), exact_action.at("max_upwards_acceleration"), exact_action.at("max_speed"), risk_cost);
-        */
        
 
         if(pars.modify_parameters){
 
             auto param_set = mavros_msgs::ParamSet{};
-            //TODO: tune inn verdiene her
             param_set.request.param_id = "SA_DISTANCE";
             param_set.request.value.real = search_result.optimal_action.at("safety_margin")*(1.09-0.1)/9.0+(0.1+0.21)/2+0.31;
             if (!ros::service::call("/mavros/param/set", param_set) || (param_set.response.success == 0u))
